@@ -20,6 +20,8 @@ typedef struct s_block {
     bool freed;
 } t_block;
 
+// Macros that return the address of the block and heap
+// based on the start of the heap
 #define HEAP_SHIFT(start)((void *)start + sizeof(t_heap))
 #define BLOCK_SHIFT(start)((void *)start + sizeof(t_block))
 
