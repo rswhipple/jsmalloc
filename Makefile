@@ -2,7 +2,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Wall -g3
+CFLAGS=-Wall -fsanitize=address -g3
 
 # Source file
 SRC = my_malloc.c
