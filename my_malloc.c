@@ -13,6 +13,17 @@ void create_heap(t_heap *heap, size_t size) {
     heap->block_count = 0;
 };
 
+void *create_block(t_heap *heap, size_t size) {
+    t_block *block = BLOCK_SHIFT(heap);
+    block->prev = NULL;
+    block->next = NULL;
+    block->data_size = size;
+    block->freed = false;
+    heap->block_count++;
+    heap->free_size -= size;
+    return BLOCK_SHIFT(heap);
+};
+
 void *my_malloc(size_t size) {
     // Still need to handle LARGE_HEAP_ALLOCATION_SIZE
     int allocation_size = size < TINY_BLOCK_SIZE ? TINY_HEAP_ALLOCATION_SIZE : SMALL_HEAP_ALLOCATION_SIZE;
@@ -21,14 +32,7 @@ void *my_malloc(size_t size) {
         create_heap(global_heap, allocation_size);
 
         // Create a block
-        t_block *block = BLOCK_SHIFT(global_heap);
-        block->prev = NULL;
-        block->next = NULL;
-        block->data_size = size;
-        block->freed = false;
-        global_heap->block_count++;
-        global_heap->free_size -= size;
-        return BLOCK_SHIFT(global_heap);
+        return create_block(global_heap, size);
     }
     return NULL;
 };
