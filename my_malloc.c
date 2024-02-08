@@ -4,18 +4,21 @@
 
 t_heap *global_heap = NULL;
 
+void create_heap(t_heap *heap, size_t size) {
+    heap = mmap(0, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+    heap->prev = NULL;
+    heap->next = NULL;
+    heap->total_size = size;
+    heap->free_size = size;
+    heap->block_count = 0;
+};
+
 void *my_malloc(size_t size) {
+    // Still need to handle LARGE_HEAP_ALLOCATION_SIZE
     int allocation_size = size < TINY_BLOCK_SIZE ? TINY_HEAP_ALLOCATION_SIZE : SMALL_HEAP_ALLOCATION_SIZE;
 
     if (global_heap == NULL) {
-        global_heap = mmap(0, allocation_size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);;
-        global_heap->prev = NULL;
-        global_heap->next = NULL;
-        
-        // Use size to determine if it's a tiny or small allocation
-        global_heap->total_size = allocation_size;
-        global_heap->free_size = allocation_size;
-        global_heap->block_count = 0;
+        create_heap(global_heap, allocation_size);
 
         // Create a block
         t_block *block = BLOCK_SHIFT(global_heap);
