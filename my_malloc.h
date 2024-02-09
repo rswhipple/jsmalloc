@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include "hash_table.h"
 
 #ifndef MY_MALLOC_H
 #define MY_MALLOC_H
@@ -11,9 +12,11 @@ typedef struct s_heap {
     size_t total_size;
     size_t free_size;
     size_t block_count;
+    hash_table *ht;
 } t_heap;
 
 typedef struct s_block {
+    char *key;
     struct s_block *prev;
     struct s_block *next;
     size_t data_size;
@@ -23,6 +26,7 @@ typedef struct s_block {
 // Macros that return the address of the block and heap
 // based on the start of the heap
 #define HEAP_SHIFT(start)((void *)start + sizeof(t_heap))
+#define HASH_SHIFT(start)((void *)start + sizeof(t_hash))
 #define BLOCK_SHIFT(start)((void *)start + sizeof(t_block))
 
 #define TINY_HEAP_ALLOCATION_SIZE (4 * getpagesize())
