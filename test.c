@@ -18,8 +18,9 @@ int main(int ac, char** av) {
 
 
     const int tablesize = (1<<20);
+    // initiate heap first
  
-    hash_table *table = hash_table_create(tablesize, my_hash_func);
+    // t_hash *table = hash_table_create(heap, tablesize, my_hash_func);
 
     return EXIT_SUCCESS;
 }

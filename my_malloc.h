@@ -1,10 +1,10 @@
+#ifndef MY_MALLOC_H
+#define MY_MALLOC_H
+
+#include "hash_table.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include "hash_table.h"
-
-#ifndef MY_MALLOC_H
-#define MY_MALLOC_H
 
 typedef struct s_heap {
     struct s_heap *prev;
@@ -16,11 +16,11 @@ typedef struct s_heap {
 } t_heap;
 
 typedef struct s_block {
-    char *key;
     struct s_block *prev;
     struct s_block *next;
     size_t data_size;
     bool freed;
+    void *object;
 } t_block;
 
 // Macros that return the address of the block and heap

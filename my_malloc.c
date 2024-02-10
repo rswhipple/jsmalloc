@@ -40,8 +40,6 @@ void *create_block(t_heap *heap, size_t size) {
         current_block->next = new_block;
         return new_block;
     }
-    
-
 }
 
 
