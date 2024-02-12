@@ -11,6 +11,8 @@ void create_heap(t_heap **heap, size_t size) {
     (*heap)->total_size = size;
     (*heap)->free_size = size;
     (*heap)->block_count = 0;
+    // TODO: I think we need this but want to double check my logic
+    // *heap = HEAP_SHIFT(heap);
 }
 void *create_block(t_heap *heap, size_t size) {
 
@@ -21,6 +23,7 @@ void *create_block(t_heap *heap, size_t size) {
         block->next = NULL;
         block->data_size = size;
         block->freed = false;
+        block->object = MEMORY_SHIFT(heap, size);
         heap->block_count++;
         heap->free_size -= size;
         return block;

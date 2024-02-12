@@ -47,8 +47,8 @@ void hash_table_print(t_hash *ht) {
     }
 }
 
-bool hash_table_insert(t_heap **heap, t_hash *ht, size_t size, void *object) {
-    if (object == NULL || size == NULL) return false;
+bool hash_table_insert(t_heap **heap, t_hash *ht, size_t size) {
+    if (ht == NULL || size == NULL) return false;
     size_t index = ht->hash(size, ht->size);;
 
     if (hash_table_allocate(ht, size)) return false;
@@ -60,12 +60,12 @@ bool hash_table_insert(t_heap **heap, t_hash *ht, size_t size, void *object) {
     block->next = NULL;
     block->data_size = size;
     block->freed = false;
+
+    // TODO create an object to allocate the memory space
+    // block->object = 
+
     (*heap)->block_count++;
     (*heap)->free_size -= size;
-
-    // TODO fix key and malloc
-    // b->key = malloc(strlen(key) + 1);
-    // strcpy(b->key, key);
 
     // insert entry
     ht->elements[index]->prev = block;
@@ -86,8 +86,9 @@ void *hash_table_allocate(t_hash *ht, const char *key) {
     return tmp->data_size;
 }
 
-void *hash_table_deallocate(t_hash *ht, const char *key) {
-    // if (key == NULL || ht == NULL) return false;
+void *hash_table_deallocate(t_block *block) {
+    if (!block) return NULL;
+
     // size_t index = hash_table_index(ht, key);
 
     // t_block *tmp = ht->elements[index];

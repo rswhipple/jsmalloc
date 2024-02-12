@@ -24,6 +24,7 @@ void hash_table_destroy(t_hash *ht);
 void hash_table_print(t_hash *ht);
 // bool hash_table_insert(t_heap **heap, t_hash *ht, const char *key, size_t value);
 void *hash_table_allocate(t_hash *ht, const char *key);
-void *hash_table_deallocate(t_hash *ht, const char *key);
+void *hash_table_deallocate(t_block *block);
+// void *hash_table_deallocate(t_hash *ht, const char *key);
 
 #endif

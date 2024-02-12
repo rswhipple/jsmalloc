@@ -26,8 +26,10 @@ typedef struct s_block {
 // Macros that return the address of the block and heap
 // based on the start of the heap
 #define HEAP_SHIFT(start)((void *)start + sizeof(t_heap))
-#define HASH_SHIFT(start)((void *)start + sizeof(t_hash))
 #define BLOCK_SHIFT(start)((void *)start + sizeof(t_block))
+
+#define HASH_SHIFT(start)((void *)start + sizeof(t_hash))
+#define MEMORY_SHIFT(start, data_size)((void *)start + data_size)
 
 #define TINY_HEAP_ALLOCATION_SIZE (4 * getpagesize())
 #define TINY_BLOCK_SIZE (TINY_HEAP_ALLOCATION_SIZE / 128)
