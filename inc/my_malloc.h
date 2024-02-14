@@ -12,7 +12,7 @@ typedef struct s_heap {
     size_t total_size;
     size_t free_size;
     size_t block_count;
-    hash_table *ht;
+    t_hash *ht;
 } t_heap;
 
 typedef struct s_block {
