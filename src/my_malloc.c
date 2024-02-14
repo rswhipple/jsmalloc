@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "my_malloc.h"
 #include <sys/mman.h>
+#include "../inc/my_malloc.h" 
 
 t_heap *global_heap = NULL;
 
@@ -12,7 +12,7 @@ void create_heap(t_heap **heap, size_t size) {
     (*heap)->free_size = size;
     (*heap)->block_count = 0;
     // TODO: I think we need this but want to double check my logic
-    // *heap = HEAP_SHIFT(heap);
+    *heap = HEAP_SHIFT(heap);
 }
 void *create_block(t_heap *heap, size_t size) {
 

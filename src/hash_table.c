@@ -1,4 +1,4 @@
-#include "hash_table.h"
+#include "../inc/hash_table.h"
 
 
 unsigned int my_hash_function(int data_size, int table_size) {
