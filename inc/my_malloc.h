@@ -27,7 +27,6 @@ typedef struct s_block {
 // based on the start of the heap
 #define HEAP_SHIFT(start)((void *)start + sizeof(t_heap))
 #define BLOCK_SHIFT(start)((void *)start + sizeof(t_block))
-
 #define HASH_SHIFT(start)((void *)start + sizeof(t_hash))
 #define MEMORY_SHIFT(start, data_size)((void *)start + data_size)
 
@@ -35,6 +34,8 @@ typedef struct s_block {
 #define TINY_BLOCK_SIZE (TINY_HEAP_ALLOCATION_SIZE / 128)
 #define SMALL_HEAP_ALLOCATION_SIZE (16 * getpagesize())
 #define SMALL_BLOCK_SIZE (SMALL_HEAP_ALLOCATION_SIZE / 128)
+
+#define MAX_BLOCKS 20   // TODO: 20 is an arbitrary size 
 
 void *my_malloc(size_t size);
 void my_free(size_t nitems, size_t size);
