@@ -11,24 +11,15 @@ t_hash *hash_table_create(t_heap *heap, uint32_t size, hash_function *hf) {
     ht->size = size;
     ht->hash = hf;
 
-    // TODO: figure out how to create the pointer array
-    ht->elements = BLOCK_SHIFT(heap);
+    // TODO: calculate the number of indexes possible
+    ht->elements = MEMORY_SHIFT(heap, sizeof(t_hash) + (sizeof(t_block *) * MAX_BLOCKS));
+
+    // Initialize hashtable slots to NULL
+    for (uint32_t i = 0; i < size; i++) {
+        ht->elements[i] = NULL; 
+    }
 
     return ht;
-}
-
-void hash_table_destroy(t_hash *ht) {
-    // cleanup individual elements
-    for (uint32_t i = 0; i < ht->size; i++) {
-        while (ht->elements[i]) {
-            t_block *tmp = ht->elements[i];
-            ht->elements[i] = ht->elements[i]->next;
-            free(tmp->object); // TODO: make it work for t_block
-            free(tmp);
-        }
-    }
-    free(ht->elements);
-    free(ht);
 }
 
 void hash_table_print(t_hash *ht) {
