@@ -11,9 +11,15 @@ void create_heap(t_heap **heap, size_t size) {
     (*heap)->total_size = size;
     (*heap)->free_size = size;
     (*heap)->block_count = 0;
-    // TODO: I think we need this but want to double check my logic
-    *heap = HEAP_SHIFT(heap);
+    (*heap)->ht = NULL;
+
+    *heap = HEAP_SHIFT(heap);   // TODO: I think we need this but want to double check my logic
 }
+
+void destroy_heap(t_heap *heap) {
+    munmap(heap, heap->total_size);
+}
+
 void *create_block(t_heap *heap, size_t size) {
 
     if (heap->block_count == 0) {
@@ -39,6 +45,7 @@ void *create_block(t_heap *heap, size_t size) {
         new_block->next = NULL;
         new_block->data_size = size;
         new_block->freed = false;
+        new_block->object = MEMORY_SHIFT(heap, size);
         heap->block_count++;
         current_block->next = new_block;
         return new_block;
