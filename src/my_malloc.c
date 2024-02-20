@@ -63,7 +63,7 @@ void print_blocks(t_heap *heap) {
 
 void *my_malloc(size_t size) {
     // Still need to handle LARGE_HEAP_ALLOCATION_SIZE
-    int allocation_size = size < TINY_BLOCK_SIZE ? TINY_HEAP_ALLOCATION_SIZE : SMALL_HEAP_ALLOCATION_SIZE;
+    int allocation_size = size < (size_t)TINY_BLOCK_SIZE ? TINY_HEAP_ALLOCATION_SIZE : SMALL_HEAP_ALLOCATION_SIZE;
 
     if (global_heap == NULL) {
         create_heap(&global_heap, allocation_size);
@@ -72,7 +72,7 @@ void *my_malloc(size_t size) {
     } else {
         t_heap *current_heap = global_heap;
         while (current_heap != NULL) {
-            if (current_heap->total_size == allocation_size && current_heap->free_size >= size) {
+            if (current_heap->total_size == (size_t)allocation_size && current_heap->free_size >= size) {
                 printf("current_heap: %zu\n", current_heap->total_size);
                 return create_block(current_heap, size);
             }
@@ -85,17 +85,56 @@ void *my_malloc(size_t size) {
 };
 
 void my_free(size_t nitems, size_t size) {
+    UNUSED(nitems);
+    UNUSED(size);
+    // int allocation_size = size < TINY_BLOCK_SIZE ? TINY_HEAP_ALLOCATION_SIZE : SMALL_HEAP_ALLOCATION_SIZE;
+
+    // Find the Corresponding Block to Free:
+    
+    // Mark the Block as Freed:
+
+    // Coalesce Free Blocks:
+
+    // Update Heap Metadata:
+
+    // Update Hash Table:
+
+    // Unmap Heap if Empty:
+
 };
 
 void *my_realloc(void *ptr, size_t size) {
+    UNUSED(ptr);
+    UNUSED(size);
     return NULL;
 };
 
 void *calloc(size_t nitems, size_t size) {
+    UNUSED(size);
+    UNUSED(nitems);
     return NULL;
 };
 
+uint64_t my_hash_func(char *name, size_t length) {
+    uint64_t hash_value = 0;
+    for (int i = 0; (size_t)i < length; i++) {
+        hash_value += name[i];
+        hash_value = hash_value * name[i];
+    }
+
+    return hash_value;
+}
+
 int main() {
+
+    // For hash table testing
+    // const int tablesize = (1<<20);
+    // initiate heap first
+ 
+    // t_hash *table = hash_table_create(heap, tablesize, my_hash_func);
+
+
+    // For my_malloc testing
     char *ptr1 = my_malloc(10);
     char *ptr2 = my_malloc(25);
     char *ptr3 = my_malloc(30);
@@ -103,7 +142,7 @@ int main() {
     printf("pointer to malloced node: %p\n", ptr1);
     printf("pointer to malloced node: %p\n", ptr2);
     printf("pointer to malloced node: %p\n", ptr3);
-
+    printf("testestestst\n");
     print_blocks(global_heap);
     return 0;
 }

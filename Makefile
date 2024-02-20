@@ -1,28 +1,25 @@
-# Compiler
 CC = gcc
+CFLAGS = -Wall -Wextra -Werror  -fsanitize=address -g3
+LDFLAGS =
 
-# Compiler flags
-CFLAGS=-Wall -fsanitize=address -g3
-
-# Source file
-SRC = my_malloc.c
-
-# Executable name
+# Using CURDIR to set the SRCDIR
+SRCDIR = $(CURDIR)/src
+INCDIR = $(CURDIR)/include
+BUILDDIR = $(CURDIR)/build
 TARGET = my_malloc
 
-# Default target, which will be executed when you just type "make" without any arguments
+# Gather all source files recursively
+SOURCES = $(wildcard $(SRCDIR)/*.c)
+OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
+INCLUDES = -I$(INCDIR)
+
 all: $(TARGET)
 
-# Rule to compile the C source file into an executable
-$(TARGET): $(SRC)
-	$(CC) $(CFLAGS) -o $(TARGET) $(SRC)
+$(TARGET): $(OBJECTS)
+		$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-# Clean up the generated files
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c
+		$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
 clean:
-	rm -f $(TARGET)
-
-fclean: clean
-	rm -f $(TARGET)
-
-# Phony targets
-.PHONY: all clean
+		rm -f $(OBJECTS) $(TARGET)
