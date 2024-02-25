@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sys/mman.h>
 #include "../inc/my_malloc.h" 
+#include "../inc/hash_table.h" 
 
 t_heap *global_heap = NULL;
 
@@ -115,24 +116,16 @@ void *calloc(size_t nitems, size_t size) {
     return NULL;
 };
 
-uint64_t my_hash_func(char *name, size_t length) {
-    uint64_t hash_value = 0;
-    for (int i = 0; (size_t)i < length; i++) {
-        hash_value += name[i];
-        hash_value = hash_value * name[i];
-    }
-
-    return hash_value;
-}
-
 int main() {
 
     // For hash table testing
-    // const int tablesize = (1<<20);
+    const int tablesize = (1<<12);
     // initiate heap first
- 
-    // t_hash *table = hash_table_create(heap, tablesize, my_hash_func);
+    t_heap *heap = NULL;
+    int heap_size = 1000000;
 
+    create_heap(&heap, heap_size);
+    hash_table_create(heap, tablesize, my_hash_function);
 
     // For my_malloc testing
     char *ptr1 = my_malloc(10);
@@ -142,7 +135,7 @@ int main() {
     printf("pointer to malloced node: %p\n", ptr1);
     printf("pointer to malloced node: %p\n", ptr2);
     printf("pointer to malloced node: %p\n", ptr3);
-    printf("testestestst\n");
+
     print_blocks(global_heap);
     return 0;
 }

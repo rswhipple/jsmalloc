@@ -13,7 +13,7 @@
 
 
 // function prototypes
-unsigned int my_hash_function(int key, int table_size);
+unsigned int my_hash_function(size_t data_size, uint32_t table_size);
 t_hash *hash_table_create(t_heap *heap, uint32_t size, hash_function *hf) ;
 void hash_table_destroy(t_hash *ht);
 void hash_table_print(t_hash *ht);

@@ -8,7 +8,7 @@
 
 // #include "hash_table.h"
 typedef struct hash_table_s t_hash;
-typedef uint64_t (hash_function)(size_t input, size_t);
+typedef unsigned int (hash_function)(size_t input, uint32_t);
 
 typedef struct s_heap {
     struct s_heap *prev;

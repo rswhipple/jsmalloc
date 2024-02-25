@@ -1,7 +1,8 @@
 #include "../inc/hash_table.h"
+#include <sys/mman.h>
+#include <unistd.h>
 
-
-unsigned int my_hash_function(int data_size, int table_size) {
+unsigned int my_hash_function(size_t data_size, uint32_t table_size) {
     double A = (sqrt(5) - 1) / 2; // Fractional part of the golden ratio
     return ((unsigned int)(table_size * (data_size * A - (int)(data_size * A)))) % table_size;
 }
@@ -14,9 +15,18 @@ t_hash *hash_table_create(t_heap *heap, uint32_t size, hash_function *hf) {
     // TODO: calculate the number of indexes possible
     ht->elements = MEMORY_SHIFT(heap, sizeof(t_hash) + (sizeof(t_block *) * MAX_BLOCKS));
 
+    size_t elements_size = size * sizeof(t_block *);
+    ht->elements = mmap(NULL, elements_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+
+    if (ht->elements == MAP_FAILED) {
+        perror("mmap failed");
+        munmap(ht, sizeof(t_hash)); // Clean up the previously mapped memory
+        return NULL;
+    }
+
     // Initialize hashtable slots to NULL
     for (uint32_t i = 0; i < size; i++) {
-        ht->elements[i] = NULL; 
+        ht->elements[i] = NULL;
     }
 
     return ht;
