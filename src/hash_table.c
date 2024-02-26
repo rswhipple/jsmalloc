@@ -1,7 +1,8 @@
 #include "../inc/hash_table.h"
+#include <sys/mman.h>
+#include <unistd.h>
 
-
-unsigned int my_hash_function(int data_size, int table_size) {
+unsigned int my_hash_function(size_t data_size, uint32_t table_size) {
     double A = (sqrt(5) - 1) / 2; // Fractional part of the golden ratio
     return ((unsigned int)(table_size * (data_size * A - (int)(data_size * A)))) % table_size;
 }
@@ -14,9 +15,18 @@ t_hash *hash_table_create(t_heap *heap, uint32_t size, hash_function *hf) {
     // TODO: calculate the number of indexes possible
     ht->elements = MEMORY_SHIFT(heap, sizeof(t_hash) + (sizeof(t_block *) * MAX_BLOCKS));
 
+    size_t elements_size = size * sizeof(t_block *);
+    ht->elements = mmap(NULL, elements_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+
+    if (ht->elements == MAP_FAILED) {
+        perror("mmap failed");
+        munmap(ht, sizeof(t_hash)); // Clean up the previously mapped memory
+        return NULL;
+    }
+
     // Initialize hashtable slots to NULL
     for (uint32_t i = 0; i < size; i++) {
-        ht->elements[i] = NULL; 
+        ht->elements[i] = NULL;
     }
 
     return ht;
@@ -24,11 +34,11 @@ t_hash *hash_table_create(t_heap *heap, uint32_t size, hash_function *hf) {
 
 void hash_table_print(t_hash *ht) {
     printf("Start Table\n");
-    for (int i = 0; i < ht->size; i++) {
+    for (uint32_t i = 0; i < ht->size; i++) {
         if (ht->elements[i] == NULL) {
-            printf("\t%i\t---\n", i);
+            printf("\t%u\t---\n", i);
         } else {
-            printf("\t%i\t\n", i);
+            printf("\t%u\t\n", i);
             t_block *tmp = ht->elements[i];
             while (tmp) {
                 // printf("\"%TODO\"(%lu) - ", tmp->data_size);
@@ -39,13 +49,13 @@ void hash_table_print(t_hash *ht) {
 }
 
 bool hash_table_insert(t_heap **heap, t_hash *ht, size_t size) {
-    if (ht == NULL || size == NULL) return false;
+    if (ht == NULL || size == 0) return false;
     size_t index = ht->hash(size, ht->size);;
 
     if (hash_table_allocate(ht, size)) return false;
 
     // create new entry
-    t_block *block = create_block();
+    t_block *block = create_block(*heap, size);
     printf("block: %zu\n", block->data_size);
     block->prev = NULL;
     block->next = NULL;
@@ -65,8 +75,8 @@ bool hash_table_insert(t_heap **heap, t_hash *ht, size_t size) {
     return true;
 }
 
-void *hash_table_allocate(t_hash *ht, const char *key) {
-    if (key == NULL || ht == NULL) return false;
+void *hash_table_allocate(t_hash *ht, size_t key) {
+    if (key == 0 || ht == NULL) return false;
     size_t index = ht->hash(key, ht->size);     // TODO: make sure this is the correct function pointer
 
     t_block *tmp = ht->elements[index];
@@ -74,7 +84,7 @@ void *hash_table_allocate(t_hash *ht, const char *key) {
         tmp = tmp->next;
     }
     if (!tmp) return NULL;  // This means we need to allocate more memory
-    return tmp->data_size;
+    return &tmp->data_size;
 }
 
 void *hash_table_deallocate(t_block *block) {
@@ -101,6 +111,7 @@ void *hash_table_deallocate(t_block *block) {
     // free(tmp);
 
     // return result;
+    return 0;
 }
 
 

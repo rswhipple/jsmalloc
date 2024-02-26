@@ -1,10 +1,14 @@
 #ifndef MY_MALLOC_H
 #define MY_MALLOC_H
 
-#include "hash_table.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
+#define UNUSED(x) (void)(x)
+
+// #include "hash_table.h"
+typedef struct hash_table_s t_hash;
+typedef unsigned int (hash_function)(size_t input, uint32_t);
 
 typedef struct s_heap {
     struct s_heap *prev;
@@ -22,6 +26,12 @@ typedef struct s_block {
     bool freed;
     void *object;
 } t_block;
+
+struct hash_table_s {
+    uint32_t size;
+    hash_function *hash;
+    t_block **elements;
+};
 
 // Macros that return the address of the block and heap
 // based on the start of the heap
@@ -41,5 +51,6 @@ void *my_malloc(size_t size);
 void my_free(size_t nitems, size_t size);
 void *my_realloc(void *ptr, size_t size);
 void *my_calloc(size_t nitems, size_t size);
+void *create_block(t_heap *heap, size_t size);
 
 #endif
