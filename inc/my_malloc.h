@@ -48,7 +48,7 @@ struct hash_table_s {
 #define MAX_BLOCKS 20   // TODO: 20 is an arbitrary size 
 
 void *my_malloc(size_t size);
-void my_free(size_t nitems, size_t size);
+void my_free(void *ptr);
 void *my_realloc(void *ptr, size_t size);
 void *my_calloc(size_t nitems, size_t size);
 void *create_block(t_heap *heap, size_t size);

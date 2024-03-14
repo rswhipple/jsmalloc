@@ -7,7 +7,7 @@ t_heap *global_heap = NULL;
 
 void create_heap(t_heap **heap, size_t size) {
     *heap = mmap(0, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-    (*heap)->prev = NULL;
+    // (*heap)->prev = NULL;
     (*heap)->next = NULL;
     (*heap)->total_size = size;
     (*heap)->free_size = size;
@@ -22,7 +22,7 @@ void destroy_heap(t_heap *heap) {
 }
 
 void *create_block(t_heap *heap, size_t size) {
-
+    printf("heap total size: %zu\n", heap->total_size);
     if (heap->block_count == 0) {
         t_block *block = BLOCK_SHIFT(heap);
         printf("block: %zu\n", block->data_size);
@@ -67,33 +67,84 @@ void *my_malloc(size_t size) {
     int allocation_size = size < (size_t)TINY_BLOCK_SIZE ? TINY_HEAP_ALLOCATION_SIZE : SMALL_HEAP_ALLOCATION_SIZE;
 
     if (global_heap == NULL) {
+        printf("global_heap is NULL\n");
         create_heap(&global_heap, allocation_size);
-
         return create_block(global_heap, size);
     } else {
         t_heap *current_heap = global_heap;
+        printf("current_heap: %zu\n", current_heap->free_size);
         while (current_heap != NULL) {
             if (current_heap->total_size == (size_t)allocation_size && current_heap->free_size >= size) {
-                printf("current_heap: %zu\n", current_heap->total_size);
+                printf("current_heap: %zu\n", current_heap->free_size);
                 return create_block(current_heap, size);
-            }
+            } 
+            printf("moving to next heap\n");
             current_heap = current_heap->next;
         }
+
+        t_heap *new_heap = NULL;
+        create_heap(&new_heap, allocation_size);
+
+        // Add the new heap to the end of the heap list
+        t_heap *last_heap = global_heap;
+        while (last_heap->next != NULL) {
+            last_heap = last_heap->next;
+        }
+        last_heap->next = new_heap;
+
+        // Return the newly allocated block
+        return create_block(new_heap, size);
     }
 
     printf("returning NULL\n");
     return NULL;
 };
 
-void my_free(size_t nitems, size_t size) {
-    UNUSED(nitems);
-    UNUSED(size);
-    // int allocation_size = size < TINY_BLOCK_SIZE ? TINY_HEAP_ALLOCATION_SIZE : SMALL_HEAP_ALLOCATION_SIZE;
+void search_ptr(t_heap **ptr_heap, t_block **ptr_block,
+	t_heap *heap, void *ptr) {
+	t_block *block;
 
+	block = NULL;
+	while (heap)
+	{
+		block = (t_block *)HEAP_SHIFT(heap);
+		while (block)
+		{
+			if (BLOCK_SHIFT(block) == ptr)
+			{
+				*ptr_heap = heap;
+				*ptr_block = block;
+				return ;
+			}
+			block = block->next;
+		}
+		heap = heap->next;
+	}
+	*ptr_heap = NULL;
+	*ptr_block = NULL;
+}
+
+void my_free(void *ptr) {
+    if (global_heap == NULL || ptr == NULL) {
+        printf("Attempting to free NULL pointer or heap not initialized.\n");
+        return;
+    }
+
+    t_heap	*heap;
+	t_block	*block;
+    heap = global_heap;
     // Find the Corresponding Block to Free:
-    
+    search_ptr(&heap, &block, heap, ptr);
     // Mark the Block as Freed:
-
+	if (block && heap)
+	{
+        printf("found block: %zu\n", block->data_size);
+        printf("heap free size: %zu\n", heap->free_size);
+        block->freed = true;
+        heap->free_size += block->data_size;
+        printf("block freed: %zu\n", block->data_size);
+        printf("heap free size: %zu\n", heap->free_size);
+    }
     // Coalesce Free Blocks:
 
     // Update Heap Metadata:
@@ -128,14 +179,21 @@ int main() {
     hash_table_create(heap, tablesize, my_hash_function);
 
     // For my_malloc testing
+    printf("\n=====mallocing for small size heap=====\n");
     char *ptr1 = my_malloc(10);
-    char *ptr2 = my_malloc(25);
+    printf("\n=====mallocing big size heap=====\n");
+    char *ptr2 = my_malloc(40);
+
+    printf("\n=====mallocing medium?=====\n");
     char *ptr3 = my_malloc(30);
+
 
     printf("pointer to malloced node: %p\n", ptr1);
     printf("pointer to malloced node: %p\n", ptr2);
     printf("pointer to malloced node: %p\n", ptr3);
 
     print_blocks(global_heap);
+
+    // my_free(ptr1);
     return 0;
 }
