@@ -4,6 +4,13 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <sys/mman.h>
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpointer-arith"
+#endif
+
 #define UNUSED(x) (void)(x)
 
 // #include "hash_table.h"
@@ -47,10 +54,13 @@ struct hash_table_s {
 
 #define MAX_BLOCKS 20   // TODO: 20 is an arbitrary size 
 
+extern t_heap *global_heap;
+
 void *my_malloc(size_t size);
 void my_free(void *ptr);
 void *my_realloc(void *ptr, size_t size);
 void *my_calloc(size_t nitems, size_t size);
 void *create_block(t_heap *heap, size_t size);
+void print_blocks(t_heap *heap);
 
 #endif

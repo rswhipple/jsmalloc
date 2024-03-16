@@ -1,8 +1,8 @@
-#include "my_malloc.h"
 
 #ifndef HASH_TABLE_H  
 #define HASH_TABLE_H
 
+#include "my_malloc.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
