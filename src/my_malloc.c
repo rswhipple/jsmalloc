@@ -52,6 +52,7 @@ void *create_block(t_heap *heap, size_t size) {
         new_block->freed = false;
         new_block->object = MEMORY_SHIFT(heap, size);
         heap->block_count++;
+        heap->free_size -= size;
         current_block->next = new_block;
         return new_block;
     }
@@ -185,24 +186,34 @@ int main() {
     // For my_malloc testing
     printf("\n=====mallocing for small size heap=====\n");
     const void *ptr1 = my_malloc(10);
-    printf("\n=====mallocing big size heap=====\n");
+    const void *ptr5 = my_malloc(80);
     const void *ptr2 = my_malloc(40);
+    const void *ptr3 = my_malloc(30);
 
     printf("\n=====mallocing medium?=====\n");
-    const void *ptr3 = my_malloc(30);
+    for (size_t i = 0; i < 100; i++)
+    {
+         my_malloc(900);
+        // /* code */
+    }
+    
     const void *ptr4 = my_malloc(900);
-    const void *ptr5 = my_malloc(80);
 
+    printf("\n=====mallocing big size heap=====\n");
+    printf("None yet\n");
 
+    printf("\n======pointers=====\n");
     printf("pointer to malloced node: %p\n", ptr1);
     printf("pointer to malloced node: %p\n", ptr2);
     printf("pointer to malloced node: %p\n", ptr3);
     printf("pointer to malloced node: %p\n", ptr4);
     printf("pointer to malloced node: %p\n", ptr5);
 
+    printf("\n=====pointers allocated=====\n");
     t_heap *current_heap = global_heap;
     while (current_heap != NULL) {
-        printf("heap size: %zu\n", current_heap->free_size);
+        printf("heap total: %zu\n", current_heap->total_size);
+        printf("remaining size: %zu\n", current_heap->free_size);
         print_blocks(current_heap);
         current_heap = current_heap->next;
     }
