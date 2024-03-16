@@ -15,7 +15,7 @@ typedef struct s_heap {
     struct s_heap *next;
     size_t total_size;
     size_t free_size;
-    size_t block_count;
+    int block_count;
     t_hash *ht;
 } t_heap;
 
