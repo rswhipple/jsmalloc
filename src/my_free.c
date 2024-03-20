@@ -5,30 +5,35 @@ void search_ptr(t_heap **ptr_heap, t_block **ptr_block,
     t_block *block;
 
     block = NULL;
-    log_info("iterating through heap");
-    while (heap->next != NULL)
-    {   printf("heap: %p\n", heap);
+    while (heap->next != NULL) {   
         block = (t_block *)BLOCK_SHIFT(heap);
-        printf("block: %p\n", block);
-        while (block && block->next != NULL)
-        {
-            printf("block data size: %zu\n", block->data_size);
-            if (block == ptr)
-            {   
+        while (block && block->next != NULL) {
+            if (block == ptr) {   
                 printf("block found: %p\n", block);
                 *ptr_heap = heap;
                 *ptr_block = block;
                 return ;
             }
             block = block->next;
-            printf("next block: %p\n", block);
         }
         heap = heap->next;
-        printf("next heap: %p\n", heap);
     }
     log_info("block not found");
     *ptr_heap = NULL;
     *ptr_block = NULL;
+}
+
+void unmap_heap(t_heap *heap) {
+    if (heap->prev != NULL) {
+        heap->prev->next = heap->next;
+    }
+    if (heap->next != NULL) {
+        heap->next->prev = heap->prev;
+    }
+    if (heap == global_heap) {
+        global_heap = heap->next;
+    }
+    munmap(heap, heap->total_size);
 }
 
 void my_free(void *ptr) {
@@ -44,21 +49,25 @@ void my_free(void *ptr) {
     log_info("searching for block");
     search_ptr(&heap, &block, heap, ptr);
     // Mark the Block as Freed:
-    if (block && heap)
-    {
+    if (block && heap) {
         printf("found block: %zu\n", block->data_size);
         printf("heap free size: %zu\n", heap->free_size);
         block->freed = true;
+        // Update Heap Metadata:
         heap->free_size += block->data_size;
+        heap->block_count--;
         printf("block freed: %zu\n", block->data_size);
         printf("heap free size: %zu\n", heap->free_size);
+
+        // TODO:
+        // Coalesce Free Blocks:
+
+
+        // Update Hash Table:
+
+        // Unmap Heap if Empty:
+        if (heap->block_count == 0) {
+            unmap_heap(heap);
+        }
     }
-    // Coalesce Free Blocks:
-
-    // Update Heap Metadata:
-
-    // Update Hash Table:
-
-    // Unmap Heap if Empty:
-
 };
