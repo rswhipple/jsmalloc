@@ -5,21 +5,28 @@ void search_ptr(t_heap **ptr_heap, t_block **ptr_block,
     t_block *block;
 
     block = NULL;
-    while (heap)
-    {
-        block = (t_block *)HEAP_SHIFT(heap);
-        while (block)
+    log_info("iterating through heap");
+    while (heap->next != NULL)
+    {   printf("heap: %p\n", heap);
+        block = (t_block *)BLOCK_SHIFT(heap);
+        printf("block: %p\n", block);
+        while (block && block->next != NULL)
         {
-            if (BLOCK_SHIFT(block) == ptr)
-            {
+            printf("block data size: %zu\n", block->data_size);
+            if (block == ptr)
+            {   
+                printf("block found: %p\n", block);
                 *ptr_heap = heap;
                 *ptr_block = block;
                 return ;
             }
             block = block->next;
+            printf("next block: %p\n", block);
         }
         heap = heap->next;
+        printf("next heap: %p\n", heap);
     }
+    log_info("block not found");
     *ptr_heap = NULL;
     *ptr_block = NULL;
 }
