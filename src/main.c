@@ -14,13 +14,13 @@ int main() {
     hash_table_create(heap, tablesize, my_hash_function);
 
     // For my_malloc testing
-    printf("\n=====mallocing for small size heap=====\n");
-    const void *ptr1 = my_malloc(10);
+    log_info("mallocing for small size heap");
+    void *ptr1 = my_malloc(10);
     const void *ptr5 = my_malloc(80);
     const void *ptr2 = my_malloc(40);
     const void *ptr3 = my_malloc(30);
 
-    printf("\n=====mallocing medium?=====\n");
+    log_info("mallocing medium?");
     // For testing big batches
     // for (size_t i = 0; i < 100; i++)
     // {
@@ -30,17 +30,17 @@ int main() {
     
     const void *ptr4 = my_malloc(900);
 
-    printf("\n=====mallocing big size heap=====\n");
+    log_info("mallocing big size heap");
     printf("None yet\n");
 
-    printf("\n======pointers=====\n");
+    log_info("=pointers");
     printf("pointer to malloced node: %p\n", ptr1);
     printf("pointer to malloced node: %p\n", ptr2);
     printf("pointer to malloced node: %p\n", ptr3);
     printf("pointer to malloced node: %p\n", ptr4);
     printf("pointer to malloced node: %p\n", ptr5);
 
-    printf("\n=====pointers allocated=====\n");
+    log_info("pointers allocated");
     t_heap *current_heap = global_heap;
     while (current_heap != NULL) {
         printf("heap total: %zu\n", current_heap->total_size);
@@ -49,6 +49,7 @@ int main() {
         current_heap = current_heap->next;
     }
 
-    // my_free(ptr1);
+    log_info("freeing");
+    my_free(ptr1);
     return 0;
 }
