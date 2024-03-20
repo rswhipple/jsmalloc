@@ -1,7 +1,7 @@
 #include "../inc/block.h" 
 
 void print_blocks(t_heap *heap) {
-    t_block *current_block = BLOCK_SHIFT(heap);
+    t_block *current_block = (t_block *)BLOCK_SHIFT(heap);
     while (current_block != NULL) {
         printf("block size: %zu\n", current_block->data_size);
         current_block = current_block->next;
@@ -11,13 +11,13 @@ void print_blocks(t_heap *heap) {
 void *create_block(t_heap *heap, size_t size) {
     printf("heap total size: %zu\n", heap->total_size);
     if (heap->block_count == 0) {
-        t_block *block = BLOCK_SHIFT(heap);
+        t_block *block = (t_block *)BLOCK_SHIFT(heap);
         printf("block: %zu\n", block->data_size);
         block->prev = NULL;
         block->next = NULL;
         block->data_size = size;
         block->freed = false;
-        block->object = MEMORY_SHIFT(heap, size);
+        block->object = (t_block *)MEMORY_SHIFT(heap, size);
         heap->block_count++;
         heap->free_size -= size;
         return block;
@@ -38,7 +38,7 @@ void *create_block(t_heap *heap, size_t size) {
         new_block->next = NULL;
         new_block->data_size = size;
         new_block->freed = false;
-        new_block->object = MEMORY_SHIFT(heap, size);
+        new_block->object = (t_block *)MEMORY_SHIFT(heap, size);
         heap->block_count++;
         heap->free_size -= size;
         current_block->next = new_block;
