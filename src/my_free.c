@@ -7,7 +7,7 @@ void search_ptr(t_heap **ptr_heap, t_block **ptr_block,
     block = NULL;
     while (heap->next != NULL) {   
         block = (t_block *)BLOCK_SHIFT(heap);
-        while (block && block->next != NULL) {
+        while (block) {
             if (block == ptr) {   
                 printf("block found: %p\n", block);
                 *ptr_heap = heap;
@@ -50,7 +50,8 @@ void my_free(void *ptr) {
     search_ptr(&heap, &block, heap, ptr);
     // Mark the Block as Freed:
     if (block && heap) {
-        printf("found block: %zu\n", block->data_size);
+        log_info("found block and freeing");
+        printf("%zu\n", block->data_size);
         printf("heap free size: %zu\n", heap->free_size);
         block->freed = true;
         // Update Heap Metadata:
@@ -59,9 +60,13 @@ void my_free(void *ptr) {
         printf("block freed: %zu\n", block->data_size);
         printf("heap free size: %zu\n", heap->free_size);
 
-        // TODO:
         // Coalesce Free Blocks:
-
+        if (block->prev != NULL) {
+            block->prev->next = block->next;
+        }
+        if (block->next != NULL) {
+            block->next->prev = block->prev;
+        }
 
         // Update Hash Table:
 
