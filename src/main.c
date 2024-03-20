@@ -13,6 +13,8 @@ int main() {
     create_heap(&heap, heap_size);
     hash_table_create(heap, tablesize, my_hash_function);
 
+
+    log_info("allocating");
     void *ptr1 = my_malloc(10);
     void *ptr5 = my_malloc(80);
     void *ptr2 = my_malloc(40);

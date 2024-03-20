@@ -8,14 +8,13 @@ t_heap *global_heap = NULL;
 void *my_malloc(size_t size) {
     // Still need to handle LARGE_HEAP_ALLOCATION_SIZE
     int allocation_size = size < (size_t)TINY_BLOCK_SIZE ? TINY_HEAP_ALLOCATION_SIZE : SMALL_HEAP_ALLOCATION_SIZE;
-
+    printf("allocation size: %d\n", allocation_size);
     if (global_heap == NULL) {
-        printf("global_heap is NULL\n");
         create_heap(&global_heap, allocation_size);
         return create_block(global_heap, size);
     } else {
         t_heap *current_heap = global_heap;
-        while (current_heap->next != NULL) {
+        while (current_heap != NULL) {
             if (current_heap->total_size == (size_t)allocation_size && current_heap->free_size >= size) {
                 return create_block(current_heap, size);
             } 
