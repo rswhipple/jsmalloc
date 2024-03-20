@@ -34,6 +34,7 @@ void my_free(void *ptr) {
     t_block	*block;
     heap = global_heap;
     // Find the Corresponding Block to Free:
+    log_info("searching for block");
     search_ptr(&heap, &block, heap, ptr);
     // Mark the Block as Freed:
     if (block && heap)
