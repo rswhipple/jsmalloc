@@ -3,10 +3,11 @@
 #include "../inc/my_malloc.h"
 
 int main() {
+    system_settings();
 
-    // initiate memory span and add to pagemap
+    // initiate pagemap with pageheap (memory span)
     t_pagemap *pagemap = NULL;
-    create_pagemap(&pagemap);
+    create_pageheap(&pagemap);
 
     log_info("allocating");
     void *ptr1 = my_malloc(10);
