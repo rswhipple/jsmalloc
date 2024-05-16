@@ -74,7 +74,6 @@ struct hash_table_s {
 #define LARGE_HEAP_ALLOCATION_SIZE (20 * PAGE_SIZE)
 #define LARGE_PAGE_MAX_CHUNK_SIZE (LARGE_HEAP_ALLOCATION_SIZE / 12)
 
-
 extern size_t min_chunk_size;
 
 void* my_malloc(size_t size);
