@@ -18,6 +18,7 @@ typedef struct s_pagemap t_pagemap;
 typedef struct s_span t_span;
 typedef struct s_page t_page;
 typedef struct s_chunk t_chunk;
+typedef struct s_tiny_chunk t_tiny__chunk;
 
 struct s_pagemap {
     t_span *span_head;
@@ -45,6 +46,12 @@ struct s_chunk {
     t_chunk* next;
     void* data;     // figure out how to write over the pointers while in use
     size_t chunk_size;
+};
+
+struct s_tiny_chunk {
+    size_t size;
+    t_chunk* next;
+    void* data;     // figure out how to write over the pointers while in use
 };
 
 typedef struct hash_table_s t_hash;
