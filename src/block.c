@@ -1,5 +1,6 @@
 #include "../inc/block.h" 
 
+/*
 void print_blocks(t_heap *heap) {
     t_block *current_block = (t_block *)BLOCK_SHIFT(heap);
     while (current_block != NULL) {
@@ -43,3 +44,4 @@ void *create_block(t_heap *heap, size_t size) {
         return new_block;
     }
 }
+*/
