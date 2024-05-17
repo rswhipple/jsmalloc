@@ -18,7 +18,9 @@ t_span *create_base_span(void *start) {
     return span;
 }
 
+
 void create_pages(t_pagemap *pagemap, t_span *span) {
+    // TODO: create and assign pages to types (fast, small, large)
     // t_page *head = ;
     // if (span == pagemap->span_head) {
 
