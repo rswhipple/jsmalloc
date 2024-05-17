@@ -7,8 +7,6 @@ void system_settings() {
         min_chunk_size = 16;
         log_info("Minimum chunk size is 16 bytes (12 free).");
     } else {
-        min_chunk_size = 24;
-            log_info("Minimum chunk size is 24 bytes (20 free).");
         size_t size_t_size = check_system_size_t();
         if (size_t_size == 4) {
             min_chunk_size = 24;
@@ -34,4 +32,20 @@ size_t check_system_pointer() {
     }
 
     return pointer_size;
+}
+
+size_t check_system_size_t() {
+    size_t size_t_size = sizeof(size_t);
+    printf("Size_t size: %zu bytes\n", size_t_size);
+
+    if (size_t_size == 4) {
+        printf("System has 4-byte size_t.\n");
+    } else if (size_t_size == 8) {
+        printf("System has 8-byte size_t.\n");
+    } else {
+        printf("Unexpected size_t size: %zu bytes\n", size_t_size);
+        // add error and exit
+    }
+
+    return size_t_size;
 }
