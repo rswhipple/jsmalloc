@@ -41,19 +41,21 @@ struct s_page {
 };
 
 struct s_chunk {
-    size_t size;
+    size_t size;    // bounding size marker
+                    // TODO: figure out how to incorporate an in_use flag into the size bytes ?
     t_chunk* prev;
     t_chunk* next;
-    void* data;     // figure out how to write over the pointers while in use
-    size_t chunk_size;
+    void* data;     // TODO: figure out how to write over the pointers while in use
+    size_t chunk_size;  // bounding size markers so that we can traverse the chunks in either direction even when in_use
 };
 
 struct s_tiny_chunk {
-    size_t size;
+    size_t size;    // TODO: figure out how to incorporate an in_use flag into the size bytes ?
     t_chunk* next;
-    void* data;     // figure out how to write over the pointers while in use
+    void* data;     // TODO: figure out how to write over the pointers while in use
 };
 
+// TODO: create a system for only allowing certain hash bins (standard sizes from min_chunk_size to tbd max)
 typedef struct hash_table_s t_hash;
 typedef unsigned int (hash_function)(size_t input, uint32_t);
 
