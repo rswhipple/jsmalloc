@@ -1,10 +1,11 @@
 #include "../inc/pagemap.h" 
+
 #include "../inc/my_malloc.h" 
 
 void create_pageheap(t_pagemap **pagemap) {
     *pagemap = (t_pagemap *)mmap(0, BASE_HEAP_SIZE, PROT_READ | 
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-    (*pagemap)->span_head = create_span((void *)*pagemap);
+    (*pagemap)->span_head = create_base_span((void *)*pagemap);
     (*pagemap)->total_pages = BASE_HEAP_SIZE / PAGE_SIZE;
     create_pages(*pagemap, (*pagemap)->span_head);
 }
@@ -13,19 +14,11 @@ t_span *create_base_span(void *start) {
     t_span *span = (t_span *)PAGEMAP_SHIFT(start);
     span->next = NULL;
     span->page_head = NULL;
+    span->top_chunk = NULL;
+    span->last_chunk = NULL;
     span->num_pages = BASE_HEAP_SIZE / PAGE_SIZE;
     span->pages_returned = false;
     return span;
-}
-
-
-void create_pages(t_pagemap *pagemap, t_span *span) {
-    // TODO: create and assign pages to types (fast, small, large)
-    // t_page *head = ;
-    // if (span == pagemap->span_head) {
-
-    // }
-    // else {}
 }
 
 t_span *add_span(t_pagemap *pagemap, void *start, size_t size) {
@@ -45,12 +38,37 @@ t_span *add_span(t_pagemap *pagemap, void *start, size_t size) {
     return span;
 }
 
-void create_base_page(t_span *span) {
-    t_page *page_one = (t_page *)SPAN_SHIFT(span);
-    span->page_head = span;
+void create_pages(t_pagemap *pagemap, t_span *span) {
+    // TODO: create and assign pages to types (fast, small, large)
+    int page_count = span->num_pages;
     t_page *current = NULL;
+    if (span == pagemap->span_head) 
+            span->page_head = create_base_page((void *)span);
+    else span->page_head = create_page(current, (void *)span);
+    page_count -= 1;
+    current = span->page_head;
+    while (page_count > 0) {
+        void *next = (void *)((void *)current + 
+                (sizeof(char) * current->memory + sizeof(t_page))); // double check this calculation
+        current = create_page(current, next);
+        page_count -= 1;
+    }
+}
 
+t_page *create_base_page(void *start) {
+    // TODO: create "base" page with space for pagemap header;
+    t_page *base_page = (t_page *)SPAN_SHIFT(start);
+    base_page->chunk_count = 1;
+    base_page->prev = NULL;
+    base_page->next = NULL;
+    base_page->memory = PAGE_SIZE - 
+            sizeof(t_pagemap) - sizeof(t_span) - sizeof(t_page);
+    base_page->top_chunk = ;
+    return base_page;
+}
 
+t_page *create_page(t_page *prev_page, void *start) {
+    // TODO: create "base" page with space for pagemap header;
 }
 
 void destroy_active_page(t_page *page) {
@@ -62,7 +80,6 @@ void destroy_active_page(t_page *page) {
     } else {
         page->prev->next = NULL;
     }
-
     munmap(page, PAGE_SIZE);
 }
 
