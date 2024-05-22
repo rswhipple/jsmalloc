@@ -14,5 +14,6 @@
 #include "utils.h"
 #include "heap.h"
 #include "block.h"
+#include "chunk.h"
 
 #endif 

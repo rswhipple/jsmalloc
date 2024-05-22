@@ -29,5 +29,5 @@ t_page* create_page(t_page* prev_page, void* start);
 void destroy_active_page(t_page* page);
 void destroy_page(t_page* page);
 void destroy_pageheap(t_pagemap* pagemap);
->>>>>> > 5e23db7(refactor: move all pagemap / heap define's to pagemap.h)
+
 #endif
