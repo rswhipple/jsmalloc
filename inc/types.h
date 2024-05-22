@@ -23,6 +23,8 @@ struct s_pagemap {
 struct s_span {
     t_span* next;
     t_page* page_head;
+    t_chunk* top_chunk;
+    t_chunk* last_chunk;
     size_t num_pages;
     bool pages_returned;
 };
@@ -30,6 +32,7 @@ struct s_span {
 struct s_page {
     t_page* next;
     t_page* prev;
+    char type;
     size_t memory;
     size_t chunk_count;
     t_chunk* top_chunk;
