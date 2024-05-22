@@ -21,6 +21,7 @@ t_span* create_base_span(t_pagemap* pagemap) {
 }
 
 t_span* add_span(t_pagemap* pagemap, void* start, size_t size) {
+    UNUSED(start);
     // map memory to span
     t_span* span = (t_span*)mmap(0, size, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
@@ -62,19 +63,20 @@ t_page* create_base_page(void* start) {
     base_page->next = NULL;
     base_page->memory = PAGE_SIZE -
         sizeof(t_pagemap) - sizeof(t_span) - sizeof(t_page);
-    base_page->type = "F";
+    base_page->type = 'F';
     base_page->top_chunk = create_chunk(base_page);
     return base_page;
 }
 
 t_page* create_page(t_page* prev_page, t_pagemap* pagemap) {
+    UNUSED(prev_page);
     t_page* page = (t_page*)PAGE_SHIFT(pagemap);
     page->chunk_count = 1;
     page->prev = NULL;
     page->next = NULL;
     page->memory = PAGE_SIZE -
         sizeof(t_pagemap) - sizeof(t_span) - sizeof(t_page);
-    page->type = "F";
+    page->type = 'F';
     page->top_chunk = create_chunk(page);
     return page;
 }
