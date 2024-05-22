@@ -18,7 +18,7 @@ typedef struct s_pagemap t_pagemap;
 typedef struct s_span t_span;
 typedef struct s_page t_page;
 typedef struct s_chunk t_chunk;
-typedef struct s_tiny_chunk t_tiny__chunk;
+typedef struct s_tiny_chunk t_tiny_chunk;
 
 struct s_pagemap {
     t_span *span_head;
@@ -28,6 +28,8 @@ struct s_pagemap {
 struct s_span {
     t_span *next;   
     t_page *page_head;
+    t_chunk *top_chunk;
+    t_chunk *last_chunk;
     size_t num_pages;    
     bool pages_returned;
 };
