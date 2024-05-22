@@ -4,6 +4,6 @@
 
 #include "my_malloc.h"
 
-void *create_block(t_heap *heap, size_t size);
+void *create_chunk(t_pagemap *pagemap, size_t size);
 
 #endif
