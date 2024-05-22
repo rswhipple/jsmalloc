@@ -4,7 +4,7 @@
 
 #include "my_malloc.h"
 
-t_span *create_base_span(void *start);
+t_span *create_base_span(t_pagemap *pagemap);
 t_span *add_span(t_pagemap *pagemap, void *start, size_t size);
 void create_pages(t_pagemap *pagemap, t_span *span);
 t_page *create_base_page(void *start);

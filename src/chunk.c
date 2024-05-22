@@ -9,38 +9,24 @@ void print_blocks(t_heap *heap) {
     }
 }
 */
-void *create_chunk(void *start, size_t size) {
-    t_chunk *chunk = (t_chunk *)BLOCK_SHIFT(start);
+t_chunk *create_chunk(t_page *page) {
+    t_chunk *chunk = (t_chunk *)PAGE_SHIFT(page);
     chunk->prev = NULL;
     chunk->next = NULL;
-    // block->data_size = size;
-    // block->freed = false;
-    // block->object = (t_block *)MEMORY_SHIFT(heap, size);
-    // heap->block_count++;
-    // heap->free_size -= size;
-    // printf("block created: %zu\n", block->data_size);
-    // printf("heap free size: %zu\n", heap->free_size);
-    // return block;
-    // else {
-    //     t_block *current_block = (t_block *)BLOCK_SHIFT(heap);
-    //     // if (heap->block_count) {
-    //         while (current_block->next != NULL) {
-    //             current_block = current_block->next;
-    //         }
-    //     // }
-    //     t_block *new_block = (t_block *)((char *)current_block + sizeof(t_block));
-        
-    //     new_block->prev = current_block;
-    //     new_block->next = NULL;
-    //     new_block->data_size = size;
-    //     new_block->freed = false;
-    //     new_block->object = (t_block *)MEMORY_SHIFT(heap, size);
-    //     heap->block_count++;
-    //     heap->free_size -= size;
-    //     current_block->next = new_block;
-    //     printf("block created: %zu\n", new_block->data_size);
-    //     printf("heap free size: %zu\n", heap->free_size);
-    //     return new_block;
-    // }
+    chunk->chunk_size;
+
+    return chunk;
+}
+
+t_tiny_chunk *create_tiny_chunk(t_page *page, size_t size) {
+    t_tiny_chunk *tiny = (t_tiny_chunk *)PAGE_SHIFT(page);
+    tiny->next = NULL;
+    tiny->data;
+
+    return tiny;
+}
+
+t_chunk *split_chunk(t_chunk *chunk, size_t size) {
+
 }
 

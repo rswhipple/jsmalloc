@@ -36,7 +36,8 @@ struct s_span {
 
 struct s_page {
     t_page *next;  
-    t_page *prev;   
+    t_page *prev;
+    char type;   
     size_t memory;       
     size_t chunk_count;   
     t_chunk *top_chunk;     
@@ -69,7 +70,7 @@ struct hash_table_s {
 
 // Macros that return the address of datatypes within the heap
 // based on the start of the heap
-#define PAGEMAP_SHIFT(start)((u_int8_t *)start + sizeof(t_pagemap))
+// #define PAGEMAP_SHIFT(start)((u_int8_t *)start + sizeof(t_pagemap))
 #define SPAN_SHIFT(start)((u_int8_t *)start + sizeof(t_span))
 #define PAGE_SHIFT(start)((u_int8_t *)start + sizeof(t_page))
 #define CHUNK_SHIFT(start)((u_int8_t *)start + sizeof(t_chunk))
