@@ -1,21 +1,30 @@
 
-#include "../inc/system_settings.h"
+#include "../inc/main.h"
 
 void system_settings() {
     size_t pointer_size = check_system_pointer();
     if (pointer_size == 4) {
         min_chunk_size = 16;
         log_info("Minimum chunk size is 16 bytes (12 free).");
-    } else {
-        size_t size_t_size = check_system_size_t();
+        <<<<<< < HEAD
+    }
+    else {
+        ====== =
+    }
+    else {
+        min_chunk_size = 24;
+        log_info("Minimum chunk size is 24 bytes (20 free).");
+        >>>>>> > e7bf7f8(fix: add undefined check_system_size_t fn and include main.h)
+            size_t size_t_size = check_system_size_t();
         if (size_t_size == 4) {
             min_chunk_size = 24;
             log_info("Minimum chunk size is 24 bytes (20 free).");
-        } else {
+        }
+        else {
             min_chunk_size = 24;
             log_info("Minimum chunk size is 32 bytes (24 free).");
         }
-    } 
+    }
 }
 
 size_t check_system_pointer() {
@@ -24,9 +33,11 @@ size_t check_system_pointer() {
 
     if (pointer_size == 4) {
         log_info("System has 4-byte pointers.\n");
-    } else if (pointer_size == 8) {
+    }
+    else if (pointer_size == 8) {
         log_info("System has 8-byte pointers.\n");
-    } else {
+    }
+    else {
         printf("Unexpected pointer size: %zu bytes\n", pointer_size);
         // add error exit
     }
@@ -39,12 +50,14 @@ size_t check_system_size_t() {
     printf("Size_t size: %zu bytes\n", size_t_size);
 
     if (size_t_size == 4) {
-        printf("System has 4-byte size_t.\n");
-    } else if (size_t_size == 8) {
-        printf("System has 8-byte size_t.\n");
-    } else {
+        log_info("System has 4-byte size_t.\n");
+    }
+    else if (size_t_size == 8) {
+        log_info("System has 8-byte size_t.\n");
+    }
+    else {
         printf("Unexpected size_t size: %zu bytes\n", size_t_size);
-        // add error and exit
+        // add error exit
     }
 
     return size_t_size;
