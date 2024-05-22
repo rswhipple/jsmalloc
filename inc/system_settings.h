@@ -6,6 +6,6 @@
 
 void system_settings();
 size_t check_system_pointer();
-// size_t check_system_size_t();
+size_t check_system_size_t();
 
 #endif
