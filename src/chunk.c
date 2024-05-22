@@ -9,19 +9,18 @@ void print_blocks(t_heap *heap) {
     }
 }
 */
-
-void *create_chunk(t_heap *heap, size_t size) {
-    t_chunk *chunk = (t_chunk *)BLOCK_SHIFT(heap);
-    block->prev = NULL;
-    block->next = NULL;
-    block->data_size = size;
-    block->freed = false;
-    block->object = (t_block *)MEMORY_SHIFT(heap, size);
-    heap->block_count++;
-    heap->free_size -= size;
-    printf("block created: %zu\n", block->data_size);
-    printf("heap free size: %zu\n", heap->free_size);
-    return block;
+void *create_chunk(void *start, size_t size) {
+    t_chunk *chunk = (t_chunk *)BLOCK_SHIFT(start);
+    chunk->prev = NULL;
+    chunk->next = NULL;
+    // block->data_size = size;
+    // block->freed = false;
+    // block->object = (t_block *)MEMORY_SHIFT(heap, size);
+    // heap->block_count++;
+    // heap->free_size -= size;
+    // printf("block created: %zu\n", block->data_size);
+    // printf("heap free size: %zu\n", heap->free_size);
+    // return block;
     // else {
     //     t_block *current_block = (t_block *)BLOCK_SHIFT(heap);
     //     // if (heap->block_count) {
