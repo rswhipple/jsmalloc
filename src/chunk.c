@@ -17,26 +17,28 @@ t_chunk* create_top_chunk(t_page* page) {
     chunk->prev = NULL;
     chunk->next = NULL;
     chunk->data = (void*)MEMORY_SHIFT(CHUNK_SHIFT(chunk), 0);
-    chunk->chunk_size = page->memory - (sizeof(t_chunk));   // TODO figure out how to write chunk_size after the data block
+    chunk->chunk_size = page->memory - (sizeof(t_chunk));   
+    // TODO figure out how to write chunk_size after the data block
+    // TODO make sure that you should subtract t_chunk here and not later
 
     return chunk;
 }
 
-t_tiny_chunk* create_top_tiny_chunk(t_page* page) {
-    t_tiny_chunk* tiny = (t_tiny_chunk*)PAGE_SHIFT(page);
-    tiny->size = page->memory - (sizeof(t_chunk));    // set size to 0 when chunk is IN USE
+t_tiny_chunk* create_top_tiny_chunk(t_fastpage* page) {
+    t_tiny_chunk* tiny = (t_tiny_chunk*)FASTPAGE_SHIFT(page);
+    tiny->parent = page;
     tiny->next = NULL;
     tiny->data = (void*)MEMORY_SHIFT(TINY_CHUNK_SHIFT(tiny), 0);
 
     return tiny;
 }
 
-t_tiny_chunk* split_tiny_chunk(t_page* page, t_tiny_chunk* prev_chunk, size_t size) {
+t_tiny_chunk* split_tiny_chunk(t_fastpage* page, t_tiny_chunk* prev_chunk) {
     t_tiny_chunk* tiny;
-    tiny = (t_tiny_chunk*)MEMORY_SHIFT(prev_chunk->data, prev_chunk->size);
+    tiny = (t_tiny_chunk*)MEMORY_SHIFT(prev_chunk->data, page->chunk_size);
 
     // initialize new tiny chunk
-    tiny->size = size;
+    tiny->parent = page;
     tiny->next = NULL;
     tiny->data = (void*)MEMORY_SHIFT(TINY_CHUNK_SHIFT(tiny), 0);
 

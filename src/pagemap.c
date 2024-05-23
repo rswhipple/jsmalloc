@@ -12,6 +12,7 @@ void create_pageheap(t_pagemap** pagemap) {
 t_span* create_base_span(t_pagemap* pagemap) {
     t_span* span = (t_span*)PAGEMAP_SHIFT(pagemap);
     span->next = NULL;
+    span->fastpages = NULL;
     span->page_head = NULL;
     span->top_chunk = NULL;
     span->last_chunk = NULL;
@@ -26,7 +27,12 @@ t_span* add_span(t_pagemap* pagemap, void* start, size_t size) {
     t_span* span = (t_span*)mmap(0, size, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
     span->next = NULL;
+    span->fastpages = NULL;
+    span->page_head = NULL;
+    span->top_chunk = NULL;
+    span->last_chunk = NULL;
     span->num_pages = size / PAGE_SIZE;
+    span->pages_returned = false;
 
     // add span to pagemap
     t_span* head = pagemap->span_head;
@@ -64,7 +70,7 @@ t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
         page->memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
     }
     page->pagetype = fast;
-    page->top_chunk = create_top_chunk(page);          // (t_tiny_chunk*)MEMORY_SHIFT(PAGE_SHIFT(page), 0);
+    page->top_chunk = create_top_chunk(page);
     return page;
 }
 
@@ -75,14 +81,11 @@ t_page* create_page(t_page* prev_page, t_span* span, int pagetype) {
     page->next = NULL;
     page->memory = PAGE_SIZE - sizeof(t_page);
     page->pagetype = pagetype;
-    // if (pagetype == fast) {
-    //     create_tiny_chunk(page, NULL, min_chunk_size);
-    // } elif (pagetype == small) {
-    //     ;
-    // } else {
-    //     ;
-    // }
-    page->top_chunk = create_top_chunk(); // TODO figure out logic
+    if (pagetype == fast) {
+        page->top_chunk = create_top_tiny_chunk(page);
+    } else {
+        page->top_chunk = create_top_chunk(page); // TODO figure out logic
+    }
     return page;
 }
 
