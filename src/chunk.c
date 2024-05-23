@@ -1,7 +1,7 @@
 #include "../inc/main.h" 
 
 /*
-void print_blocks(t_heap *heap) {
+void print_chunks() {
     t_block *current_block = (t_block *)BLOCK_SHIFT(heap);
     while (current_block != NULL) {
         printf("block size: %zu\n", current_block->data_size);
@@ -9,23 +9,45 @@ void print_blocks(t_heap *heap) {
     }
 }
 */
-t_chunk* create_chunk(t_page* page) {
+
+
+t_chunk* create_top_chunk(t_page* page) {
     t_chunk* chunk = (t_chunk*)PAGE_SHIFT(page);
+    chunk->size = page->memory - (sizeof(t_chunk));    // set size to 0 when chunk is IN USE
     chunk->prev = NULL;
     chunk->next = NULL;
-    // chunk->chunk_size;
+    chunk->data = (void*)MEMORY_SHIFT(CHUNK_SHIFT(chunk), 0);
+    chunk->chunk_size = page->memory - (sizeof(t_chunk));   // TODO figure out how to write chunk_size after the data block
 
     return chunk;
 }
 
-t_tiny_chunk* create_tiny_chunk(t_page* page, size_t size) {
-    UNUSED(size);
+t_tiny_chunk* create_top_tiny_chunk(t_page* page) {
     t_tiny_chunk* tiny = (t_tiny_chunk*)PAGE_SHIFT(page);
+    tiny->size = page->memory - (sizeof(t_chunk));    // set size to 0 when chunk is IN USE
     tiny->next = NULL;
-    // tiny->data;
+    tiny->data = (void*)MEMORY_SHIFT(TINY_CHUNK_SHIFT(tiny), 0);
 
     return tiny;
 }
+
+t_tiny_chunk* split_tiny_chunk(t_page* page, t_tiny_chunk* prev_chunk, size_t size) {
+    t_tiny_chunk* tiny;
+    tiny = (t_tiny_chunk*)MEMORY_SHIFT(prev_chunk->data, prev_chunk->size);
+
+    // initialize new tiny chunk
+    tiny->size = size;
+    tiny->next = NULL;
+    tiny->data = (void*)MEMORY_SHIFT(TINY_CHUNK_SHIFT(tiny), 0);
+
+    // add to linked list ??
+    if (prev_chunk) {
+        prev_chunk->next = tiny;
+    }
+
+    return tiny;
+}
+
 
 // t_chunk *split_chunk(t_chunk *chunk, size_t size) {
 
