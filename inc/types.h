@@ -10,6 +10,7 @@ typedef struct s_span t_span;
 typedef struct hash_table_s t_hash;
 typedef struct s_pagemap t_pagemap;
 typedef struct s_page t_page;
+typedef struct s_fastpage t_fastpage;
 typedef struct s_chunk t_chunk;
 typedef struct s_tiny_chunk t_tiny_chunk;
 typedef struct s_heap t_heap;
@@ -38,6 +39,15 @@ struct s_page {
     t_chunk* top_chunk;
 };
 
+struct s_fastpage {
+    t_page* next;
+    t_page* prev;
+    size_t memory;
+    size_t chunk_size;
+    size_t chunk_count;
+    t_chunk* top_chunk;
+};
+
 enum page_types
 {
     fast,
@@ -54,7 +64,7 @@ struct s_chunk {
 };
 
 struct s_tiny_chunk {
-    size_t size;    // TODO: figure out how to incorporate an in_use flag into the size bytes ?
+    t_page *parent;
     t_chunk* next;
     void* data;     // TODO: figure out how to write over the pointers while in use
 };
