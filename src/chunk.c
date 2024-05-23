@@ -42,7 +42,7 @@ t_tiny_chunk* split_tiny_chunk(t_fastpage* page, t_tiny_chunk* prev_chunk) {
     tiny->next = NULL;
     tiny->data = (void*)MEMORY_SHIFT(TINY_CHUNK_SHIFT(tiny), 0);
 
-    // add to linked list ??
+    // add to linked list
     if (prev_chunk) {
         prev_chunk->next = tiny;
     }
