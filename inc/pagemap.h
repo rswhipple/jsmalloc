@@ -5,12 +5,13 @@
 #include "types.h"
 
 // Macros that return the address of datatypes within the heap
-#define PAGEMAP_SHIFT(start)((u_int8_t *)start + sizeof(t_pagemap))
-#define SPAN_SHIFT(start)((u_int8_t *)start + sizeof(t_span))
-#define PAGE_SHIFT(start)((u_int8_t *)start + sizeof(t_page))
-#define CHUNK_SHIFT(start)((u_int8_t *)start + sizeof(t_chunk))
-#define HASH_SHIFT(start)((u_int8_t *)start + sizeof(t_hash))
-#define MEMORY_SHIFT(start, data_size)((u_int8_t *)start + data_size)
+#define PAGEMAP_SHIFT(start)((u_int8_t *)start + sizeof(t_pagemap))  
+#define SPAN_SHIFT(start)((char *)start + sizeof(t_span))
+#define PAGE_SHIFT(start)((char *)start + sizeof(t_page))
+#define CHUNK_SHIFT(start)((char *)start + sizeof(t_chunk))
+#define TINY_CHUNK_SHIFT(start)((char *)start + sizeof(t_tiny_chunk))
+#define HASH_SHIFT(start)((char *)start + sizeof(t_hash))
+#define MEMORY_SHIFT(start, data_size)((char *)start + data_size)
 
 #define PAGE_SIZE getpagesize()
 #define BASE_HEAP_SIZE (48 * PAGE_SIZE)
@@ -24,8 +25,8 @@
 t_span* create_base_span(t_pagemap* pagemap);
 t_span* add_span(t_pagemap* pagemap, void* start, size_t size);
 void create_pages(t_pagemap* pagemap, t_span* span);
-t_page* create_base_page(void* start);
-t_page* create_page(t_page* prev_page, t_pagemap* pagemap);
+t_page* create_base_page(t_pagemap* pagemap, t_span* span);
+t_page* create_page(t_page* prev_page, t_span* span, int pagetype);
 void destroy_active_page(t_page* page);
 void destroy_page(t_page* page);
 void create_pageheap(t_pagemap** pagemap);
