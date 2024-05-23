@@ -14,14 +14,20 @@ The page type reflects its memory size category. (see below)
 Pages are moved into the Frontend Cache on an as-needed basis.
 
 
-Fast Pages ("tiny"):
-    For tiny allocation sizes from min_chunk_size to 64 bytes in 8 byte increments.
+Fast Pages:
+    For "tiny" allocation sizes from min_chunk_size to 64 bytes in 8 byte increments.
     Only one size per page, no coalesing.
     Free chunks are accessed by a simple linked list, LIFO (last in first out).
 
-Small Pages ("small"):
-    For small allocation sizes, 72 to 512 bytes in varying increments.
+Small Pages:
+    For "small" allocation sizes, 72 to 512 bytes in varying increments.
     Double linked list, freed chunks are added into an unsorted heap first.
-    The unsorted heap sorts chunks (handling coalesing) and returning 
+    The unsorted heap sorts chunks (handling coalesing) and then adds free chunks to the hash table.
 
-Huge size – anything over 4KiB, will be allocated directly from the OS using mmap() and returned upon freeing.
+Large Pages:
+    For "large" allocatation sizes > 512 bytes and < 4kB.
+    Double linked list, freed chunks are added into an unsorted heap first.
+    The unsorted heap sorts chunks (handling coalesing) and then adds free chunks to the hash table.
+
+
+Huge size – anything over 4kB, will be allocated directly from the OS using mmap() and returned upon freeing.
