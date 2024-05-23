@@ -8,6 +8,7 @@
 #define PAGEMAP_SHIFT(start)((u_int8_t *)start + sizeof(t_pagemap))  
 #define SPAN_SHIFT(start)((char *)start + sizeof(t_span))
 #define PAGE_SHIFT(start)((char *)start + sizeof(t_page))
+#define FASTPAGE_SHIFT(start)((char *)start + sizeof(t_fastpage))
 #define CHUNK_SHIFT(start)((char *)start + sizeof(t_chunk))
 #define TINY_CHUNK_SHIFT(start)((char *)start + sizeof(t_tiny_chunk))
 #define HASH_SHIFT(start)((char *)start + sizeof(t_hash))
