@@ -23,6 +23,7 @@ struct s_pagemap {
 
 struct s_span {
     t_span* next;
+    t_fastpage* fastpages;
     t_page* page_head;
     t_chunk* top_chunk;
     t_chunk* last_chunk;
