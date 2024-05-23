@@ -32,10 +32,17 @@ struct s_span {
 struct s_page {
     t_page* next;
     t_page* prev;
-    char type;
+    size_t pagetype;
     size_t memory;
     size_t chunk_count;
     t_chunk* top_chunk;
+};
+
+enum page_types
+{
+    fast,
+    small,
+    large
 };
 
 struct s_chunk {
@@ -82,4 +89,4 @@ struct hash_table_s {
 extern size_t min_chunk_size;
 extern t_heap* global_heap;
 
-#endif // TYPES_H
+#endif  // TYPES_H
