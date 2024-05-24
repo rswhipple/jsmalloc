@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <unistd.h>
+#include <stdint.h>
 
 typedef struct s_span t_span;
 typedef struct hash_table_s t_hash;
