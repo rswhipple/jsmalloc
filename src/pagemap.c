@@ -117,7 +117,7 @@ void create_pages(t_pagemap* pagemap, t_span* span) {
 //     return page;
 // }
 
-t_page* create_page(t_page* prev_page, t_span* span, int pagetype, int size) {
+t_page* create_page(t_page* prev_page, t_span* span, int pagetype) {
     t_page* page = (t_page*)MEMORY_SHIFT(PAGE_SHIFT(prev_page), prev_page->memory);
     page->chunk_count = 1;
     page->prev = prev_page;
