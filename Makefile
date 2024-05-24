@@ -1,13 +1,24 @@
-CC=gcc
-CFLAGS=-Wall -Wextra -Werror #-fsanitize=address -g3
-BIN=my_malloc
-SRC=src/main.c src/hash_table.c src/my_calloc.c src/my_free.c src/my_malloc.c src/my_realloc.c src/block.c src/heap.c src/utils.c
-INC=inc
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror  -fsanitize=address -g3
 
-all:
-	$(CC) $(CFLAGS) -I$(INC) $(SRC) -o $(BIN)
+# Using CURDIR to set the SRCDIR
+SRCDIR = $(CURDIR)/src
+INCDIR = $(CURDIR)/inc
+BUILDDIR = $(CURDIR)/build
+TARGET = $(BUILDDIR)/malloc
+
+# Gather all source files recursively
+SOURCES = $(wildcard $(SRCDIR)/*.c)
+OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
+INCLUDES = -I$(INCDIR)
+
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+		$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c
+		$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+
 clean:
-	rm -f $(OBJ)
-fclean: clean
-	rm -f $(BIN)
-re: fclean all
+		rm -f $(OBJECTS) $(TARGET)

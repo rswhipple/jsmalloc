@@ -2,6 +2,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
+/*
 unsigned int my_hash_function(size_t data_size, uint32_t table_size) {
     double A = (sqrt(5) - 1) / 2; // Fractional part of the golden ratio
     return ((unsigned int)(table_size * (data_size * A - (int)(data_size * A)))) % table_size;
@@ -115,5 +116,5 @@ void* hash_table_deallocate(t_block* block) {
     return 0;
 }
 
-
+*/
 

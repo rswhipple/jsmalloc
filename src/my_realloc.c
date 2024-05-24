@@ -1,9 +1,10 @@
 #include "../inc/my_malloc.h" 
 #include "../inc/hash_table.h" 
 
-void *my_realloc(void *ptr, size_t size) {
-    UNUSED(ptr);
-    UNUSED(size);
+void* my_realloc(void* ptr, size_t size) {
+    // to compile the code with unused params, we need to use the UNUSED macro
+    // UNUSED(ptr);
+    // UNUSED(size);
 
     if (ptr == NULL && size != 0) {
         return my_malloc(size);
@@ -14,7 +15,7 @@ void *my_realloc(void *ptr, size_t size) {
         return NULL;
     }
 
-    void *new_ptr = my_malloc(size);
+    void* new_ptr = my_malloc(size);
 
     if (new_ptr != NULL) {
         my_free(ptr);

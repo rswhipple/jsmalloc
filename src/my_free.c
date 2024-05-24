@@ -1,18 +1,18 @@
-#include "../inc/my_malloc.h" 
+#include "../inc/main.h"
 
-void search_ptr(t_heap **ptr_heap, t_block **ptr_block,
-    t_heap *heap, void *ptr) {
-    t_block *block;
+void search_ptr(t_heap** ptr_heap, t_block** ptr_block,
+    t_heap* heap, void* ptr) {
+    t_block* block;
 
     block = NULL;
-    while (heap->next != NULL) {   
-        block = (t_block *)BLOCK_SHIFT(heap);
+    while (heap->next != NULL) {
+        block = (t_block*)BLOCK_SHIFT(heap);
         while (block) {
-            if (block == ptr) {   
+            if (block == ptr) {
                 printf("block found: %p\n", block);
                 *ptr_heap = heap;
                 *ptr_block = block;
-                return ;
+                return;
             }
             block = block->next;
         }
@@ -23,7 +23,7 @@ void search_ptr(t_heap **ptr_heap, t_block **ptr_block,
     *ptr_block = NULL;
 }
 
-void unmap_heap(t_heap *heap) {
+void unmap_heap(t_heap* heap) {
     if (heap->prev != NULL) {
         heap->prev->next = heap->next;
     }
@@ -36,14 +36,14 @@ void unmap_heap(t_heap *heap) {
     munmap(heap, heap->total_size);
 }
 
-void my_free(void *ptr) {
+void my_free(void* ptr) {
     if (global_heap == NULL || ptr == NULL) {
         printf("Attempting to free NULL pointer or heap not initialized.\n");
         return;
     }
 
-    t_heap	*heap;
-    t_block	*block;
+    t_heap* heap;
+    t_block* block;
     heap = global_heap;
     // Find the Corresponding Block to Free:
     log_info("searching for block");

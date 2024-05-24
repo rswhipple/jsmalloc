@@ -1,9 +1,9 @@
 
-#ifndef HEAP_H
-#define HEAP_H
+#ifndef BLOCK_H
+#define BLOCK_H
 
-#include "my_malloc.h"
+#include "types.h"
 
-void *create_block(t_heap *heap, size_t size);
+void* create_block(t_heap* heap, size_t size);
 
 #endif
