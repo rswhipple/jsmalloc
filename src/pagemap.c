@@ -100,22 +100,16 @@ void create_pages(t_pagemap* pagemap, t_span* span) {
     }
 }
 
-// t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
-//     t_page* page = (t_page*)SPAN_SHIFT(span);
-//     page->chunk_count = 1;
-//     page->prev = NULL;
-//     page->next = NULL;
-//     if (span == pagemap->span_head) {   
-//         // available memory accounts for t_pagemap, t_span and t_page space
-//         page->memory = PAGE_SIZE - sizeof(t_pagemap) - 
-//                 sizeof(t_span) - sizeof(t_page);
-//     } else {
-//         page->memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
-//     }
-//     page->pagetype = fast;
-//     page->top_chunk = create_top_chunk(page);
-//     return page;
-// }
+t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
+    t_page* page = (t_page*)SPAN_SHIFT(span);
+    page->chunk_count = 1;
+    page->prev = NULL;
+    page->next = NULL;
+    page->memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
+    page->pagetype = small;
+    page->top_chunk = create_top_chunk(page);
+    return page;
+}
 
 t_page* create_page(t_page* prev_page, t_span* span, int pagetype) {
     t_page* page = (t_page*)MEMORY_SHIFT(PAGE_SHIFT(prev_page), prev_page->memory);
