@@ -8,7 +8,7 @@
 #define PAGEMAP_SHIFT(start)((u_int8_t *)start + sizeof(t_pagemap))  
 #define SPAN_SHIFT(start)((char *)start + sizeof(t_span))
 #define PAGE_SHIFT(start)((char *)start + sizeof(t_page))
-#define FPAGE_SHIFT(start)((char *)start + sizeof(t_fpage))
+#define FASTPAGE_SHIFT(start)((char *)start + sizeof(t_fpage))
 #define CHUNK_SHIFT(start)((char *)start + sizeof(t_chunk))
 #define TINY_CHUNK_SHIFT(start)((char *)start + sizeof(t_tiny_chunk))
 #define HASH_SHIFT(start)((char *)start + sizeof(t_hash))
@@ -29,7 +29,7 @@ void create_fpages(t_pagemap* pagemap, t_span* span);
 t_fpage* create_base_fpage(t_pagemap* pagemap, t_span* span);
 t_fpage* create_fpage(t_fpage* prev_page, t_span* span, int size);
 void create_pages(t_pagemap* pagemap, t_span* span);
-// t_page* create_base_page(t_pagemap* pagemap, t_span* span);
+t_page* create_base_page(t_pagemap* pagemap, t_span* span);
 t_page* create_page(t_page* prev_page, t_span* span, int pagetype);
 void destroy_active_page(t_page* page);
 void destroy_page(t_page* page);
