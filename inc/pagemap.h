@@ -3,6 +3,7 @@
 #define PAGEMAP_H
 
 #include "types.h"
+#include <stdint.h>
 
 // Macros that return the address of datatypes within the heap
 #define PAGEMAP_SHIFT(start)((u_int8_t *)start + sizeof(t_pagemap))  
