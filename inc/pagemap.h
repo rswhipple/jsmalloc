@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 // Macros that return the address of datatypes within the heap
-#define PAGEMAP_SHIFT(start)((u_int8_t *)start + sizeof(t_pagemap))  
+#define PAGEMAP_SHIFT(start)((uint8_t *)start + sizeof(t_pagemap))  
 #define SPAN_SHIFT(start)((char *)start + sizeof(t_span))
 #define PAGE_SHIFT(start)((char *)start + sizeof(t_page))
 #define FASTPAGE_SHIFT(start)((char *)start + sizeof(t_fpage))
