@@ -24,7 +24,7 @@ t_chunk* create_top_chunk(t_page* page) {
     return chunk;
 }
 
-t_tiny_chunk* create_top_tiny_chunk(t_fastpage* page) {
+t_tiny_chunk* create_top_tiny_chunk(t_fpage* page) {
     t_tiny_chunk* tiny = (t_tiny_chunk*)FASTPAGE_SHIFT(page);
     tiny->parent = page;
     tiny->next = NULL;
@@ -33,7 +33,7 @@ t_tiny_chunk* create_top_tiny_chunk(t_fastpage* page) {
     return tiny;
 }
 
-t_tiny_chunk* split_tiny_chunk(t_fastpage* page, t_tiny_chunk* prev_chunk) {
+t_tiny_chunk* split_tiny_chunk(t_fpage* page, t_tiny_chunk* prev_chunk) {
     t_tiny_chunk* tiny;
     tiny = (t_tiny_chunk*)MEMORY_SHIFT(prev_chunk->data, page->chunk_size);
 

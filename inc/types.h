@@ -10,7 +10,7 @@ typedef struct s_span t_span;
 typedef struct hash_table_s t_hash;
 typedef struct s_pagemap t_pagemap;
 typedef struct s_page t_page;
-typedef struct s_fastpage t_fastpage;
+typedef struct s_fpage t_fpage;
 typedef struct s_chunk t_chunk;
 typedef struct s_tiny_chunk t_tiny_chunk;
 typedef struct s_heap t_heap;
@@ -23,7 +23,7 @@ struct s_pagemap {
 
 struct s_span {
     t_span* next;
-    t_fastpage* fastpages;
+    t_fpage* fastpages;
     t_page* page_head;
     t_chunk* top_chunk;
     t_chunk* last_chunk;
@@ -40,7 +40,7 @@ struct s_page {
     t_chunk* top_chunk;
 };
 
-struct s_fastpage {
+struct s_fpage {
     t_page* next;
     t_page* prev;
     size_t memory;
