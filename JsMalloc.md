@@ -1,95 +1,43 @@
-# JSMalloc: Thread-Caching Malloc (or is it? 😁)
+## JSMalloc: Two-Tiered Dynamic Allocator
 
-## Motivation
+### Motivation
 
-JSMalloc is an alternative memory allocator with key features:
+JSMalloc introduces a two-tiered dynamic memory allocation system to address various challenges in modern computing environments:
 
-- **Fast allocation/deallocation:** Per-thread or per-CPU caching reduces contention and improves scaling in multi-threaded applications.
-- **Flexible memory usage:** Frees memory can be reused for different object sizes or returned to the OS.
-- **Low overhead:** Allocates "pages" of objects of the same size for space efficiency.
-- **Detailed memory usage insights:** Low overhead sampling provides detailed insights into application memory usage.
+- **Enhanced Scalability:** By segregating memory management into backend pageheap and frontend cache, JSMalloc can better handle concurrent memory access in multi-threaded applications.
+- **Efficient Memory Utilization:** Utilizing different page sizes and chunk categorizations allows for optimal memory utilization across various object sizes.
+- **Flexible Resource Management:** JSMalloc can efficiently manage memory resources by dynamically adjusting cache sizes and employing different allocation strategies based on object size.
 
-## Usage
+### Overview
 
-Specify JSMalloc as the `malloc` attribute on binary rules in Bazel.
+JSMalloc comprises two main components:
 
-## Overview
+1. **Backend Pageheap:** Manages memory allocation at the page level and interacts with the operating system for memory allocation and deallocation.
+2. **Frontend Cache:** Provides fast allocation and deallocation operations for small and medium-sized objects, reducing contention and improving performance.
 
-JSMalloc consists of three main components:
+### JSMalloc Backend Pageheap
 
-1. **Front-end:** Fast allocation and deallocation of memory.
-2. **Middle-end:** Refills the front-end cache.
-3. **Back-end:** Fetches memory from the OS.
+- **Span Organization:** Memory is organized into spans, representing isolated heaps of memory allocated from the operating system using the mmap() system call.
+- **Page Management:** Spans are further divided into pages, with each page representing a contiguous block of memory of a fixed size determined by the operating system.
+- **Pagemap Structure:** The pagemap structure facilitates efficient mapping of memory addresses to spans, enabling fast retrieval and management of memory resources.
 
-The front-end can operate in per-CPU or legacy per-thread mode. The back-end supports hugepage-aware or legacy pageheap.
+### JSMalloc Frontend Cache
 
-## JSMalloc Front-end
+- **Tiered Allocation:** Objects are categorized into different size classes based on their size, with separate handling mechanisms for tiny, small, and large objects.
+- **Per-Thread or Per-CPU Caching:** The frontend cache can operate in per-thread mode, where each thread has its local cache, or per-CPU mode, where each logical CPU has its cache, improving efficiency and scalability in multi-threaded environments.
+- **Dynamic Page Movement:** Pages are moved between the backend pageheap and frontend cache based on usage patterns, ensuring efficient utilization of memory resources.
 
-- **Per-Thread Mode:** Each thread has a local cache, scaling poorly with high thread counts.
-- **Per-CPU Mode:** Each logical CPU has its own cache, improving efficiency and scalability.
+### Memory Chunk Categorization
 
-## Small and Large Object Allocation
+- **Tiny Allocation:** For objects ranging from min_chunk_size to 64 bytes, each page contains objects of a single size, simplifying allocation and deallocation operations.
+- **Small Allocation:** Objects ranging from 72 to 512 bytes are managed using a double-linked list structure, with efficient handling of coalescing and free chunk sorting.
+- **Large Allocation:** Objects larger than 512 bytes and less than 4KB are managed similarly to small allocations but with larger chunk sizes and optimized handling for larger objects.
 
-- Small objects are allocated based on size-classes (60-80 classes).
-- Large objects exceed `kMaxSize` and are allocated directly from the back-end.
+### Huge Size Allocation
 
-## Deallocation
+- Objects larger than 4KB are allocated directly from the operating system using the mmap() system call, bypassing the frontend cache and backend pageheap.
+- This approach ensures efficient allocation and deallocation of very large memory blocks without incurring the overhead of cache management.
 
-- Small objects return to the front-end cache.
-- Large objects return directly to the pageheap.
+### Conclusion
 
-### Per-CPU Mode
-
-- Memory is allocated in a large block, divided among CPUs.
-- Metadata includes headers per size-class and pointers to available objects.
-- Capacity management adapts dynamically based on allocation and deallocation patterns.
-
-### Restartable Sequences
-
-- Ensures uninterrupted execution of per-CPU operations without locks or atomic instructions.
-
-### Legacy Per-Thread Mode
-
-- Each thread has a local cache with lists of free objects per size-class.
-- Capacity management adapts dynamically.
-
-### Runtime Sizing of Front-end Caches
-
-- Dynamically adjusts cache sizes based on usage patterns to balance memory efficiency and allocation speed.
-
-## JSMalloc Middle-end
-
-- **Transfer Cache:** Rapidly moves objects between CPUs/threads.
-- **Central Free List:** Manages memory in spans and interacts with the back-end.
-
-### Pagemap and Spans
-
-- Memory divided into pages managed by spans.
-- Pagemap uses a radix tree to map memory addresses to spans.
-
-### Storing Small Objects in Spans
-
-- Uses unrolled linked lists to manage objects within spans.
-
-## JSMalloc Page Sizes
-
-- Page sizes: 4KiB, 8KiB, 32KiB, 256KiB.
-- Smaller pages reduce memory overhead; larger pages reduce management costs.
-
-## JSMalloc Backend
-
-### Legacy Pageheap
-
-- Array of free lists for contiguous page runs.
-- Allocates and frees memory by managing page runs.
-
-### Hugepage Aware Allocator
-
-- Manages memory in hugepage-size chunks.
-- Three caches: filler cache (partial hugepages), region cache (straddling hugepages), hugepage cache (large allocations).
-
-## Caveats
-
-- **Metadata Overhead:** Grows with heap and virtual address range.
-- **Large Memory Reservations:** Requests large chunks from OS, leading to large VSS but smaller RSS.
-- **Compatibility:** Not suitable for dynamic loading into running binaries due to potential conflicts with system malloc.
+JSMalloc's two-tiered dynamic allocator provides a robust and efficient solution for memory management in modern computing environments. By combining backend pageheap and frontend cache mechanisms, JSMalloc achieves optimal memory utilization, scalability, and performance for diverse application workloads.
