@@ -13,8 +13,8 @@ void print_chunks() {
 
 t_chunk* create_top_chunk(t_page* page) {
     t_chunk* chunk = (t_chunk*)PAGE_SHIFT(page);
-    chunk->base.size = page->base.memory - (sizeof(t_chunk));    // set size to 0 when chunk is IN USE
-    chunk->base.prev = NULL;
+    chunk->size = page->base.memory - (sizeof(t_chunk));    // set size to 0 when chunk is IN USE
+    chunk->prev = NULL;
     chunk->base.next = NULL;
     chunk->base.data = (void*)MEMORY_SHIFT(CHUNK_SHIFT(chunk), 0);
     chunk->chunk_size = page->base.memory - (sizeof(t_chunk));

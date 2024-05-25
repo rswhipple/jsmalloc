@@ -28,13 +28,13 @@ enum page_types {
 
 struct s_base_chunk {
     void* data;
-    size_t size;
     struct s_base_chunk* next;
-    struct s_base_chunk* prev;
 };
 
 struct s_chunk {
+    size_t size;
     struct s_base_chunk base;
+    struct s_base_chunk* prev;
     size_t chunk_size;
 };
 
