@@ -1,5 +1,5 @@
 
-#include "../inc/main.h" 
+#include "../../inc/main.h" 
 
 void create_heap(t_heap** heap, size_t size) {
   *heap = (t_heap*)mmap(0, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);

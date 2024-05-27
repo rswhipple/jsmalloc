@@ -1,4 +1,4 @@
-#include "../inc/main.h"
+#include "../../inc/main.h"
 
 void search_ptr(t_heap** ptr_heap, t_block** ptr_block,
     t_heap* heap, void* ptr) {
