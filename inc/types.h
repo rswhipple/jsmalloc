@@ -102,4 +102,9 @@ struct hash_table_s {
 extern size_t min_chunk_size;
 extern t_heap* global_heap;
 
+#define SMALL_HEAP_ALLOCATION_SIZE 20
+#define SMALL_PAGE_MAX_CHUNK_SIZE 512
+#define LARGE_HEAP_ALLOCATION_SIZE 20
+#define LARGE_PAGE_MAX_CHUNK_SIZE (LARGE_HEAP_ALLOCATION_SIZE * PAGE_SIZE / 12)
+
 #endif  // TYPES_H
