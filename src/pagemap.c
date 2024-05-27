@@ -1,12 +1,15 @@
 #include "../inc/main.h"
 
-void create_pageheap(t_pagemap** pagemap) {
+void create_pagemap(t_pagemap** pagemap) {
     log_info("creating pageheap");
+    printf("BASE_HEAP_SIZE: %d\n", BASE_HEAP_SIZE);
+    printf("PAGE_SIZE: %d\n", PAGE_SIZE);
     *pagemap = (t_pagemap*)mmap(0, BASE_HEAP_SIZE, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
     (*pagemap)->span_head = create_base_span(*pagemap);
     (*pagemap)->total_pages = BASE_HEAP_SIZE / PAGE_SIZE;
     create_pages(*pagemap, (*pagemap)->span_head);
+    // create_fpages(*pagemap, (*pagemap)->span_head);
 }
 
 t_span* create_base_span(t_pagemap* pagemap) {
@@ -101,8 +104,8 @@ void create_pages(t_pagemap* pagemap, t_span* span) {
     pages_left -= 1;
     current = span->page_head;
     while (pages_left > 0) {
-        log_info("creating page");
-        printf("pages_left: %d\n", pages_left);
+        // log_info("creating page");
+        // printf("pages_left: %d\n", pages_left);
         current = create_page(current, span, fast);
         pages_left -= 1;
     }
@@ -161,7 +164,7 @@ void destroy_page(t_page* page) {
     munmap(page, PAGE_SIZE);
 }
 
-void destroy_pageheap(t_pagemap* pagemap) {
+void destroy_pagemap(t_pagemap* pagemap) {
     t_span* span = pagemap->span_head;
     while (span) {
         t_page* cur = span->page_head;
