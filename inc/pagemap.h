@@ -34,7 +34,7 @@ t_page* create_base_page(t_pagemap* pagemap, t_span* span);
 t_page* create_page(t_page* prev_page, t_span* span, int pagetype);
 void destroy_active_page(t_page* page);
 void destroy_page(t_page* page);
-void create_pageheap(t_pagemap** pagemap);
-void destroy_pageheap(t_pagemap* pagemap);
+void create_pagemap(t_pagemap** pagemap);
+void destroy_pagemap(t_pagemap* pagemap);
 
 #endif
