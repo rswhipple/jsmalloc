@@ -59,23 +59,23 @@ void create_fpages(t_pagemap* pagemap, t_span* span) {
     while (page_count > 0 && chunk_size <= 64) {
         chunk_size += 8;
         create_fpage(current, span, chunk_size);
-        current = (t_fpage*)current->base.next;
+        current = (t_fpage*)current->next;
         page_count -= 1;
     }
 }
 
 t_fpage* create_base_fpage(t_pagemap* pagemap, t_span* span) {
     t_fpage* fpage = (t_fpage*)SPAN_SHIFT(span);
-    fpage->base.chunk_count = 1;
-    fpage->base.prev = NULL;
-    fpage->base.next = NULL;
+    fpage->chunk_count = 1;
+    fpage->prev = NULL;
+    fpage->next = NULL;
     if (span == pagemap->span_head) {
         // available memory accounts for t_pagemap, t_span and t_page space
-        fpage->base.memory = PAGE_SIZE - sizeof(t_pagemap) -
+        fpage->memory = PAGE_SIZE - sizeof(t_pagemap) -
             sizeof(t_span) - sizeof(t_fpage);
     }
     else {
-        fpage->base.memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_fpage);
+        fpage->memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_fpage);
     }
     fpage->chunk_size = min_chunk_size;
 
@@ -86,11 +86,11 @@ t_fpage* create_base_fpage(t_pagemap* pagemap, t_span* span) {
 t_fpage* create_fpage(t_fpage* prev_page, t_span* span, int size) {
     UNUSED(span);
     UNUSED(size);
-    t_fpage* page = (t_fpage*)MEMORY_SHIFT(FASTPAGE_SHIFT(prev_page), prev_page->base.memory);
-    page->base.chunk_count = 1;
-    page->base.prev = (t_base_page*)prev_page;
-    page->base.next = NULL;
-    page->base.memory = PAGE_SIZE - sizeof(t_fpage);
+    t_fpage* page = (t_fpage*)MEMORY_SHIFT(FASTPAGE_SHIFT(prev_page), prev_page->memory);
+    page->chunk_count = 1;
+    page->prev = prev_page;
+    page->next = NULL;
+    page->memory = PAGE_SIZE - sizeof(t_fpage);
     prev_page = page;
     create_top_tiny_chunk(page);
     return page;
@@ -114,10 +114,10 @@ void create_pages(t_pagemap* pagemap, t_span* span) {
 t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
     UNUSED(pagemap);
     t_page* page = (t_page*)SPAN_SHIFT(span);
-    page->base.chunk_count = 1;
-    page->base.prev = NULL;
-    page->base.next = NULL;
-    page->base.memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
+    page->chunk_count = 1;
+    page->prev = NULL;
+    page->next = NULL;
+    page->memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
     page->pagetype = small;
     create_top_chunk(page);
     return page;
@@ -125,37 +125,37 @@ t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
 
 t_page* create_page(t_page* prev_page, t_span* span, int pagetype) {
     UNUSED(span);
-    t_page* page = (t_page*)MEMORY_SHIFT(PAGE_SHIFT(prev_page), prev_page->base.memory);
+    t_page* page = (t_page*)MEMORY_SHIFT(PAGE_SHIFT(prev_page), prev_page->memory);
     // log_info("creating page");
     // printf("prev_page: %p\n", prev_page);
     // printf("page: %p\n", page);
-    page->base.chunk_count = 1;
-    page->base.prev = (t_base_page*)prev_page;
-    page->base.next = NULL;
-    page->base.memory = PAGE_SIZE - sizeof(t_page);
+    page->chunk_count = 1;
+    page->prev = prev_page;
+    page->next = NULL;
+    page->memory = PAGE_SIZE - sizeof(t_page);
     page->pagetype = pagetype;
-    if (pagetype == fast) {
-        // log_info("creating top tiny chunk");
-        // printf("page: %p\n", page);
-        // TODO: can we use create_top_tiny_chunk here?
-        create_top_tiny_chunk((t_fpage*)page);
-    }
-    else {
-        create_top_chunk(page); // TODO figure out logic
-    }
+    // if (pagetype == fast) {
+    //     // log_info("creating top tiny chunk");
+    //     // printf("page: %p\n", page);
+    //     // TODO: can we use create_top_tiny_chunk here?
+    //     create_top_tiny_chunk((t_fpage*)page);
+    // }
+    // else {
+    create_top_chunk(page); // TODO figure out logic
+    // }
     return page;
 }
 
 void destroy_active_page(t_page* page) {
-    if (page->base.next && page->base.prev) {
-        page->base.next->prev = page->base.prev;
-        page->base.prev->next = page->base.next;
+    if (page->next && page->prev) {
+        page->next->prev = page->prev;
+        page->prev->next = page->next;
     }
-    else if (page->base.next) {
-        page->base.next->prev = NULL;
+    else if (page->next) {
+        page->next->prev = NULL;
     }
     else {
-        page->base.prev->next = NULL;
+        page->prev->next = NULL;
     }
     munmap(page, PAGE_SIZE);
 }
@@ -168,12 +168,12 @@ void destroy_pagemap(t_pagemap* pagemap) {
     t_span* span = pagemap->span_head;
     while (span) {
         t_page* cur = span->page_head;
-        t_page* next = (t_page*)cur->base.next;
+        t_page* next = (t_page*)cur->next;
         if (span->pages_returned) {
             while (cur) {
                 destroy_page(cur);
                 cur = next;
-                next = (t_page*)cur->base.next;
+                next = (t_page*)cur->next;
             }
         }
         else {
