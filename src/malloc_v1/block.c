@@ -1,4 +1,4 @@
-#include "../inc/main.h" 
+#include "../../inc/main.h" 
 
 void print_blocks(t_heap* heap) {
     t_block* current_block = (t_block*)BLOCK_SHIFT(heap);

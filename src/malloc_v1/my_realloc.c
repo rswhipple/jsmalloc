@@ -1,5 +1,4 @@
-#include "../inc/my_malloc.h" 
-#include "../inc/hash_table.h" 
+#include "../../inc/main.h" 
 
 void* my_realloc(void* ptr, size_t size) {
     // to compile the code with unused params, we need to use the UNUSED macro

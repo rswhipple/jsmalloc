@@ -1,5 +1,4 @@
-
-#include "../inc/main.h" 
+#include "../../inc/main.h" 
 
 void* my_malloc(size_t size) {
     // initiate pageheap
