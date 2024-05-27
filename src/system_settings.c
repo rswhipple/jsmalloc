@@ -24,13 +24,11 @@ void system_settings() {
 
 size_t check_system_pointer() {
     size_t pointer_size = sizeof(void*);
-    printf("Pointer size: %zu bytes\n", pointer_size);
-
     if (pointer_size == 4) {
-        log_info("System has 4-byte pointers.\n");
+        log_info("System has 4-byte pointers.");
     }
     else if (pointer_size == 8) {
-        log_info("System has 8-byte pointers.\n");
+        log_info("System has 8-byte pointers.");
     }
     else {
         printf("Unexpected pointer size: %zu bytes\n", pointer_size);
@@ -42,13 +40,12 @@ size_t check_system_pointer() {
 
 size_t check_system_size_t() {
     size_t size_t_size = sizeof(size_t);
-    printf("Size_t size: %zu bytes\n", size_t_size);
 
     if (size_t_size == 4) {
-        log_info("System has 4-byte size_t.\n");
+        log_info("System has 4-byte size_t.");
     }
     else if (size_t_size == 8) {
-        log_info("System has 8-byte size_t.\n");
+        log_info("System has 8-byte size_t.");
     }
     else {
         printf("Unexpected size_t size: %zu bytes\n", size_t_size);
