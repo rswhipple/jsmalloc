@@ -69,12 +69,12 @@ void destroy_pagemap(t_pagemap* pagemap) {
     t_span* span = pagemap->span_head;
     while (span) {
         t_page* cur = span->page_head;
-        t_page* next = (t_page*)cur->next;
+        t_page* next = cur->next;
         if (span->pages_returned) {
             while (cur) {
                 destroy_page(cur);
                 cur = next;
-                next = (t_page*)cur->next;
+                next = cur->next;
             }
         }
         else {
