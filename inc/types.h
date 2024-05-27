@@ -14,6 +14,10 @@ typedef struct s_page t_page;
 typedef struct s_fpage t_fpage;
 typedef struct s_heap t_heap;
 typedef struct s_block t_block;
+typedef struct s_chunk t_chunk;
+typedef struct s_tiny_chunk t_tiny_chunk;
+typedef struct s_page t_page;
+typedef struct s_fpage t_fpage;
 
 struct s_pagemap {
     t_span* span_head;
@@ -26,26 +30,19 @@ enum page_types {
     large
 };
 
-struct s_base_chunk {
-    void* data;
-    struct s_base_chunk* next;
-};
-
 struct s_chunk {
-    size_t size;
-    struct s_base_chunk base;
-    struct s_base_chunk* prev;
-    size_t chunk_size;
+    size_t size;    // bounding size marker
+    t_chunk* prev;
+    t_chunk* next;
+    void* data;     // TODO: figure out how to write over the pointers while in use
+    size_t chunk_size;  // bounding size markers so that we can traverse the chunks in either direction even when in use
 };
 
 struct s_tiny_chunk {
-    struct s_base_chunk base;
-    struct s_page* parent;
+    t_fpage* parent;
+    t_tiny_chunk* next;
+    void* data;     // TODO: figure out how to write over the pointers while in use
 };
-
-typedef struct s_base_chunk t_base_chunk;
-typedef struct s_chunk t_chunk;
-typedef struct s_tiny_chunk t_tiny_chunk;
 
 struct s_span {
     t_span* next;
@@ -57,27 +54,23 @@ struct s_span {
     bool pages_returned;
 };
 
-struct s_base_page {
-    struct s_base_page* next;
-    struct s_base_page* prev;
+struct s_page {
+    t_page* next;
+    t_page* prev;
+    size_t pagetype;
     size_t memory;
     size_t chunk_count;
-    t_base_chunk* top_chunk;
-};
-
-struct s_page {
-    struct s_base_page base;
-    size_t pagetype;
+    t_chunk* top_chunk;
 };
 
 struct s_fpage {
-    struct s_base_page base;
+    t_fpage* next;
+    t_fpage* prev;
+    size_t memory;
     size_t chunk_size;
+    size_t chunk_count;
+    t_tiny_chunk* top_chunk;
 };
-
-typedef struct s_base_page t_base_page;
-typedef struct s_page t_page;
-typedef struct s_fpage t_fpage;
 
 struct s_heap {
     struct s_heap* prev;
