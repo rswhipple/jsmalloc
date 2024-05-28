@@ -19,9 +19,17 @@ t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
   page->chunk_count = 1;
   page->prev = NULL;
   page->next = NULL;
-  page->memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
+  if (span == pagemap->span_head) {
+    // available memory accounts for t_pagemap, t_span and t_page space
+    printf("span == pagemap->span_head\n");
+    page->memory = PAGE_SIZE - sizeof(t_pagemap) -
+      sizeof(t_span) - sizeof(t_fpage);
+  }
+  else {
+    page->memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_fpage);
+  }
   page->pagetype = small;
-  log_info("in create base page");
+  log_info("creating base page");
   printf("page pointer: %p\n", page);
   // printf("page->memory: %zu\n", page->memory);
   create_top_chunk(page);

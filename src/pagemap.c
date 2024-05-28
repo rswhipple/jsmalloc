@@ -9,7 +9,7 @@ void create_pagemap(t_pagemap** pagemap) {
     (*pagemap)->span_head = create_base_span(*pagemap);
     (*pagemap)->total_pages = BASE_HEAP_SIZE / PAGE_SIZE;
     create_pages(*pagemap, (*pagemap)->span_head);
-    create_fpages(*pagemap, (*pagemap)->span_head);
+    create_fpages((*pagemap)->span_head);
 }
 
 t_span* create_base_span(t_pagemap* pagemap) {
