@@ -39,7 +39,6 @@ struct s_chunk {
 };
 
 struct s_tiny_chunk {
-    t_fpage* parent;
     t_tiny_chunk* next;
     void* data;     // TODO: figure out how to write over the pointers while in use
 };
@@ -65,10 +64,11 @@ struct s_page {
 
 struct s_fpage {
     t_fpage* next;
-    t_fpage* prev;
+    // t_fpage* prev;  // I don't think we need this - RWS 5/28
     size_t memory;
     size_t chunk_size;
     size_t chunk_count;
+    size_t max_chunks;
     t_tiny_chunk* top_chunk;
 };
 
