@@ -28,7 +28,7 @@ t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
   page->prev = NULL;
   page->next = NULL;
   if (span == pagemap->span_head) {
-    // available memory accounts for t_pagemap, t_span and t_page space
+    // available memory in base_page must account for t_pagemap, t_cache, t_span and t_page space
     page->memory = PAGE_SIZE - sizeof(t_pagemap) -
       sizeof(t_span) - sizeof(t_fpage);
   }
