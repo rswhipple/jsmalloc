@@ -39,7 +39,6 @@ struct s_chunk {
 };
 
 struct s_tiny_chunk {
-    t_fpage* parent;
     t_tiny_chunk* next;
     void* data;     // TODO: figure out how to write over the pointers while in use
 };
@@ -65,11 +64,12 @@ struct s_page {
 
 struct s_fpage {
     t_fpage* next;
-    t_fpage* prev;
+    // t_fpage* prev;  // I don't think we need this - RWS 5/28
     size_t memory;
     size_t chunk_size;
     size_t chunk_count;
-    t_tiny_chunk* top_chunk;
+    size_t max_chunks;
+    t_tiny_chunk* last_chunk;
 };
 
 struct s_heap {
@@ -100,6 +100,7 @@ struct hash_table_s {
 #define UNUSED(x) (void)(x)
 
 extern size_t min_chunk_size;
+extern size_t pointer_size;
 extern t_heap* global_heap;
 
 #define SMALL_HEAP_ALLOCATION_SIZE 20

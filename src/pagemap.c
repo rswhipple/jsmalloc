@@ -6,10 +6,13 @@ void create_pagemap(t_pagemap** pagemap) {
     printf("PAGE_SIZE: %d\n", PAGE_SIZE);
     *pagemap = (t_pagemap*)mmap(0, BASE_HEAP_SIZE, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+    printf("first byte of pageheap: %p\n", *pagemap);
+    void *last_byte = (void*)MEMORY_SHIFT(*pagemap, BASE_HEAP_SIZE);
+    printf("last byte of pageheap: %p\n", last_byte);
     (*pagemap)->span_head = create_base_span(*pagemap);
     (*pagemap)->total_pages = BASE_HEAP_SIZE / PAGE_SIZE;
     create_pages(*pagemap, (*pagemap)->span_head);
-    create_fpages(*pagemap, (*pagemap)->span_head);
+    create_fpages((*pagemap)->span_head, *pagemap);
 }
 
 t_span* create_base_span(t_pagemap* pagemap) {
