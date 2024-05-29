@@ -1,16 +1,24 @@
 #include "../inc/main.h"
 
 void create_pages(t_pagemap* pagemap, t_span* span) {
-  // TODO: create and assign pages to types (fast, small, large)
-  int pages_left = span->num_pages;
+  // TODO: assign pages to types (small and large)
+  int pages_left = SMALL_HEAP_ALLOCATION_SIZE;
   t_page* current = NULL;
   span->page_head = create_base_page(pagemap, span);
   pages_left -= 1;
   current = span->page_head;
+
   while (pages_left > 0) {
-    current = create_page(current, span, fast);
+    current = create_page(current, span, small);
     pages_left -= 1;
   }
+
+  pages_left = LARGE_HEAP_ALLOCATION_SIZE;
+  while (pages_left > 0) {
+    current = create_page(current, span, large);
+    pages_left -= 1;
+  }
+
 }
 
 t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
@@ -21,7 +29,6 @@ t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
   page->next = NULL;
   if (span == pagemap->span_head) {
     // available memory accounts for t_pagemap, t_span and t_page space
-    printf("span == pagemap->span_head\n");
     page->memory = PAGE_SIZE - sizeof(t_pagemap) -
       sizeof(t_span) - sizeof(t_fpage);
   }
