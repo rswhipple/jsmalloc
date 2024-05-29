@@ -69,7 +69,7 @@ struct s_fpage {
     size_t chunk_size;
     size_t chunk_count;
     size_t max_chunks;
-    t_tiny_chunk* top_chunk;
+    t_tiny_chunk* last_chunk;
 };
 
 struct s_heap {
@@ -100,6 +100,7 @@ struct hash_table_s {
 #define UNUSED(x) (void)(x)
 
 extern size_t min_chunk_size;
+extern size_t pointer_size;
 extern t_heap* global_heap;
 
 #define SMALL_HEAP_ALLOCATION_SIZE 20
