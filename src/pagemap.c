@@ -9,14 +9,15 @@ void create_pagemap(t_pagemap** pagemap) {
     printf("first byte of pageheap: %p\n", *pagemap);
     void *last_byte = (void*)MEMORY_SHIFT(*pagemap, BASE_HEAP_SIZE);
     printf("last byte of pageheap: %p\n", last_byte);
-    (*pagemap)->span_head = create_base_span(*pagemap);
+    (*pagemap)->frontend_cache = create_fast_cache(*pagemap);
+    (*pagemap)->span_head = create_base_span((*pagemap)->frontend_cache);
     (*pagemap)->total_pages = BASE_HEAP_SIZE / PAGE_SIZE;
     create_pages(*pagemap, (*pagemap)->span_head);
     create_fpages((*pagemap)->span_head, *pagemap);
 }
 
-t_span* create_base_span(t_pagemap* pagemap) {
-    t_span* span = (t_span*)PAGEMAP_SHIFT(pagemap);
+t_span* create_base_span(t_cache* cache) {
+    t_span* span = (t_span*)CACHE_SHIFT(cache);
     span->next = NULL;
     span->fastpages = NULL;
     span->page_head = NULL;
