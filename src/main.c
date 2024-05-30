@@ -23,7 +23,7 @@ int main() {
     // my_free(ptr3);
     // my_free(ptr4);
 
-    // destroy_pageheap(pagemap);
+    destroy_pagemap(pagemap);
 
     return 0;
 }
