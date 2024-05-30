@@ -1,7 +1,6 @@
 #include "../inc/main.h"
 
 void create_pages(t_pagemap* pagemap, t_span* span) {
-  // TODO: assign pages to types (small and large)
   int pages_left = SMALL_HEAP_ALLOCATION_SIZE;
   t_page* current = NULL;
   span->page_head = create_base_page(pagemap, span);
@@ -29,8 +28,8 @@ t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
   page->next = NULL;
   if (span == pagemap->span_head) {
     // available memory in base_page must account for t_pagemap, t_cache, t_span and t_page space
-    page->memory = PAGE_SIZE - sizeof(t_pagemap) -
-      sizeof(t_span) - sizeof(t_fpage);
+    page->memory = PAGE_SIZE - sizeof(t_pagemap) - sizeof(t_cache) -
+        sizeof(t_span) - sizeof(t_fpage);
   }
   else {
     page->memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_fpage);
