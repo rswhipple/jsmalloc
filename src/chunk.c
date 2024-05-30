@@ -17,7 +17,7 @@ t_chunk* create_top_chunk(t_page* page) {
     chunk->prev = NULL;
     chunk->next = NULL;
     chunk->data = (void*)MEMORY_SHIFT(CHUNK_SHIFT(chunk), 0);
-    chunk->chunk_size = page->memory - (sizeof(t_chunk));
+    chunk->chunk_size = page->memory;
     log_info("creating top chunk");
     printf("chunk pointer: %p\n", chunk);
     printf("chunk's data pointer: %p\n", chunk->data);
