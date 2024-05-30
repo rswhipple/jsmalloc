@@ -10,5 +10,7 @@ t_cache* create_frontend_cache(t_pagemap* pagemap) {
     else cache->fcache_size = 7; 
     cache->sorted_cache = NULL;     // add create_hash_table here or after create pages in base_page?
     cache->unsorted_cache = NULL;
+
+    return cache;
 }
 
