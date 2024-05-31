@@ -1,24 +1,16 @@
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror  -fsanitize=address -g3
+.PHONY: all clean test
 
-# Using CURDIR to set the SRCDIR
-SRCDIR = $(CURDIR)/src
-INCDIR = $(CURDIR)/inc
-BUILDDIR = $(CURDIR)/build
-TARGET = $(BUILDDIR)/malloc
+all: source test run_tests
 
-# Gather all source files recursively
-SOURCES = $(wildcard $(SRCDIR)/*.c)
-OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
-INCLUDES = -I$(INCDIR)
+source:
+		$(MAKE) -C src
 
-all: $(TARGET)
+test:
+		$(MAKE) -C tests
 
-$(TARGET): $(OBJECTS)
-		$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
-
-$(BUILDDIR)/%.o: $(SRCDIR)/%.c
-		$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+run_tests:
+		./tests/build/tests/run
 
 clean:
-		rm -f $(OBJECTS) $(TARGET)
+		$(MAKE) -C src clean
+		$(MAKE) -C tests clean
