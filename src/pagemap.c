@@ -9,19 +9,29 @@ void create_pagemap(t_pagemap** pagemap) {
     *pagemap = (t_pagemap*)mmap(0, BASE_HEAP_SIZE, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
                 
-    printf("first byte of pageheap: %p\n", *pagemap);
-    void *last_byte = (void*)MEMORY_SHIFT(*pagemap, BASE_HEAP_SIZE);
-    printf("last byte of pageheap: %p\n", last_byte);
+    printf("pagemap pointer: %p\n", *pagemap);
+    printf("sizeof(t_pagemap): %zu\n", sizeof(t_pagemap));
+    void *last_byte = (void*)MEMORY_SHIFT(*pagemap, sizeof(t_pagemap));
+    printf("pagemap end: %p\n", last_byte);
+    last_byte = (void*)MEMORY_SHIFT(*pagemap, BASE_HEAP_SIZE);
+    printf("pageheap end: %p\n", last_byte);
 
     (*pagemap)->frontend_cache = create_frontend_cache(*pagemap);
     (*pagemap)->span_head = create_base_span((*pagemap)->frontend_cache);
     (*pagemap)->total_pages = BASE_HEAP_SIZE / PAGE_SIZE;
     create_pages(*pagemap, (*pagemap)->span_head);
-    create_fpages((*pagemap)->span_head, *pagemap);
+    log_info("printing fast_cache before fpages");
+    print_fast_cache((*pagemap)->frontend_cache->fast_cache);
+    create_fpages(*pagemap);
+    log_info("printing fast_cache after fpages");
+    print_fast_cache((*pagemap)->frontend_cache->fast_cache);
 }
 
 t_span* create_base_span(t_cache* cache) {
-    t_span* span = (t_span*)CACHE_SHIFT(cache);
+    log_info("creating span");
+    t_span* span = (t_span*)MEMORY_SHIFT(CACHE_SHIFT(cache), 
+            (cache->fcache_size * sizeof(t_tiny_chunk)));
+    printf("span pointer: %p\n", span);
     span->next = NULL;
     span->fastpages = NULL;
     span->page_head = NULL;
@@ -29,6 +39,8 @@ t_span* create_base_span(t_cache* cache) {
     span->last_chunk = NULL;
     span->num_pages = BASE_HEAP_SIZE / PAGE_SIZE;
     span->pages_returned = false;
+    void* last_byte = (void*)MEMORY_SHIFT(span, sizeof(t_span));
+    printf("span end: %p\n", last_byte);
     return span;
 }
 
@@ -91,5 +103,5 @@ void destroy_pagemap(t_pagemap* pagemap) {
         }
         span = span->next;
     }
-    printf("success");
+    printf("success\n");
 }
