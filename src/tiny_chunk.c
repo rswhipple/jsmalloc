@@ -1,6 +1,11 @@
 #include "../inc/main.h" 
 
 
+void print_tiny_chunk(t_tiny_chunk* tiny) {
+    printf("data pointer = %p\n", tiny->data);
+    if (tiny->next) printf("next pointer = %p\n", tiny->next);
+}
+
 t_tiny_chunk* create_top_tiny_chunk(t_fpage* page) {
     t_tiny_chunk* tiny = (t_tiny_chunk*)FASTPAGE_SHIFT(page);
     tiny->next = NULL;
