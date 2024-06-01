@@ -2,19 +2,20 @@
 #include <stdlib.h>
 
 static int setup(void** state) {
-    int* answer = (int*)malloc(sizeof(int));
-    if (answer == NULL) {
-        return -1;
-    }
-    *answer = 42;
+    system_settings();
 
-    *state = answer;
+    t_pagemap* pagemap = NULL;
 
+    create_pagemap(&pagemap);
+
+    *state = pagemap;
     return 0;
 }
 
 static int teardown(void** state) {
-    free(*state);
+    UNUSED(state);
+    // TODO: uncomment this when destry working fully?
+    // destroy_pagemap((t_pagemap*)state);
 
     return 0;
 }
@@ -23,7 +24,7 @@ static int teardown(void** state) {
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(null_test_success),
-        cmocka_unit_test_setup_teardown(int_test_success, setup, teardown),
+        cmocka_unit_test_setup_teardown(chunk_test_success, setup, teardown),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
