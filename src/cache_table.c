@@ -1,118 +1,126 @@
 #include "../inc/main.h"
 
+t_chunk** create_cache_table(t_cache* cache) {
+    log_info("creating cache_table");
+    t_chunk** cache_table = (t_chunk**)MEMORY_SHIFT(cache, (cache->fcache_size * sizeof(t_tiny_chunk*)));
+    printf("cache_table pointer: %p\n", cache_table);
+
+    void *last_byte = (void*)MEMORY_SHIFT(cache_table, (120 * sizeof(t_chunk*)));
+    printf("cache_table end: %p\n", last_byte);
+    return cache_table;
+}
 
 // unsigned int my_hash_function(size_t data_size, uint32_t table_size) {
 //     double A = (sqrt(5) - 1) / 2; // Fractional part of the golden ratio
 //     return ((unsigned int)(table_size * (data_size * A - (int)(data_size * A)))) % table_size;
 // }
 
-t_cache_table* create_cache_table(t_pagemap* heap, uint32_t size, hash_function* hf) {
-    t_cache_table* ht = (t_cache_table*)HASH_SHIFT((char*)heap);;
-    ht->size = size;
-    ht->hash = hf;
+// t_cache_table* create_cache_table(t_cache* cache, uint32_t size, hash_function* hf) {
+//     t_cache_table* ht = (t_cache_table*)MEMORY_SHIFT(cache, (cache->fcache_size * sizeof(t_tiny_chunk)));
+//     ht->size = size;
+//     ht->hash = hf;
 
-    // TODO: calculate the number of indexes possible
-    ht->elements = (t_block**)MEMORY_SHIFT(heap, sizeof(t_cache_table) + (sizeof(t_block*) * MAX_BLOCKS));
+//     ht->elements = (t_chunk**)MEMORY_SHIFT(heap, sizeof(t_cache_table) + (sizeof(t_chunk*) * MAX_BLOCKS));
 
-    size_t elements_size = size * sizeof(t_block*);
-    ht->elements = mmap(NULL, elements_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+//     size_t elements_size = size * sizeof(t_chunk*);
+//     ht->elements = mmap(NULL, elements_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
-    if (ht->elements == MAP_FAILED) {
-        perror("mmap failed");
-        munmap(ht, sizeof(t_cache_table)); // Clean up the previously mapped memory
-        return NULL;
-    }
+//     if (ht->elements == MAP_FAILED) {
+//         perror("mmap failed");
+//         munmap(ht, sizeof(t_cache_table)); // Clean up the previously mapped memory
+//         return NULL;
+//     }
 
-    // Initialize hashtable slots to NULL
-    for (uint32_t i = 0; i < size; i++) {
-        ht->elements[i] = NULL;
-    }
+//     // Initialize hashtable slots to NULL
+//     for (uint32_t i = 0; i < size; i++) {
+//         ht->elements[i] = NULL;
+//     }
 
-    return ht;
-}
+//     return ht;
+// }
 
-void cache_table_print(t_cache_table* ht) {
-    printf("Start Table\n");
-    for (uint32_t i = 0; i < ht->size; i++) {
-        if (ht->elements[i] == NULL) {
-            printf("\t%u\t---\n", i);
-        }
-        else {
-            printf("\t%u\t\n", i);
-            t_block* tmp = ht->elements[i];
-            while (tmp) {
-                // printf("\"%TODO\"(%lu) - ", tmp->data_size);
-                tmp = tmp->next;
-            }
-        }
-    }
-}
+// void cache_table_print(t_cache_table* ht) {
+//     printf("Start Table\n");
+//     for (uint32_t i = 0; i < ht->size; i++) {
+//         if (ht->elements[i] == NULL) {
+//             printf("\t%u\t---\n", i);
+//         }
+//         else {
+//             printf("\t%u\t\n", i);
+//             t_block* tmp = ht->elements[i];
+//             while (tmp) {
+//                 // printf("\"%TODO\"(%lu) - ", tmp->data_size);
+//                 tmp = tmp->next;
+//             }
+//         }
+//     }
+// }
 
-bool cache_table_insert(t_heap** heap, t_cache_table* ht, size_t size) {
-    if (ht == NULL || size == 0) return false;
-    size_t index = ht->hash(size, ht->size);;
+// bool cache_table_insert(t_heap** heap, t_cache_table* ht, size_t size) {
+//     if (ht == NULL || size == 0) return false;
+//     size_t index = ht->hash(size, ht->size);;
 
-    if (cache_table_allocate(ht, size)) return false;
+//     if (cache_table_allocate(ht, size)) return false;
 
-    // create new entry
-    t_block* block = create_block(*heap, size);
-    printf("block: %zu\n", block->data_size);
-    block->prev = NULL;
-    block->next = NULL;
-    block->data_size = size;
-    block->freed = false;
+//     // create new entry
+//     t_block* block = create_block(*heap, size);
+//     printf("block: %zu\n", block->data_size);
+//     block->prev = NULL;
+//     block->next = NULL;
+//     block->data_size = size;
+//     block->freed = false;
 
-    // TODO create an object to allocate the memory space
-    // block->object = 
+//     // TODO create an object to allocate the memory space
+//     // block->object = 
 
-    (*heap)->block_count++;
-    (*heap)->free_size -= size;
+//     (*heap)->block_count++;
+//     (*heap)->free_size -= size;
 
-    // insert entry
-    ht->elements[index]->prev = block;
-    block->next = ht->elements[index];
-    ht->elements[index] = block;
-    return true;
-}
+//     // insert entry
+//     ht->elements[index]->prev = block;
+//     block->next = ht->elements[index];
+//     ht->elements[index] = block;
+//     return true;
+// }
 
-void* cache_table_allocate(t_cache_table* ht, size_t key) {
-    if (key == 0 || ht == NULL) return false;
-    size_t index = ht->hash(key, ht->size);     // TODO: make sure this is the correct function pointer
+// void* cache_table_allocate(t_cache_table* ht, size_t key) {
+//     if (key == 0 || ht == NULL) return false;
+//     size_t index = ht->hash(key, ht->size);     // TODO: make sure this is the correct function pointer
 
-    t_block* tmp = ht->elements[index];
-    while (tmp && !tmp->freed) {
-        tmp = tmp->next;
-    }
-    if (!tmp) return NULL;  // This means we need to allocate more memory
-    return &tmp->data_size;
-}
+//     t_block* tmp = ht->elements[index];
+//     while (tmp && !tmp->freed) {
+//         tmp = tmp->next;
+//     }
+//     if (!tmp) return NULL;  // This means we need to allocate more memory
+//     return &tmp->data_size;
+// }
 
-void* cache_table_deallocate(t_block* block) {
-    if (!block) return NULL;
+// void* cache_table_deallocate(t_block* block) {
+//     if (!block) return NULL;
 
-    // size_t index = cache_table_index(ht, key);
+//     // size_t index = cache_table_index(ht, key);
 
-    // t_block *tmp = ht->elements[index];
-    // t_block *prev = NULL;
-    // while (tmp && strcmp(tmp->key, key) != 0) {
-    //     prev = tmp;
-    //     tmp = tmp->next;
-    // }
-    // if (!tmp) return NULL;
-    // if (!prev) {
-    //     // deallocating the head of the list
-    //     // change this to making the block free again
-    //     ht->elements[index] = tmp->next;
-    // } else {
-    //     // deallocating from the middle 
-    //     prev->next = tmp->next;
-    // }
-    // void *result = tmp->data_size;
-    // free(tmp);
+//     // t_block *tmp = ht->elements[index];
+//     // t_block *prev = NULL;
+//     // while (tmp && strcmp(tmp->key, key) != 0) {
+//     //     prev = tmp;
+//     //     tmp = tmp->next;
+//     // }
+//     // if (!tmp) return NULL;
+//     // if (!prev) {
+//     //     // deallocating the head of the list
+//     //     // change this to making the block free again
+//     //     ht->elements[index] = tmp->next;
+//     // } else {
+//     //     // deallocating from the middle 
+//     //     prev->next = tmp->next;
+//     // }
+//     // void *result = tmp->data_size;
+//     // free(tmp);
 
-    // return result;
-    return 0;
-}
+//     // return result;
+//     return 0;
+// }
 
 
 
