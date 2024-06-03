@@ -42,10 +42,9 @@ struct s_cache {
 
 struct s_chunk {
     size_t size;    // bounding size marker
-    t_chunk* prev;
-    t_chunk* next;
+    t_chunk* fd;
+    t_chunk* bk;
     void* data;     // TODO: figure out how to write over the pointers while in use
-    size_t chunk_size;  // bounding size markers so that we can traverse the chunks in either direction even when in use
 };
 
 struct s_tiny_chunk {
