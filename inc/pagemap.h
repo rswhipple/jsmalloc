@@ -17,6 +17,7 @@
 
 #define PAGE_SIZE getpagesize()
 #define BASE_HEAP_SIZE (48 * PAGE_SIZE)
+#define NUM_BINS 149
 
 t_span* create_base_span(t_cache* cache);
 t_span* add_span(t_pagemap* pagemap, void* start, size_t size);
