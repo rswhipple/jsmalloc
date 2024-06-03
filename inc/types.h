@@ -49,7 +49,7 @@ struct s_chunk {
 
 struct s_tiny_chunk {
     t_tiny_chunk* next;
-    void* data;     // TODO: figure out how to write over the pointers while in use
+    void* data;
 };
 
 struct s_span {
