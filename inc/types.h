@@ -36,7 +36,7 @@ enum page_types {
 struct s_cache {
     t_tiny_chunk** fast_cache;
     size_t fcache_size;
-    t_cache_table* cache_table;
+    t_chunk **cache_table;
     t_chunk* unsorted_cache;
 };
 
@@ -59,9 +59,9 @@ struct s_chunk {
 #define ALIGN(n) (((n) + ALIGN_MASK) & ~ALIGN_MASK)
 
 struct s_tiny_chunk {
-    size_t size;
+    // size_t size;
     t_tiny_chunk* next;
-    // void* data;
+    void* data;
 };
 
 struct s_span {
