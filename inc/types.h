@@ -42,10 +42,21 @@ struct s_cache {
 
 struct s_chunk {
     size_t size;    // bounding size marker
+    size_t prev_size;
     t_chunk* fd;
     t_chunk* bk;
     void* data;     // TODO: figure out how to write over the pointers while in use
 };
+
+// Helper macros to access boundary tags
+#define CHUNK_SIZE(chunk) ((chunk)->size & ~0x7) // Mask out lower bits used for status
+#define NEXT_CHUNK(chunk) ((chunk*)((char*)(chunk) + CHUNK_SIZE(chunk)))
+#define PREV_CHUNK(chunk) ((chunk*)((char*)(chunk) - (chunk)->prev_size))
+
+// Alignment to ensure proper boundaries
+#define ALIGN_SIZE 8
+#define ALIGN_MASK (ALIGN_SIZE - 1)
+#define ALIGN(n) (((n) + ALIGN_MASK) & ~ALIGN_MASK)
 
 struct s_tiny_chunk {
     t_tiny_chunk* next;
@@ -111,6 +122,7 @@ struct hash_table_s {
 extern size_t min_chunk_size;
 extern size_t pointer_size;
 extern t_heap* global_heap;
+extern t_pagemap* g_pagemap;
 
 #define FAST_PAGE_ALLOCATION_SIZE 8
 #define FAST_PAGE_MAX_CHUNK_SIZE 64
