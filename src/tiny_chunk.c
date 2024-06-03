@@ -31,5 +31,10 @@ t_tiny_chunk* create_tiny_chunk(t_fpage* fpage) {
     return tiny;
 }
 
+void* free_tiny_chunk(t_tiny_chunk* tiny) {
+    // find fast_cache bin by size
 
 
+    // pagemap->frontend_cache->fast_cache[0]
+
+}
