@@ -7,9 +7,11 @@
 #include <unistd.h>
 #include <stdint.h>
 
+
+typedef struct s_pagemap t_pagemap;
+typedef struct s_cache t_cache;
 typedef struct s_span t_span;
 typedef struct hash_table_s t_hash;
-typedef struct s_pagemap t_pagemap;
 typedef struct s_page t_page;
 typedef struct s_fpage t_fpage;
 typedef struct s_heap t_heap;
@@ -20,6 +22,7 @@ typedef struct s_page t_page;
 typedef struct s_fpage t_fpage;
 
 struct s_pagemap {
+    t_cache* frontend_cache;
     t_span* span_head;
     size_t total_pages;
 };
@@ -28,6 +31,13 @@ enum page_types {
     fast,
     small,
     large
+};
+
+struct s_cache {
+    t_tiny_chunk** fast_cache;
+    size_t fcache_size;
+    t_hash* sorted_cache;
+    t_chunk* unsorted_cache;
 };
 
 struct s_chunk {
@@ -103,6 +113,8 @@ extern size_t min_chunk_size;
 extern size_t pointer_size;
 extern t_heap* global_heap;
 
+#define FAST_PAGE_ALLOCATION_SIZE 8
+#define FAST_PAGE_MAX_CHUNK_SIZE 64
 #define SMALL_HEAP_ALLOCATION_SIZE 20
 #define SMALL_PAGE_MAX_CHUNK_SIZE 512
 #define LARGE_HEAP_ALLOCATION_SIZE 20

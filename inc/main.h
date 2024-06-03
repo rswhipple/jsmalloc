@@ -14,6 +14,8 @@
 #include "utils.h"
 #include "heap.h"
 #include "block.h"
-#include "chunk.h"
+#include "chunks.h"
+#include "pages.h"
+#include "cache.h"
 
 #endif 
