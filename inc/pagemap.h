@@ -7,7 +7,7 @@
 
 #define PAGEMAP_SHIFT(start)((uint8_t *)start + sizeof(t_pagemap))
 #define CACHE_SHIFT(start)((uint8_t *)start + sizeof(t_cache))  
-#define HASH_SHIFT(start)((char *)start + sizeof(t_hash))
+#define HASH_SHIFT(start)((char *)start + sizeof(t_cache_table))
 #define SPAN_SHIFT(start)((char *)start + sizeof(t_span))
 #define PAGE_SHIFT(start)((char *)start + sizeof(t_page))
 #define FASTPAGE_SHIFT(start)((char *)start + sizeof(t_fpage))

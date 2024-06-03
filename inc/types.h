@@ -11,7 +11,7 @@
 typedef struct s_pagemap t_pagemap;
 typedef struct s_cache t_cache;
 typedef struct s_span t_span;
-typedef struct hash_table_s t_hash;
+typedef struct cache_table_s t_cache_table;
 typedef struct s_page t_page;
 typedef struct s_fpage t_fpage;
 typedef struct s_heap t_heap;
@@ -36,7 +36,7 @@ enum page_types {
 struct s_cache {
     t_tiny_chunk** fast_cache;
     size_t fcache_size;
-    t_hash* sorted_cache;
+    t_cache_table* cache_table;
     t_chunk* unsorted_cache;
 };
 
@@ -59,8 +59,9 @@ struct s_chunk {
 #define ALIGN(n) (((n) + ALIGN_MASK) & ~ALIGN_MASK)
 
 struct s_tiny_chunk {
+    size_t size;
     t_tiny_chunk* next;
-    void* data;
+    // void* data;
 };
 
 struct s_span {
@@ -98,7 +99,7 @@ struct s_heap {
     size_t total_size;
     size_t free_size;
     int block_count;
-    t_hash* ht;
+    t_cache_table* ht;
 };
 
 struct s_block {
@@ -111,7 +112,7 @@ struct s_block {
 
 // Hash table structure
 typedef unsigned int (hash_function)(size_t input, uint32_t);
-struct hash_table_s {
+struct cache_table_s {
     size_t size;
     hash_function* hash;
     t_chunk** elements;

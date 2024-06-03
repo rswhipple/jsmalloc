@@ -5,9 +5,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 #include "types.h"
-#include "hash_table.h"
+#include "cache_table.h"
 #include "pagemap.h"
 #include "my_malloc.h"
 #include "system_settings.h"

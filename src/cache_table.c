@@ -1,27 +1,25 @@
-#include "../inc/hash_table.h"
-#include <sys/mman.h>
-#include <unistd.h>
+#include "../inc/main.h"
 
-/*
-unsigned int my_hash_function(size_t data_size, uint32_t table_size) {
-    double A = (sqrt(5) - 1) / 2; // Fractional part of the golden ratio
-    return ((unsigned int)(table_size * (data_size * A - (int)(data_size * A)))) % table_size;
-}
 
-t_hash* hash_table_create(t_heap* heap, uint32_t size, hash_function* hf) {
-    t_hash* ht = (t_hash*)HASH_SHIFT((char*)heap);;
+// unsigned int my_hash_function(size_t data_size, uint32_t table_size) {
+//     double A = (sqrt(5) - 1) / 2; // Fractional part of the golden ratio
+//     return ((unsigned int)(table_size * (data_size * A - (int)(data_size * A)))) % table_size;
+// }
+
+t_cache_table* create_cache_table(t_pagemap* heap, uint32_t size, hash_function* hf) {
+    t_cache_table* ht = (t_cache_table*)HASH_SHIFT((char*)heap);;
     ht->size = size;
     ht->hash = hf;
 
     // TODO: calculate the number of indexes possible
-    ht->elements = (t_block**)MEMORY_SHIFT(heap, sizeof(t_hash) + (sizeof(t_block*) * MAX_BLOCKS));
+    ht->elements = (t_block**)MEMORY_SHIFT(heap, sizeof(t_cache_table) + (sizeof(t_block*) * MAX_BLOCKS));
 
     size_t elements_size = size * sizeof(t_block*);
     ht->elements = mmap(NULL, elements_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
     if (ht->elements == MAP_FAILED) {
         perror("mmap failed");
-        munmap(ht, sizeof(t_hash)); // Clean up the previously mapped memory
+        munmap(ht, sizeof(t_cache_table)); // Clean up the previously mapped memory
         return NULL;
     }
 
@@ -33,7 +31,7 @@ t_hash* hash_table_create(t_heap* heap, uint32_t size, hash_function* hf) {
     return ht;
 }
 
-void hash_table_print(t_hash* ht) {
+void cache_table_print(t_cache_table* ht) {
     printf("Start Table\n");
     for (uint32_t i = 0; i < ht->size; i++) {
         if (ht->elements[i] == NULL) {
@@ -50,11 +48,11 @@ void hash_table_print(t_hash* ht) {
     }
 }
 
-bool hash_table_insert(t_heap** heap, t_hash* ht, size_t size) {
+bool cache_table_insert(t_heap** heap, t_cache_table* ht, size_t size) {
     if (ht == NULL || size == 0) return false;
     size_t index = ht->hash(size, ht->size);;
 
-    if (hash_table_allocate(ht, size)) return false;
+    if (cache_table_allocate(ht, size)) return false;
 
     // create new entry
     t_block* block = create_block(*heap, size);
@@ -77,7 +75,7 @@ bool hash_table_insert(t_heap** heap, t_hash* ht, size_t size) {
     return true;
 }
 
-void* hash_table_allocate(t_hash* ht, size_t key) {
+void* cache_table_allocate(t_cache_table* ht, size_t key) {
     if (key == 0 || ht == NULL) return false;
     size_t index = ht->hash(key, ht->size);     // TODO: make sure this is the correct function pointer
 
@@ -89,10 +87,10 @@ void* hash_table_allocate(t_hash* ht, size_t key) {
     return &tmp->data_size;
 }
 
-void* hash_table_deallocate(t_block* block) {
+void* cache_table_deallocate(t_block* block) {
     if (!block) return NULL;
 
-    // size_t index = hash_table_index(ht, key);
+    // size_t index = cache_table_index(ht, key);
 
     // t_block *tmp = ht->elements[index];
     // t_block *prev = NULL;
@@ -116,5 +114,5 @@ void* hash_table_deallocate(t_block* block) {
     return 0;
 }
 
-*/
+
 
