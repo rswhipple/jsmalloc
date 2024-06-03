@@ -9,6 +9,7 @@ void print_tiny_chunk(t_tiny_chunk* tiny) {
 
 t_tiny_chunk* create_top_tiny_chunk(t_fpage* page) {
     t_tiny_chunk* tiny = (t_tiny_chunk*)FASTPAGE_SHIFT(page);
+    // tiny->size = page->chunk_size;
     tiny->next = NULL;
     tiny->data = (void*)MEMORY_SHIFT(TINY_CHUNK_SHIFT(tiny), 0);
 
@@ -31,7 +32,8 @@ t_tiny_chunk* create_tiny_chunk(t_fpage* fpage) {
     return tiny;
 }
 
-void* free_tiny_chunk(t_tiny_chunk* tiny) {
+void free_tiny_chunk(t_tiny_chunk* tiny) {
+    UNUSED(tiny);
     // find fast_cache bin by size
 
 
