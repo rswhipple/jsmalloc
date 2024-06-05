@@ -1,7 +1,7 @@
 #include "../../inc/main.h"
 
 void create_pages(t_pagemap* pagemap, t_span* span) {
-  int pages_left = SMALL_HEAP_ALLOCATION_SIZE;
+  int pages_left = SMALL_PAGE_ALLOCATION_SIZE;
   t_page* current = NULL;
   span->page_head = create_base_page(pagemap, span);
   pages_left -= 1;
@@ -12,7 +12,7 @@ void create_pages(t_pagemap* pagemap, t_span* span) {
     pages_left -= 1;
   }
 
-  pages_left = LARGE_HEAP_ALLOCATION_SIZE;
+  pages_left = LARGE_PAGE_ALLOCATION_SIZE;
   while (pages_left > 0) {
     current = create_page(current, span, large);
     pages_left -= 1;
