@@ -33,7 +33,7 @@ t_cache* create_frontend_cache(t_pagemap* pagemap) {
     if (min_chunk_size == 8) cache->fcache_size = 8; 
     else cache->fcache_size = 7; 
     cache->fast_cache = create_fast_cache(cache);
-    cache->cache_table = create_cache_table(cache);     // add create_cache_table here or after create pages in base_page?
+    cache->cache_table = create_cache_table(cache);
     cache->unsorted_cache = NULL;
     void *last_byte = (void*)MEMORY_SHIFT(cache, sizeof(t_cache));
     printf("cache end: %p\n", last_byte);
