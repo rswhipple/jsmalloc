@@ -69,9 +69,9 @@ struct s_chunk {
 #define ALIGN(n) (((n) + ALIGN_MASK) & ~ALIGN_MASK)
 
 struct s_tiny_chunk {
-    // size_t size;
+    size_t size;
     t_tiny_chunk* next;
-    void* data;
+    // void* data;
 };
 
 struct s_span {
