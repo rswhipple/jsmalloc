@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <math.h>
 
 #include "types.h"
 #include "cache_table.h"
