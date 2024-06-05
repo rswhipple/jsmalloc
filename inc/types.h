@@ -13,11 +13,9 @@ typedef struct s_chunk t_chunk;
 struct s_tiny_chunk {
     size_t size;
     t_tiny_chunk* next;
-    // void* data;
 };
 
 struct s_chunk {
-    // size_t prev_size;
     size_t size;    // bounding size marker
     t_chunk* fd;
     t_chunk* bk;
@@ -88,6 +86,8 @@ struct s_pagemap {
     t_cache* frontend_cache;
     t_span* span_head;
     size_t total_pages;
+    // t_chunk* top_chunk;      // Holds the top chunk in the heap
+    // t_chunk* last_chunk;     // Holds the chunk where memory was allocated last. Purpose is to help create objects in proximity to one another.
 };
 
 
