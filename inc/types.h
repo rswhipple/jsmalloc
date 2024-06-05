@@ -106,8 +106,10 @@ struct s_pagemap {
 // =================== Enums ===================
 
 enum page_types {
+    fast = 1,
     small,
-    large
+    large,
+    huge
 };
 
 // =================== V1 Heap ===================
