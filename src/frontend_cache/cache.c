@@ -1,6 +1,16 @@
 
 #include "../../inc/main.h"
 
+void* search_fast_cache(size_t size) {
+    printf("Returning NULL\n");
+    return NULL;
+}
+
+void* search_cache(size_t size, int page_type) {
+    printf("Returning NULL\n");
+    return NULL;
+}
+
 void print_fast_cache(t_tiny_chunk** fast_cache) {
     t_tiny_chunk* temp;
     int count;
