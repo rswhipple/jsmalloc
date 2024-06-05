@@ -4,6 +4,7 @@
 
 #include "types.h"
 
+void write_boundary_tag(t_chunk* chunk);
 t_chunk* create_top_chunk(t_page* page);
 t_chunk* split_chunk(t_chunk* chunk, size_t size);
 
