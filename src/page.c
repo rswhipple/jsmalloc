@@ -27,11 +27,11 @@ t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
   page->prev = NULL;
   page->next = NULL;
   page->pagetype = small;
-  size_t fcache_size = cache->fcache_size * sizeof(t_tiny_chunk);
   if (span == pagemap->span_head) {
     // available memory in base_page must account for t_pagemap, t_cache, t_span and t_page space
     page->memory = PAGE_SIZE - sizeof(t_pagemap) - sizeof(t_cache) -
-        fcache_size - sizeof(t_span) - sizeof(t_fpage);
+        (cache->fcache_size * sizeof(t_tiny_chunk*)) - 
+        (NUM_BINS * sizeof(t_chunk*)) - sizeof(t_span) - sizeof(t_fpage);
   }
   else {
     page->memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_fpage);

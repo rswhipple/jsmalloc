@@ -3,18 +3,18 @@
 
 void print_tiny_chunk(t_tiny_chunk* tiny) {
     printf("t_tiny_chunk pointer = %p\n", tiny);
-    printf("data pointer = %p\n", tiny->data);
     if (tiny->next) printf("next t_tiny_chunk = %p\n", tiny->next);
 }
 
 t_tiny_chunk* create_top_tiny_chunk(t_fpage* page) {
     t_tiny_chunk* tiny = (t_tiny_chunk*)FASTPAGE_SHIFT(page);
+    tiny->size = page->chunk_size;
     tiny->next = NULL;
-    tiny->data = (void*)MEMORY_SHIFT(TINY_CHUNK_SHIFT(tiny), 0);
+    char *data = (void*)MEMORY_SHIFT(tiny, sizeof(size_t));
 
     log_info("creating top tiny chunk");
     printf("tiny chunk pointer: %p\n", tiny);
-    printf("data pointer: %p\n", tiny->data);
+    printf("data pointer (same as memory location *next): %p\n", data);
     printf("sizeof(t_tiny_chunk): %zu\n", sizeof(t_tiny_chunk));
 
     return tiny;
@@ -26,10 +26,15 @@ t_tiny_chunk* create_tiny_chunk(t_fpage* fpage) {
 
     // initialize new tiny chunk
     tiny->next = NULL;
-    tiny->data = (void*)MEMORY_SHIFT(TINY_CHUNK_SHIFT(tiny), 0);
 
     return tiny;
 }
 
+void free_tiny_chunk(t_tiny_chunk* tiny) {
+    UNUSED(tiny);
+    // find fast_cache bin by size
 
 
+    // pagemap->frontend_cache->fast_cache[0]
+
+}

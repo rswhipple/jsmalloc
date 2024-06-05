@@ -19,7 +19,7 @@ void print_fast_cache(t_tiny_chunk** fast_cache) {
                 temp = temp->next;
             }
         } else {
-            printf("fast_cache[%i] = NULL\n", count);
+            printf("fast_cache[%i] = NULL\n", i);
         }
 
     }
@@ -29,13 +29,13 @@ t_cache* create_frontend_cache(t_pagemap* pagemap) {
     log_info("creating frontend cache");
     t_cache* cache = (t_cache*)PAGEMAP_SHIFT(pagemap);
     printf("cache pointer: %p\n", cache);
+    printf("sizeof(t_cache): %zu\n", sizeof(t_cache));
     if (min_chunk_size == 8) cache->fcache_size = 8; 
     else cache->fcache_size = 7; 
     cache->fast_cache = create_fast_cache(cache);
-    cache->sorted_cache = NULL;     // add create_hash_table here or after create pages in base_page?
+    cache->cache_table = create_cache_table(cache);     // add create_cache_table here or after create pages in base_page?
     cache->unsorted_cache = NULL;
     void *last_byte = (void*)MEMORY_SHIFT(cache, sizeof(t_cache));
-    printf("sizeof(t_cache): %zu\n", sizeof(t_cache));
     printf("cache end: %p\n", last_byte);
 
     return cache;
@@ -49,7 +49,7 @@ t_tiny_chunk** create_fast_cache(t_cache *cache) {
         fast_cache[i] = NULL; 
     }
 
-    void *last_byte = (void*)MEMORY_SHIFT(cache, (cache->fcache_size * sizeof(t_tiny_chunk)));
+    void *last_byte = (void*)MEMORY_SHIFT(cache, (cache->fcache_size * sizeof(t_tiny_chunk*)));
     printf("fast_cache end: %p\n", last_byte);
     return fast_cache;
 }

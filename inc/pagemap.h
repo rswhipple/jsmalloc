@@ -7,7 +7,7 @@
 
 #define PAGEMAP_SHIFT(start)((uint8_t *)start + sizeof(t_pagemap))
 #define CACHE_SHIFT(start)((uint8_t *)start + sizeof(t_cache))  
-#define HASH_SHIFT(start)((char *)start + sizeof(t_hash))
+#define HASH_SHIFT(start)((char *)start + sizeof(t_cache_table))
 #define SPAN_SHIFT(start)((char *)start + sizeof(t_span))
 #define PAGE_SHIFT(start)((char *)start + sizeof(t_page))
 #define FASTPAGE_SHIFT(start)((char *)start + sizeof(t_fpage))
@@ -17,6 +17,7 @@
 
 #define PAGE_SIZE getpagesize()
 #define BASE_HEAP_SIZE (48 * PAGE_SIZE)
+#define NUM_BINS 149
 
 t_span* create_base_span(t_cache* cache);
 t_span* add_span(t_pagemap* pagemap, void* start, size_t size);

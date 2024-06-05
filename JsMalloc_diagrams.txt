@@ -29,7 +29,7 @@
 |  |          Sorted Cache                |  |
 |  |                                      |  |
 |  |  +-------------------------------+   |  |
-|  |  | t_hash* sorted_cache          |   |  |
+|  |  | t_cache_table* cache_table          |   |  |
 |  |  +-------------------------------+   |  |
 |  +--------------------------------------+  |
 |                                            |
@@ -343,3 +343,27 @@ int main() {
 - **Helper Macros**: Macros to calculate the size and find the next and previous chunks.
 - **Functions**: Implementations for writing the boundary tag, freeing a chunk, and coalescing adjacent free chunks.
 - **Usage Example**: Demonstrates allocation, freeing, and boundary tag checking.
+
+
+
+
++---------------------+
+| pagemap             |
++---------------------+
+|[t_cache]            |
+| cache->fast_cache   |
+| cache->cache_table  |
+| cache->unsorted     |
+| ...                 |
++---------------------+
+| fast_cache          |
++---------------------+
+| cache_table         |
++---------------------+
+| span                |
++---------------------+
+| first page          |
+|                     |
+|    chunks           |
++---------------------+
++---------------------+

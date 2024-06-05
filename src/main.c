@@ -4,8 +4,8 @@ int main() {
     system_settings();
 
     // initiate pagemap with pageheap (memory span)
-    t_pagemap* pagemap = NULL;
-    create_pagemap(&pagemap);
+    t_pagemap* g_pagemap = NULL;
+    create_pagemap(&g_pagemap);
 
     // log_info("allocating");
     // void* ptr1 = my_malloc(10);
@@ -23,7 +23,7 @@ int main() {
     // my_free(ptr3);
     // my_free(ptr4);
 
-    destroy_pagemap(pagemap);
+    destroy_pagemap(g_pagemap);
 
     return 0;
 }
