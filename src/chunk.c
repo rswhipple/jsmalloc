@@ -20,10 +20,11 @@ t_chunk* create_top_chunk(t_page* page) {
     chunk->size = page->memory;  
     chunk->fd = NULL;
     chunk->bk = NULL;
+    char *data = (void*)MEMORY_SHIFT(chunk, sizeof(size_t));
     write_boundary_tag(chunk);
     log_info("creating top chunk");
     printf("chunk pointer: %p\n", chunk);
-    printf("chunk's data pointer (same memory location as *fd): %p\n", chunk->fd);
+    printf("chunk's data pointer (same memory location as *fd): %p\n", data);
     printf("chunk size: %zu\n", chunk->size);
     printf("sizeof(t_chunk): %zu\n", sizeof(t_chunk));
     page->top_chunk = chunk;
@@ -43,10 +44,12 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
     // Create the second chunk immediately after the first chunk
     t_chunk* second_chunk = (t_chunk*)MEMORY_SHIFT(CHUNK_SHIFT(chunk), size);
     second_chunk->size = initial_chunk_size - size;
+    write_boundary_tag(second_chunk);
 
-    // Update the original chunk's size and next pointer
+    // Update the original chunk's size, next pointer & boundary_tag
     chunk->size = size;
     chunk->fd = second_chunk;
+    write_boundary_tag(chunk);
 
     // Return the first chunk
     return first_chunk;
