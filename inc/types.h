@@ -74,6 +74,8 @@ struct s_tiny_chunk {
     // void* data;
 };
 
+#define TINY_CHUNK_OVERHEAD sizeof(size_t)
+
 struct s_span {
     t_span* next;
     t_fpage* fastpages;
