@@ -1,6 +1,5 @@
-
-#ifndef CHUNK_H
-#define CHUNK_H
+#ifndef CHUNKS_H
+#define CHUNKS_H
 
 #include "types.h"
 
