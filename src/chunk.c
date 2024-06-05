@@ -30,7 +30,25 @@ t_chunk* create_top_chunk(t_page* page) {
     return chunk;
 }
 
-// t_chunk *split_chunk(t_chunk *chunk, size_t size) {
+// input parameters are t_chunk *chunk and size_t chunk_size
+t_chunk* split_chunk(t_chunk* chunk, size_t size) {
+    if (chunk->size <= size) {
+        fprintf(stderr, "Invalid split size: %zu (chunk size: %zu)\n", size, chunk->size);
+        exit(EXIT_FAILURE);
+    }
+    size_t initial_chunk_size = chunk->size;
+    t_chunk* first_chunk = chunk;
+    first_chunk->size = size;
 
-// }
+    // Create the second chunk immediately after the first chunk
+    t_chunk* second_chunk = (t_chunk*)MEMORY_SHIFT(CHUNK_SHIFT(chunk), size);
+    second_chunk->size = initial_chunk_size - size;
+
+    // Update the original chunk's size and next pointer
+    chunk->size = size;
+    chunk->fd = second_chunk;
+
+    // Return the first chunk
+    return first_chunk;
+}
 
