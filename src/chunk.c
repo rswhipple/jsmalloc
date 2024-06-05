@@ -44,7 +44,7 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
 
     // Update the original chunk's size and next pointer
     chunk->size = size;
-    chunk->next = second_chunk;
+    chunk->fd = second_chunk;
 
     // Return the first chunk
     return first_chunk;
