@@ -19,7 +19,7 @@ void print_fast_cache(t_tiny_chunk** fast_cache) {
                 temp = temp->next;
             }
         } else {
-            printf("fast_cache[%i] = NULL\n", count);
+            printf("fast_cache[%i] = NULL\n", i);
         }
 
     }
