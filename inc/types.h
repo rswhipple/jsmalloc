@@ -95,7 +95,6 @@ struct s_pagemap {
 // =================== Enums ===================
 
 enum page_types {
-    fast,
     small,
     large
 };
