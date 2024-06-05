@@ -41,17 +41,27 @@ struct s_cache {
 };
 
 struct s_chunk {
+    // size_t prev_size;
     size_t size;    // bounding size marker
-    size_t prev_size;
     t_chunk* fd;
     t_chunk* bk;
-    void* data;     // TODO: figure out how to write over the pointers while in use
 };
 
+
+// Helper macros to set and check t_chunk status
+#define SET_IN_USE(chunk) ((chunk)->size |= 0x1)
+#define IS_IN_USE(chunk) ((chunk)->size & 0x1)
+#define SET_FREE(chunk) ((chunk)->size &= ~0x1)
+
+// Helper macros to set and check t_chunk size
+#define SET_CHUNK_SIZE(chunk, sz) ((chunk)->size = ((sz) & SIZE_MASK) | ((chunk)->size & ~SIZE_MASK))
+#define SIZE_MASK (~0x7)
+#define CHUNK_SIZE(chunk) ((chunk)->size & SIZE_MASK) // Mask out lower 3 bits used for status
+
 // Helper macros to access boundary tags
-#define CHUNK_SIZE(chunk) ((chunk)->size & ~0x7) // Mask out lower bits used for status
+#define CHUNK_OVERHEAD sizeof(size_t * 2)
 #define NEXT_CHUNK(chunk) ((chunk*)((char*)(chunk) + CHUNK_SIZE(chunk)))
-#define PREV_CHUNK(chunk) ((chunk*)((char*)(chunk) - (chunk)->prev_size))
+#define PREV_CHUNK(chunk, prev_size) ((chunk*)((char*)(chunk) - prev_size))
 
 // Alignment to ensure proper boundaries
 #define ALIGN_SIZE 8
