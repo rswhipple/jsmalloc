@@ -17,7 +17,7 @@ void* create_block(t_heap* heap, size_t size);
 
 #define TINY_HEAP_ALLOCATION_SIZE (4 * getpagesize())
 #define TINY_BLOCK_SIZE (TINY_HEAP_ALLOCATION_SIZE / 128)
-#define SMALL_BLOCK_SIZE (SMALL_HEAP_ALLOCATION_SIZE / 128)
+#define SMALL_BLOCK_SIZE (SMALL_PAGE_ALLOCATION_SIZE / 128)
 
 #define MAX_BLOCKS 20 
 
