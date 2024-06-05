@@ -11,6 +11,11 @@ extern t_pagemap* g_pagemap;
 
 #define FAST_PAGE_ALLOCATION_SIZE 8
 #define FAST_PAGE_MAX_CHUNK_SIZE 64
+#define FAST_MAX_CHUNK_SIZE 64
+#define SMALL_PAGE_ALLOCATION_SIZE 20
+#define SMALL_MAX_CHUNK_SIZE 512
+#define LARGE_PAGE_ALLOCATION_SIZE 20
+#define LARGE_MAX_CHUNK_SIZE (LARGE_PAGE_ALLOCATION_SIZE * PAGE_SIZE / 12)
 
 // Helper macros to set and check t_chunk status
 #define SET_IN_USE(chunk) ((chunk)->size |= 0x1)
