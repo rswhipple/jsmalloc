@@ -29,7 +29,7 @@ t_fpage* create_base_fpage(t_pagemap *pagemap) {
   the pageheap and using MEMORY_SHIFT to add the standard pages total 
   allocation size. */
   size_t pages_area = PAGE_SIZE * 
-      (SMALL_HEAP_ALLOCATION_SIZE + LARGE_HEAP_ALLOCATION_SIZE);
+      (SMALL_PAGE_ALLOCATION_SIZE + LARGE_PAGE_ALLOCATION_SIZE);
   t_fpage* fpage = (t_fpage*)MEMORY_SHIFT(pagemap, pages_area);
   fpage->chunk_count = 1;
   fpage->next = NULL;
