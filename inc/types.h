@@ -7,37 +7,13 @@
 #include <unistd.h>
 #include <stdint.h>
 
-
-typedef struct s_pagemap t_pagemap;
-typedef struct s_cache t_cache;
-typedef struct s_span t_span;
-typedef struct cache_table_s t_cache_table;
-typedef struct s_page t_page;
-typedef struct s_fpage t_fpage;
-typedef struct s_heap t_heap;
-typedef struct s_block t_block;
-typedef struct s_chunk t_chunk;
+// =================== Chunk ===================
 typedef struct s_tiny_chunk t_tiny_chunk;
-typedef struct s_page t_page;
-typedef struct s_fpage t_fpage;
+typedef struct s_chunk t_chunk;
 
-struct s_pagemap {
-    t_cache* frontend_cache;
-    t_span* span_head;
-    size_t total_pages;
-};
-
-enum page_types {
-    fast,
-    small,
-    large
-};
-
-struct s_cache {
-    t_tiny_chunk** fast_cache;
-    size_t fcache_size;
-    t_chunk **cache_table;
-    t_chunk* unsorted_cache;
+struct s_tiny_chunk {
+    t_tiny_chunk* next;
+    void* data;
 };
 
 struct s_chunk {
@@ -46,7 +22,6 @@ struct s_chunk {
     t_chunk* fd;
     t_chunk* bk;
 };
-
 
 // Helper macros to set and check t_chunk status
 #define SET_IN_USE(chunk) ((chunk)->size |= 0x1)
@@ -62,29 +37,29 @@ struct s_chunk {
 #define CHUNK_OVERHEAD sizeof(size_t * 2)
 #define NEXT_CHUNK(chunk) ((chunk*)((char*)(chunk) + CHUNK_SIZE(chunk)))
 #define PREV_CHUNK(chunk, prev_size) ((chunk*)((char*)(chunk) - prev_size))
-
-// Alignment to ensure proper boundaries
-#define ALIGN_SIZE 8
-#define ALIGN_MASK (ALIGN_SIZE - 1)
-#define ALIGN(n) (((n) + ALIGN_MASK) & ~ALIGN_MASK)
-
-struct s_tiny_chunk {
-    size_t size;
-    t_tiny_chunk* next;
-    // void* data;
-};
-
 #define TINY_CHUNK_OVERHEAD sizeof(size_t)
 
-struct s_span {
-    t_span* next;
-    t_fpage* fastpages;
-    t_page* page_head;
-    t_chunk* top_chunk;
-    t_chunk* last_chunk;
-    size_t num_pages;
-    bool pages_returned;
+typedef struct s_cache t_cache;
+typedef struct cache_table_s t_cache_table;
+struct s_cache {
+    t_tiny_chunk** fast_cache;
+    size_t fcache_size;
+    t_chunk** cache_table;
+    t_chunk* unsorted_cache;
 };
+
+// Hash table structure
+typedef unsigned int (hash_function)(size_t input, uint32_t);
+
+struct cache_table_s {
+    size_t size;
+    hash_function* hash;
+};
+
+// =================== Pages ===================
+
+typedef struct s_page t_page;
+typedef struct s_fpage t_fpage;
 
 struct s_page {
     t_page* next;
@@ -97,13 +72,59 @@ struct s_page {
 
 struct s_fpage {
     t_fpage* next;
-    // t_fpage* prev;  // I don't think we need this - RWS 5/28
     size_t memory;
     size_t chunk_size;
     size_t chunk_count;
     size_t max_chunks;
     t_tiny_chunk* last_chunk;
 };
+
+// =================== Span ===================
+
+typedef struct s_span t_span;
+
+struct s_span {
+    t_span* next;
+    t_fpage* fastpages;
+    t_page* page_head;
+    t_chunk* top_chunk;
+    t_chunk* last_chunk;
+    size_t num_pages;
+    bool pages_returned;
+};
+
+// =================== PageMap ===================
+
+typedef struct s_pagemap t_pagemap;
+
+struct s_pagemap {
+    t_cache* frontend_cache;
+    t_span* span_head;
+    size_t total_pages;
+};
+
+// Helper macros to access boundary tags
+#define CHUNK_SIZE(chunk) ((chunk)->size & ~0x7) // Mask out lower bits used for status
+#define NEXT_CHUNK(chunk) ((chunk*)((char*)(chunk) + CHUNK_SIZE(chunk)))
+#define PREV_CHUNK(chunk) ((chunk*)((char*)(chunk) - (chunk)->prev_size))
+
+// Alignment to ensure proper boundaries
+#define ALIGN_SIZE 8
+#define ALIGN_MASK (ALIGN_SIZE - 1)
+#define ALIGN(n) (((n) + ALIGN_MASK) & ~ALIGN_MASK)
+
+// =================== Enums ===================
+
+enum page_types {
+    fast,
+    small,
+    large
+};
+
+// =================== V1 Heap ===================
+
+typedef struct s_heap t_heap;
+typedef struct s_block t_block;
 
 struct s_heap {
     struct s_heap* prev;
@@ -122,13 +143,7 @@ struct s_block {
     void* object;
 };
 
-// Hash table structure
-typedef unsigned int (hash_function)(size_t input, uint32_t);
-struct cache_table_s {
-    size_t size;
-    hash_function* hash;
-    t_chunk** elements;
-};
+// =================== Constants ===================
 
 #define UNUSED(x) (void)(x)
 
