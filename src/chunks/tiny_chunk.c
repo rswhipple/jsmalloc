@@ -10,12 +10,12 @@ t_tiny_chunk* create_top_tiny_chunk(t_fpage* page) {
     t_tiny_chunk* tiny = (t_tiny_chunk*)FASTPAGE_SHIFT(page);
     tiny->size = page->chunk_size;
     tiny->next = NULL;
-    char* data = (char*)MEMORY_SHIFT(tiny, sizeof(size_t));
+    // char* data = (char*)MEMORY_SHIFT(tiny, sizeof(size_t));
 
-    log_info("creating top tiny chunk");
-    printf("tiny chunk pointer: %p\n", tiny);
-    printf("data pointer (same as memory location *next): %p\n", data);
-    printf("sizeof(t_tiny_chunk): %zu\n", sizeof(t_tiny_chunk));
+    // log_info("creating top tiny chunk");
+    // printf("tiny chunk pointer: %p\n", tiny);
+    // printf("data pointer (same as memory location *next): %p\n", data);
+    // printf("sizeof(t_tiny_chunk): %zu\n", sizeof(t_tiny_chunk));
 
     return tiny;
 }
