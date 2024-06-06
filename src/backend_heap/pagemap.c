@@ -1,5 +1,5 @@
 
-#include "../inc/main.h"
+#include "../../inc/main.h"
 
 void create_pagemap(t_pagemap** pagemap) {
     log_info("creating pageheap");

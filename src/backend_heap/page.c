@@ -1,4 +1,4 @@
-#include "../inc/main.h"
+#include "../../inc/main.h"
 
 void create_pages(t_pagemap* pagemap, t_span* span) {
   int pages_left = SMALL_HEAP_ALLOCATION_SIZE;

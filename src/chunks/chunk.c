@@ -1,4 +1,4 @@
-#include "../inc/main.h" 
+#include "../../inc/main.h" 
 
 /*
 void print_chunks() {
