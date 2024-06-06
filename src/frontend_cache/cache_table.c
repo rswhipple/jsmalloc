@@ -1,151 +1,191 @@
 #include "../../inc/main.h"
 
-t_chunk** create_cache_table(t_cache* cache) {
-    log_info("creating cache_table");
-    t_chunk** cache_table = (t_chunk**)MEMORY_SHIFT(cache, (cache->fcache_size * sizeof(t_tiny_chunk*)));
-    printf("cache_table pointer: %p\n", cache_table);
+#include <string.h>
 
-    void* last_byte = (void*)MEMORY_SHIFT(cache_table, (NUM_BINS * sizeof(t_chunk*)));
-    printf("cache_table end: %p\n", last_byte);
-    return cache_table;
+typedef struct {
+  const char* key;  // key is NULL if this slot is empty
+  t_chunk* value;
+} cache_table_entry;
+
+struct cache_table {
+  cache_table_entry* entries;
+  size_t capacity;
+  size_t length;
+};
+
+cache_table* cache_table_create(t_cache* cache) {
+  log_info("creating true cache table");
+
+  cache_table* table = (cache_table*)MEMORY_SHIFT(cache, (cache->fcache_size * sizeof(t_tiny_chunk)));
+  printf("cache_table pointer: %p\n", table);
+  table->length = 0;
+  table->capacity = NUM_BINS;
+
+  table->entries = (cache_table_entry*)MEMORY_SHIFT(cache, sizeof(cache_table) + (sizeof(cache_table_entry*) * NUM_BINS));
+  printf("cache_table->entries pointer: %p\n", table->entries);
+  table->entries = (cache_table_entry*)mmap(NULL, table->capacity * sizeof(cache_table_entry),
+                        PROT_READ | PROT_WRITE,
+                        MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  if (table->entries == MAP_FAILED) {
+    perror("mmap failed");
+    munmap(table, sizeof(cache_table));
+    return NULL;
+  }
+  return table;
 }
 
-size_t round_up_to_next(size_t number) {
-    size_t list[] = { 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168,
-    176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 264, 272, 280, 288,
-    296, 304, 312, 320, 336, 368, 400, 432, 464, 496, 528, 560, 592, 624, 656,
-    688, 720, 752, 784, 816, 848, 880, 912, 944, 976, 1008, 1040, 1072, 1104,
-    1136, 1168, 1200, 1232, 1264, 1296, 1328, 1360, 1392, 1424, 1456, 1488,
-    1520, 1552, 1584, 1616, 1648, 1680, 1712, 1744, 1776, 1808, 1840, 1872,
-    1904, 1936, 1968, 2000, 2032, 2064, 2096, 2128, 2160, 2192, 2224, 2256,
-    2288, 2320, 2352, 2384, 2416, 2448, 2480, 2512, 2544, 2576, 2608, 2640,
-    2672, 2704, 2736, 2768, 2800, 2832, 2864, 2896, 2928, 2960, 2992, 3024,
-    3056, 3088, 3120, 3152, 3184, 3216, 3248, 3280, 3312, 3344, 3376, 3408,
-    3440, 3472, 3504, 3536, 3568, 3600, 3632, 3664, 3696, 3728, 3760, 3792,
-    3824, 3856, 3888, 3920, 3952, 3984, 4016, 4048 };
+void cache_table_destroy(cache_table* table) {
+  for (size_t i = 0; i < table->capacity; i++) {
+    munmap((void*)table->entries[i].key, strlen(table->entries[i].key));
+  }
 
-    // Iterate through the list
-    for (int i = 0; i < NUM_BINS; i++) {
-        // If the current list element is greater than or equal to the number
-        if (list[i] >= number) {
-            return list[i];
-        }
+  munmap(table->entries, table->capacity * sizeof(cache_table_entry));
+  munmap(table, sizeof(cache_table));
+}
+
+#define FNV_OFFSET 14695981039346656037UL
+#define FNV_PRIME 1099511628211UL
+
+// Return 64-bit FNV-1a hash for key (NUL-terminated). See description:
+// cache_tabletps://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
+static uint64_t hash_key(const char* key) {
+  uint64_t hash = FNV_OFFSET;
+  for (const char* p = key; *p; p++) {
+    hash ^= (uint64_t)(unsigned char)(*p);
+    hash *= FNV_PRIME;
+  }
+  return hash;
+}
+
+void* cache_table_get(cache_table* table, const char* key) {
+  // AND hash with capacity-1 to ensure it's within entries array.
+  uint64_t hash = hash_key(key);
+  size_t index = (size_t)(hash & (uint64_t)(table->capacity - 1));
+
+  // Loop till we find an empty entry.
+  while (table->entries[index].key != NULL) {
+    if (strcmp(key, table->entries[index].key) == 0) {
+      // Found key, return value.
+      return table->entries[index].value;
     }
-    // If no larger or equal number is found, return the largest number in the list
-    return list[NUM_BINS - 1]; // Assuming the list is sorted in ascending order
+    // Key wasn't in this slot, move to next (linear probing).
+    index++;
+    if (index >= table->capacity) {
+      // At end of entries array, wrap around.
+      index = 0;
+    }
+  }
+  return NULL;
 }
 
-unsigned int my_hash_function(size_t data_size, uint32_t table_size) {
-    double A = (sqrt(5) - 1) / 2; // Fractional part of the golden ratio
-    return ((unsigned int)(table_size * (data_size * A - (int)(data_size * A)))) % table_size;
+// Internal function to set an entry (without expanding table).
+static const char* cache_table_set_entry(cache_table_entry* entries, size_t capacity,
+        const char* key, t_chunk* value, size_t* plength) {
+  // AND hash with capacity-1 to ensure it's within entries array.
+  uint64_t hash = hash_key(key);
+  size_t index = (size_t)(hash & (uint64_t)(capacity - 1));
+
+  // Loop till we find an empty entry.
+  while (entries[index].key != NULL) {
+    if (strcmp(key, entries[index].key) == 0) {
+      // Found key (it already exists), update value.
+      entries[index].value = value;
+      return entries[index].key;
+    }
+    // Key wasn't in this slot, move to next (linear probing).
+    index++;
+    if (index >= capacity) {
+      // At end of entries array, wrap around.
+      index = 0;
+    }
+  }
+
+  // Didn't find key, allocate+copy if needed, then insert it.
+  if (plength != NULL) {
+    key = strdup(key);
+    if (key == NULL) {
+      return NULL;
+    }
+    (*plength)++;
+  }
+  entries[index].key = (char*)key;
+  entries[index].value = value;
+  return key;
 }
 
-// t_cache_table* create_cache_table(t_cache* cache, uint32_t size, hash_function* hf) {
-//     t_cache_table* ht = (t_cache_table*)MEMORY_SHIFT(cache, (cache->fcache_size * sizeof(t_tiny_chunk)));
-//     ht->size = size;
-//     ht->hash = hf;
+// Expand hash table to twice its current size. Return true on success,
+// false if out of memory.
+static bool cache_table_expand(cache_table* table) {
+  // Allocate new entries array.
+  size_t new_capacity = table->capacity * 2;
+  if (new_capacity < table->capacity) {
+    return false;  // overflow (capacity would be too big)
+  }
+  cache_table_entry* new_entries = (cache_table_entry*)mmap(NULL, new_capacity * sizeof(cache_table_entry),
+                               PROT_READ | PROT_WRITE,
+                               MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  if (new_entries == NULL) {
+    return false;
+  }
 
-//     ht->elements = (t_chunk**)MEMORY_SHIFT(heap, sizeof(t_cache_table) + (sizeof(t_chunk*) * MAX_BLOCKS));
+  // Iterate entries, move all non-empty ones to new table's entries.
+  for (size_t i = 0; i < table->capacity; i++) {
+    cache_table_entry entry = table->entries[i];
+    if (entry.key != NULL) {
+      cache_table_set_entry(new_entries, new_capacity, entry.key,
+                   entry.value, NULL);
+    }
+  }
 
-//     size_t elements_size = size * sizeof(t_chunk*);
-//     ht->elements = mmap(NULL, elements_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  // Free old entries array and update this table's details.
+  munmap(table->entries, table->capacity * sizeof(cache_table_entry));
+  table->entries = new_entries;
+  table->capacity = new_capacity;
+  return true;
+}
 
-//     if (ht->elements == MAP_FAILED) {
-//         perror("mmap failed");
-//         munmap(ht, sizeof(t_cache_table)); // Clean up the previously mapped memory
-//         return NULL;
-//     }
+const char* cache_table_set(cache_table* table, const char* key, t_chunk* value) {
+  assert(value != NULL);
+  if (value == NULL) {
+    return NULL;
+  }
 
-//     // Initialize hashtable slots to NULL
-//     for (uint32_t i = 0; i < size; i++) {
-//         ht->elements[i] = NULL;
-//     }
+  // If length will exceed half of current capacity, expand it.
+  if (table->length >= table->capacity / 2) {
+    if (!cache_table_expand(table)) {
+      return NULL;
+    }
+  }
 
-//     return ht;
-// }
+  // Set entry and update length.
+  return cache_table_set_entry(table->entries, table->capacity, key, value,
+                      &table->length);
+}
 
-// void cache_table_print(t_cache_table* ht) {
-//     printf("Start Table\n");
-//     for (uint32_t i = 0; i < ht->size; i++) {
-//         if (ht->elements[i] == NULL) {
-//             printf("\t%u\t---\n", i);
-//         }
-//         else {
-//             printf("\t%u\t\n", i);
-//             t_block* tmp = ht->elements[i];
-//             while (tmp) {
-//                 // printf("\"%TODO\"(%lu) - ", tmp->data_size);
-//                 tmp = tmp->next;
-//             }
-//         }
-//     }
-// }
+size_t cache_table_length(cache_table* table) {
+  return table->length;
+}
 
-// bool cache_table_insert(t_heap** heap, t_cache_table* ht, size_t size) {
-//     if (ht == NULL || size == 0) return false;
-//     size_t index = ht->hash(size, ht->size);;
+cache_tablei cache_table_iterator(cache_table* table) {
+  cache_tablei it;
+  it._table = table;
+  it._index = 0;
+  return it;
+}
 
-//     if (cache_table_allocate(ht, size)) return false;
-
-//     // create new entry
-//     t_block* block = create_block(*heap, size);
-//     printf("block: %zu\n", block->data_size);
-//     block->prev = NULL;
-//     block->next = NULL;
-//     block->data_size = size;
-//     block->freed = false;
-
-//     // TODO create an object to allocate the memory space
-//     // block->object = 
-
-//     (*heap)->block_count++;
-//     (*heap)->free_size -= size;
-
-//     // insert entry
-//     ht->elements[index]->prev = block;
-//     block->next = ht->elements[index];
-//     ht->elements[index] = block;
-//     return true;
-// }
-
-// void* cache_table_allocate(t_cache_table* ht, size_t key) {
-//     if (key == 0 || ht == NULL) return false;
-//     size_t index = ht->hash(key, ht->size);     // TODO: make sure this is the correct function pointer
-
-//     t_block* tmp = ht->elements[index];
-//     while (tmp && !tmp->freed) {
-//         tmp = tmp->next;
-//     }
-//     if (!tmp) return NULL;  // This means we need to allocate more memory
-//     return &tmp->data_size;
-// }
-
-// void* cache_table_deallocate(t_block* block) {
-//     if (!block) return NULL;
-
-//     // size_t index = cache_table_index(ht, key);
-
-//     // t_block *tmp = ht->elements[index];
-//     // t_block *prev = NULL;
-//     // while (tmp && strcmp(tmp->key, key) != 0) {
-//     //     prev = tmp;
-//     //     tmp = tmp->next;
-//     // }
-//     // if (!tmp) return NULL;
-//     // if (!prev) {
-//     //     // deallocating the head of the list
-//     //     // change this to making the block free again
-//     //     ht->elements[index] = tmp->next;
-//     // } else {
-//     //     // deallocating from the middle 
-//     //     prev->next = tmp->next;
-//     // }
-//     // void *result = tmp->data_size;
-//     // free(tmp);
-
-//     // return result;
-//     return 0;
-// }
-
-
-
+bool cache_table_next(cache_tablei* it) {
+  // Loop till we've hit end of entries array.
+  cache_table* table = it->_table;
+  while (it->_index < table->capacity) {
+    size_t i = it->_index;
+    it->_index++;
+    if (table->entries[i].key != NULL) {
+      // Found next non-empty item, update iterator key and value.
+      cache_table_entry entry = table->entries[i];
+      it->key = entry.key;
+      it->value = entry.value;
+      return true;
+    }
+  }
+  return false;
+}

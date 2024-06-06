@@ -8,6 +8,8 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <math.h>
+#include <assert.h>
+#include <stdint.h>
 
 #include "malloc_v1.h"
 
@@ -18,6 +20,5 @@
 #include "chunks.h"
 #include "frontend_cache.h"
 #include "my_malloc.h"
-#include "cache_table_v2.h"
 
 #endif 
