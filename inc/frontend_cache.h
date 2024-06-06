@@ -1,9 +1,15 @@
-#ifndef CACHE_TABLE_H  
-#define CACHE_TABLE_H
+#ifndef FRONTEND_CACHE_H
+#define FRONTEND_CACHE_H
 
 #include "types.h"
 
-// function prototypes
+void print_fast_cache(t_tiny_chunk** fast_cache);
+t_cache* create_frontend_cache(t_pagemap* pagemap);
+t_tiny_chunk** create_fast_cache(t_cache* cache);
+
+size_t round_up_to_next(size_t number);
+t_chunk** create_cache_table(t_cache* cache);
+
 // unsigned int my_hash_function(size_t data_size, uint32_t table_size);
 size_t round_up_to_next(size_t number);
 t_chunk** create_cache_table(t_cache* cache);
