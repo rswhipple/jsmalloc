@@ -8,7 +8,7 @@ void create_heap(t_heap** heap, size_t size) {
   (*heap)->total_size = size;
   (*heap)->free_size = size;
   (*heap)->block_count = 0;
-  (*heap)->ht = NULL;
+  (*heap)->cache_table = NULL;
 }
 
 void destroy_heap(t_heap* heap) {

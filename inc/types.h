@@ -24,13 +24,25 @@ struct s_chunk {
 };
 
 // =================== Cache ===================
+typedef struct cache_table cache_table;
+
+struct s_cache_tablei {
+    const char* key;  // current key
+    void* value;      // current value
+
+    // Don't use these fields directly.
+    cache_table* _table;       // reference to hash table being iterated
+    size_t _index;    // current index into cache_table._entries
+};
+
+typedef struct s_cache_tablei cache_tablei;
 
 typedef struct s_cache t_cache;
 typedef struct cache_table_s t_cache_table;
 struct s_cache {
     t_tiny_chunk** fast_cache;
     size_t fcache_size;
-    t_chunk** cache_table;
+    cache_table* cache_table;
     t_chunk* unsorted_cache;
 };
 
@@ -91,7 +103,6 @@ struct s_pagemap {
 };
 
 
-
 // =================== Enums ===================
 
 enum page_types {
@@ -111,7 +122,7 @@ struct s_heap {
     size_t total_size;
     size_t free_size;
     int block_count;
-    t_cache_table* ht;
+    t_cache_table* cache_table;
 };
 
 struct s_block {

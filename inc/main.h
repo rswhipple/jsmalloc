@@ -8,6 +8,8 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <math.h>
+#include <assert.h>
+#include <stdint.h>
 
 #include "malloc_v1.h"
 

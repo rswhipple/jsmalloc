@@ -21,11 +21,11 @@ t_chunk* create_top_chunk(t_page* page) {
     chunk->fd = NULL;
     chunk->bk = NULL;
     write_boundary_tag(chunk);
-    log_info("creating top chunk");
-    printf("chunk pointer: %p\n", chunk);
-    printf("chunk's data pointer (same memory location as *fd): %p\n", chunk->fd);
-    printf("chunk size: %zu\n", chunk->size);
-    printf("sizeof(t_chunk): %zu\n", sizeof(t_chunk));
+    // log_info("creating top chunk");
+    // printf("chunk pointer: %p\n", chunk);
+    // printf("chunk's data pointer (same memory location as *fd): %p\n", chunk->fd);
+    // printf("chunk size: %zu\n", chunk->size);
+    // printf("sizeof(t_chunk): %zu\n", sizeof(t_chunk));
     page->top_chunk = chunk;
     return chunk;
 }
