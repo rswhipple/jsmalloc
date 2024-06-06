@@ -1,10 +1,17 @@
-
-#ifndef HEAP_H
-#define HEAP_H
+#ifndef MALLOC_V1_H  
+#define MALLOC_V1_H
 
 #include "types.h"
 
-// Macros and constants
+extern t_heap* global_heap;
+
+#define SMALL_HEAP_ALLOCATION_SIZE 20
+#define LARGE_HEAP_ALLOCATION_SIZE 20
+#define SMALL_PAGE_MAX_CHUNK_SIZE 512
+#define LARGE_PAGE_MAX_CHUNK_SIZE (LARGE_HEAP_ALLOCATION_SIZE * PAGE_SIZE / 12)
+
+void* create_block(t_heap* heap, size_t size);
+
 #define HEAP_SHIFT(start)((char *)start + sizeof(t_heap))
 #define BLOCK_SHIFT(start)((char *)start + sizeof(t_block))
 
