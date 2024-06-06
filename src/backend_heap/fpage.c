@@ -1,4 +1,4 @@
-#include "../inc/main.h"
+#include "../../inc/main.h"
 
 void create_fpages(t_pagemap *pagemap) {
   int count = 0;
