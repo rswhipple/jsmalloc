@@ -1,5 +1,5 @@
 
-#include "../inc/main.h"
+#include "../../inc/main.h"
 
 void print_fast_cache(t_tiny_chunk** fast_cache) {
     t_tiny_chunk *temp;

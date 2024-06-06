@@ -1,4 +1,4 @@
-#include "../inc/main.h"
+#include "../../inc/main.h"
 
 t_chunk** create_cache_table(t_cache* cache) {
     log_info("creating cache_table");
