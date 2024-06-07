@@ -14,3 +14,4 @@ void log_span(t_span* span) {
     //     current_heap = current_heap->next;
     // }
 }
+
