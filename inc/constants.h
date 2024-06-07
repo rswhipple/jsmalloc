@@ -32,7 +32,7 @@ extern t_pagemap* g_pagemap;
 #define CHUNK_SIZE(chunk) ((chunk)->size & SIZE_MASK) // Mask out lower 3 bits used for status
 
 // Helper macros to access boundary tags
-#define CHUNK_OVERHEAD sizeof(size_t * 2)
+#define CHUNK_OVERHEAD (sizeof(size_t) * 2)
 #define NEXT_CHUNK(chunk) ((chunk*)((char*)(chunk) + CHUNK_SIZE(chunk)))
 #define PREV_CHUNK(chunk, prev_size) ((chunk*)((char*)(chunk) - prev_size))
 #define TINY_CHUNK_OVERHEAD sizeof(size_t)
