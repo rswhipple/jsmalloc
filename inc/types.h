@@ -100,8 +100,6 @@ struct s_pagemap {
     size_t total_pages;
     // t_chunk* top_chunk;      // Holds the top chunk in the heap
     // t_chunk* last_chunk;     // Holds the chunk where memory was allocated last. Purpose is to help create objects in proximity to one another.
-    // t_chunk* top_chunk;      // Holds the top chunk in the heap
-    // t_chunk* last_chunk;     // Holds the chunk where memory was allocated last. Purpose is to help create objects in proximity to one another.
 };
 
 
