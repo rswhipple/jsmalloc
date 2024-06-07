@@ -19,7 +19,7 @@ JSMalloc comprises two main components:
 
 - **Span Organization:** Memory is organized into spans, representing isolated heaps of memory allocated from the operating system using the mmap() system call.
 - **Page Management:** Spans are further divided into pages, with each page representing a contiguous block of memory of a fixed size determined by the operating system.
-- **Pagemap Structure:** The pagemap structure facilitates efficient mapping of memory addresses to spans, enabling fast retrieval and management of memory resources.
+- **Pagemap Structure:** The pagemap structure facilitates efficient mapping of memory addresses to pages, enabling fast retrieval and management of memory resources.
 
 ### JSMalloc Frontend Cache
 

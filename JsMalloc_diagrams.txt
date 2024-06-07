@@ -29,7 +29,7 @@
 |  |          Sorted Cache                |  |
 |  |                                      |  |
 |  |  +-------------------------------+   |  |
-|  |  | t_cache_table* cache_table          |   |  |
+|  |  | t_cache_table* cache_table        |  |
 |  |  +-------------------------------+   |  |
 |  +--------------------------------------+  |
 |                                            |
@@ -47,10 +47,6 @@
 |  | - Pagemap structure                  |  |
 |  +--------------------------------------+  |
 |                                            |
-|  +--------------------------------------+  |
-|  | Dynamic Page Movement:               |  |
-|  | - Move pages based on usage patterns |  |
-|  +--------------------------------------+  |
 |                                            |
 +--------------------------------------------+
                 |         ^
@@ -149,16 +145,16 @@ Let's consider three contiguous chunks in memory:
 
 [Chunk A (allocated)]
 +------------------+
-| Size             |
-| ...              |
+| Size             | <- includes a flag indicating in_use
 +------------------+
 | User Data        |
++------------------+
+| Boundary Tag     | <- size of Chunk A
 +------------------+
 
 [Chunk B (free)]
 +------------------+
 | Size             | <- includes a flag indicating free
-| Prev Size        | <- size of Chunk A
 | FD -> Chunk C    |
 | BK -> Bin Head   |
 +------------------+
@@ -170,7 +166,6 @@ Let's consider three contiguous chunks in memory:
 [Chunk C (free)]
 +------------------+
 | Size             |
-| Prev Size        | <- size of Chunk B
 | FD -> Bin Tail   | <- NULL 
 | BK -> Chunk B    |
 +------------------+
@@ -182,8 +177,7 @@ Let's consider three contiguous chunks in memory:
 
 [Chunk Header]
 +---------------------+
-| Size                |  <- Contains the size of the chunk and a status bit (allocated/free)
-| Previous Size       |  <- Size of the previous chunk in memory
+| Size                |  <- Contains the size of the chunk and a status bit (in_use/free)
 | FD (Forward Pointer)|  <- Pointer to the next free chunk in the bin list
 | BK (Backward Pointer)| <- Pointer to the previous free chunk in the bin list
 +---------------------+
@@ -193,42 +187,12 @@ Let's consider three contiguous chunks in memory:
 +---------------------+
 
 
-Writing the Boundary Tag
-The boundary tag is written into the chunk structure when a chunk is freed. Here’s how ptmalloc writes the boundary tag:
-
 Determine the Boundary Tag Location:
 
-The boundary tag is placed at the end of the chunk. To find this location, ptmalloc adds the chunk’s size to the chunk’s starting address.
-Note that the size includes the metadata and the user data sections of the chunk.
-Write the Size:
-
-PtMalloc writes the size of the chunk (the same value as in the size field of the chunk header) into the location determined in step 1.
-Example
-Consider a chunk of size 0x40 bytes (64 bytes). This size includes the metadata and user data. Here’s a more detailed example:
-
-Chunk Header:
-
-Size: 0x40 (the size includes the chunk’s header and user data).
-Previous Size: (size of the previous chunk).
-FD: (pointer to the next free chunk in the bin list).
-BK: (pointer to the previous free chunk in the bin list).
-
-Boundary Tag:
-
-The boundary tag is placed at the end of the chunk, which is at the address (chunk start address + 0x40 - size of the boundary tag).
-
-Simplified Memory Layout:
-
-0x0000: [Size: 0x40]              <- Start of the chunk
-0x0008: [Previous Size: ...]
-0x0010: [FD: ...]
-0x0018: [BK: ...]
-0x0020: [User Data or unused space]
-...
-0x0038: [Boundary Tag: 0x40]      <- End of the chunk (Size of the boundary tag is typically 8 bytes)
+The boundary tag is placed at the end of the chunk. To find this location, jsmalloc adds the chunk’s size to the chunk’s starting address.
 
 Summary
-Header: Contains the size, previous size, and pointers for the free list.
+Header: Contains the size and pointers for the free list.
 Boundary Tag: A copy of the size field, written at the end of the chunk.
 Coalescing: Boundary tags allow quick access to the previous chunk, facilitating efficient coalescing.
 
