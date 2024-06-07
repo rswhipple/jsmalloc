@@ -8,18 +8,15 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <math.h>
+#include <assert.h>
+#include <stdint.h>
 
-#include "types.h"
-#include "cache_table.h"
-#include "pagemap.h"
-#include "my_malloc.h"
-#include "system_settings.h"
 #include "utils.h"
-#include "heap.h"
-#include "block.h"
-#include "chunks.h"
-#include "pages.h"
-#include "cache.h"
 #include "constants.h"
+#include "types.h"
+#include "backend_heap.h"
+#include "chunks.h"
+#include "frontend_cache.h"
+#include "my_malloc.h"
 
 #endif 

@@ -1,36 +1,21 @@
 
-#include "../inc/main.h"
+#include "../../inc/main.h"
 
 void* search_fast_cache(size_t size) {
-    log_info("Error checking in search_fast_cache()");
-    printf("size before adding overhead = %zu", size);
-    size = size + TINY_CHUNK_OVERHEAD;
-    printf("size after adding overhead = %zu", size);
-    int index = get_fpage_index(size);
-    printf("fpage index = %i", index);
-
-    void* ptr = get_tiny_chunk(index);
-
+    UNUSED(size);
     printf("Returning NULL\n");
     return NULL;
 }
 
 void* search_cache(size_t size, int page_type) {
-    size = size + CHUNK_OVERHEAD;
-    void* ptr = NULL;
-    ptr = search_unsorted(size, page_type);
-    if (ptr) return ptr;
-    else ptr = search_cache_table(size, page_type);
-
-    return ptr;
-}
-
-void* search_unsorted(size_t size, int page_type) {
-
+    UNUSED(size);
+    UNUSED(page_type);
+    printf("Returning NULL\n");
+    return NULL;
 }
 
 void print_fast_cache(t_tiny_chunk** fast_cache) {
-    t_tiny_chunk *temp;
+    t_tiny_chunk* temp;
     int count;
     int min_align;
 
@@ -46,7 +31,8 @@ void print_fast_cache(t_tiny_chunk** fast_cache) {
                 print_tiny_chunk(temp);
                 temp = temp->next;
             }
-        } else {
+        }
+        else {
             printf("fast_cache[%i] = NULL\n", i);
         }
 
@@ -58,26 +44,26 @@ t_cache* create_frontend_cache(t_pagemap* pagemap) {
     t_cache* cache = (t_cache*)PAGEMAP_SHIFT(pagemap);
     printf("cache pointer: %p\n", cache);
     printf("sizeof(t_cache): %zu\n", sizeof(t_cache));
-    if (min_chunk_size == 8) cache->fcache_size = 8; 
-    else cache->fcache_size = 7; 
+    if (min_chunk_size == 8) cache->fcache_size = 8;
+    else cache->fcache_size = 7;
     cache->fast_cache = create_fast_cache(cache);
-    cache->cache_table = create_cache_table(cache);
+    cache->cache_table = cache_table_create(cache);     // add create_cache_table here or after create pages in base_page?
     cache->unsorted_cache = NULL;
-    void *last_byte = (void*)MEMORY_SHIFT(cache, sizeof(t_cache));
+    void* last_byte = (void*)MEMORY_SHIFT(cache, (NUM_BINS * sizeof(t_chunk*) + sizeof(t_cache)));
     printf("cache end: %p\n", last_byte);
 
     return cache;
 }
 
-t_tiny_chunk** create_fast_cache(t_cache *cache) {
+t_tiny_chunk** create_fast_cache(t_cache* cache) {
     t_tiny_chunk** fast_cache = (t_tiny_chunk**)CACHE_SHIFT(cache);
 
     printf("fast_cache pointer: %p\n", fast_cache);
     for (size_t i = 0; i < cache->fcache_size; ++i) {
-        fast_cache[i] = NULL; 
+        fast_cache[i] = NULL;
     }
 
-    void *last_byte = (void*)MEMORY_SHIFT(cache, (cache->fcache_size * sizeof(t_tiny_chunk*)));
+    void* last_byte = (void*)MEMORY_SHIFT(cache, (cache->fcache_size * sizeof(t_tiny_chunk*)));
     printf("fast_cache end: %p\n", last_byte);
     return fast_cache;
 }
