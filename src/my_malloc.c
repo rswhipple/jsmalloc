@@ -12,7 +12,8 @@ void* my_malloc(size_t size) {
 
     // search heap
     void* ptr = search_heap(size, page_type);
-    UNUSED(ptr);
+    
+    if (ptr) return ptr; 
 
     printf("returning NULL\n");
     return NULL;
@@ -32,10 +33,10 @@ void* search_heap(size_t size, int page_type) {
 }
 
 int get_page_type(size_t size) {
-    if (size < FAST_MAX_CHUNK_SIZE) return 1;
-    else if (size < SMALL_MAX_CHUNK_SIZE) return 2;
-    else if (size < (size_t)LARGE_MAX_CHUNK_SIZE) return 3;
-    else if (size < (size_t)BASE_HEAP_SIZE) return 4;
+    if (size < FAST_MAX_CHUNK_SIZE - TINY_CHUNK_OVERHEAD) return 1;
+    else if (size < (size_t)(SMALL_MAX_CHUNK_SIZE - CHUNK_OVERHEAD)) return 2;
+    else if (size < (size_t)(LARGE_MAX_CHUNK_SIZE - CHUNK_OVERHEAD)) return 3;
+    else if (size < (size_t)BASE_HEAP_SIZE - CHUNK_OVERHEAD) return 4;
     else return 0;
 }
 
