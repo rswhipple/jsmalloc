@@ -34,8 +34,8 @@ void* search_heap(size_t size, int page_type) {
 int get_page_type(size_t size) {
     if (size < FAST_MAX_CHUNK_SIZE) return 1;
     else if (size < SMALL_MAX_CHUNK_SIZE) return 2;
-    else if (size < LARGE_MAX_CHUNK_SIZE) return 3;
-    else if (size < BASE_HEAP_SIZE) return 4;
+    else if (size < (size_t)LARGE_MAX_CHUNK_SIZE) return 3;
+    else if (size < (size_t)BASE_HEAP_SIZE) return 4;
     else return 0;
 }
 

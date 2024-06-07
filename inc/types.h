@@ -112,26 +112,4 @@ enum page_types {
     huge
 };
 
-// =================== V1 Heap ===================
-
-typedef struct s_heap t_heap;
-typedef struct s_block t_block;
-
-struct s_heap {
-    struct s_heap* prev;
-    struct s_heap* next;
-    size_t total_size;
-    size_t free_size;
-    int block_count;
-    t_cache_table* cache_table;
-};
-
-struct s_block {
-    struct s_block* prev;
-    struct s_block* next;
-    size_t data_size;
-    bool freed;
-    void* object;
-};
-
 #endif  // TYPES_H
