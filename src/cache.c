@@ -2,13 +2,31 @@
 #include "../inc/main.h"
 
 void* search_fast_cache(size_t size) {
+    log_info("Error checking in search_fast_cache()");
+    printf("size before adding overhead = %zu", size);
+    size = size + TINY_CHUNK_OVERHEAD;
+    printf("size after adding overhead = %zu", size);
+    int index = get_fpage_index(size);
+    printf("fpage index = %i", index);
+
+    void* ptr = get_tiny_chunk(index);
+
     printf("Returning NULL\n");
     return NULL;
 }
 
 void* search_cache(size_t size, int page_type) {
-    printf("Returning NULL\n");
-    return NULL;
+    size = size + CHUNK_OVERHEAD;
+    void* ptr = NULL;
+    ptr = search_unsorted(size, page_type);
+    if (ptr) return ptr;
+    else ptr = search_cache_table(size, page_type);
+
+    return ptr;
+}
+
+void* search_unsorted(size_t size, int page_type) {
+
 }
 
 void print_fast_cache(t_tiny_chunk** fast_cache) {
