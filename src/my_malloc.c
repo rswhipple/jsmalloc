@@ -1,4 +1,4 @@
-#include "../../inc/main.h" 
+#include "../inc/main.h" 
 
 void* my_malloc(size_t size) {
     if (g_pagemap == NULL) {
@@ -20,11 +20,11 @@ void* my_malloc(size_t size) {
 
 void* search_heap(size_t size, int page_type) {
     switch (page_type) {
-        case 1: return search_fast_cache(size);
-        case 2: return search_cache(size, page_type);
-        case 3: return search_cache(size, page_type);
-        case 4: return allocate_huge_chunk(size);
-        default: break;
+    case 1: return search_fast_cache(size);
+    case 2: return search_cache(size, page_type);
+    case 3: return search_cache(size, page_type);
+    case 4: return allocate_huge_chunk(size);
+    default: break;
     }
 
     printf("returning NULL\n");
