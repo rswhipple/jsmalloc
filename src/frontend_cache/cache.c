@@ -2,9 +2,21 @@
 #include "../../inc/main.h"
 
 void* search_fast_cache(size_t size) {
-    UNUSED(size);
-    printf("Returning NULL\n");
-    return NULL;
+    int index = get_fpage_index(size);
+    t_tiny_chunk** f_cache = g_pagemap->frontend_cache->fast_cache;
+    t_tiny_chunk* tiny;
+
+    if (f_cache[index]) {
+        // allocate top chunk in link list and replace
+        tiny = f_cache[index];
+        f_cache[index] = f_cache[index]->next;
+    }
+    else {
+        // split off new chunk
+        tiny = create_tiny_chunk(f_cache[index]);
+    }
+
+    return (void*)MEMORY_SHIFT(tiny, TINY_CHUNK_OVERHEAD);
 }
 
 void* search_cache(size_t size, int page_type) {
