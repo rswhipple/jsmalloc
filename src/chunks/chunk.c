@@ -20,7 +20,7 @@ t_chunk* create_top_chunk(t_page* page) {
     chunk->size = page->memory;
     chunk->fd = NULL;
     chunk->bk = NULL;
-    char* data = (char*)MEMORY_SHIFT(chunk, sizeof(size_t));
+    // char* data = (char*)MEMORY_SHIFT(chunk, sizeof(size_t));
     write_boundary_tag(chunk);
     // log_info("creating top chunk");
     // printf("chunk pointer: %p\n", chunk);
@@ -55,3 +55,12 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
     return first_chunk;
 }
 
+t_chunk* allocate_huge_chunk(size_t size) {
+    // Allocate a huge chunk
+    t_chunk* huge_chunk = (t_chunk*)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    if (huge_chunk == MAP_FAILED) {
+        perror("mmap");
+        exit(EXIT_FAILURE);
+    }
+    return huge_chunk;
+}

@@ -11,8 +11,8 @@ TEST_BUILDDIR = $(BUILDDIR)/tests
 # Create necessary directories
 $(shell mkdir -p $(TEST_BUILDDIR))
 
-# Collect all source files excluding main.c
-SOURCES = $(filter-out $(SRCDIR)/main.c, $(shell find $(SRCDIR) -name '*.c'))
+# Collect all source files excluding ../src/main.c
+SOURCES = $(shell find $(SRCDIR) -name '*.c')
 TEST_SOURCES = $(wildcard $(TESTDIR)/*_test.c)
 
 # Generate object file paths
@@ -28,15 +28,15 @@ TEST_TARGET = $(TEST_BUILDDIR)/run
 all: $(TEST_TARGET)
 
 $(TEST_TARGET): $(TEST_OBJECTS) $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -D TESTING -o $@ $^ $(LDFLAGS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+	$(CC) $(CFLAGS) -D TESTING $(INCLUDES) -c -o $@ $<
 
 $(TEST_BUILDDIR)/%.o: $(TESTDIR)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+	$(CC) $(CFLAGS) -D TESTING $(INCLUDES) -c -o $@ $<
 
 test: $(TEST_TARGET)
 	./build/tests/run

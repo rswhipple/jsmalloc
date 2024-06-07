@@ -1,4 +1,4 @@
-#include "../../inc/main.h"
+#include "./malloc_v1.h" 
 
 void search_ptr(t_heap** ptr_heap, t_block** ptr_block,
     t_heap* heap, void* ptr) {
@@ -18,7 +18,7 @@ void search_ptr(t_heap** ptr_heap, t_block** ptr_block,
         }
         heap = heap->next;
     }
-    log_info("block not found");
+    // log_info("block not found");
     *ptr_heap = NULL;
     *ptr_block = NULL;
 }
@@ -46,11 +46,11 @@ void my_free(void* ptr) {
     t_block* block;
     heap = global_heap;
     // Find the Corresponding Block to Free:
-    log_info("searching for block");
+    // log_info("searching for block");
     search_ptr(&heap, &block, heap, ptr);
     // Mark the Block as Freed:
     if (block && heap) {
-        log_info("found block and freeing");
+        // log_info("found block and freeing");
         printf("%zu\n", block->data_size);
         printf("heap free size: %zu\n", heap->free_size);
         block->freed = true;

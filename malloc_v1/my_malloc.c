@@ -1,4 +1,6 @@
-#include "../../inc/main.h" 
+#include "./malloc_v1.h" 
+
+t_heap* global_heap = NULL;
 
 void* my_malloc(size_t size) {
     // initiate pageheap
