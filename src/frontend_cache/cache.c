@@ -2,11 +2,14 @@
 #include "../../inc/main.h"
 
 void* search_fast_cache(size_t size) {
+    UNUSED(size);
     printf("Returning NULL\n");
     return NULL;
 }
 
 void* search_cache(size_t size, int page_type) {
+    UNUSED(size);
+    UNUSED(page_type);
     printf("Returning NULL\n");
     return NULL;
 }
