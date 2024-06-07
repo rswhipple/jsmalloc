@@ -1,5 +1,26 @@
 #include "../../inc/main.h"
 
+int get_fpage_index(size_t nbr) {
+    int num_pages = g_pagemap->frontend_cache->fcache_size;
+    int i;
+    size_t list[] = { 8, 16, 24, 32, 40, 48, 56, 64 };
+    int list_len = 8;
+
+    // Iterate through the list
+    for (i = 0; i < list_len; i++) {
+        // If the current list element is greater than or equal to the number
+        if (list[i] >= nbr) {
+            break;
+        }
+    }
+
+    // TODO: If no larger or equal number is found, throw error
+
+    // Logic if min_chunk_size is 16
+    if (num_pages == 7 && i > 0) return i - 1;
+    else return i;
+}
+
 void create_fpages(t_pagemap* pagemap) {
   int count = 0;
   pagemap->span_head->fastpages = create_base_fpage(pagemap);
