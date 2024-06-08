@@ -15,7 +15,7 @@ static int setup(void** state) {
 static int teardown(void** state) {
     UNUSED(state);
     // TODO: uncomment this when destry working fully?
-    // destroy_pagemap((t_pagemap*)state);
+    destroy_pagemap((t_pagemap*)state);
 
     return 0;
 }
