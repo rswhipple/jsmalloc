@@ -14,15 +14,15 @@ struct cache_table {
 };
 
 cache_table* cache_table_create(t_cache* cache) {
-  log_info("creating true cache table");
+  // log_info("creating true cache table");
 
   cache_table* table = (cache_table*)MEMORY_SHIFT(cache, (cache->fcache_size * sizeof(t_tiny_chunk)));
-  printf("cache_table pointer: %p\n", table);
+  // printf("cache_table pointer: %p\n", table);
   table->length = 0;
   table->capacity = NUM_BINS;
 
   table->entries = (cache_table_entry*)MEMORY_SHIFT(cache, sizeof(cache_table) + (sizeof(cache_table_entry*) * NUM_BINS));
-  printf("cache_table->entries pointer: %p\n", table->entries);
+  // printf("cache_table->entries pointer: %p\n", table->entries);
   table->entries = (cache_table_entry*)mmap(NULL, table->capacity * sizeof(cache_table_entry),
                         PROT_READ | PROT_WRITE,
                         MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);

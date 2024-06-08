@@ -2,7 +2,7 @@
 
 
 void print_tiny_chunk(t_tiny_chunk* tiny) {
-    printf("t_tiny_chunk pointer = %p\n", tiny);
+    // printf("t_tiny_chunk pointer = %p\n", tiny);
     if (tiny->next) printf("next t_tiny_chunk = %p\n", tiny->next);
 }
 
@@ -36,8 +36,8 @@ t_tiny_chunk* create_tiny_chunk(t_fpage* fpage) {
 void free_tiny_chunk(void* data) {
     t_tiny_chunk** f_cache = g_pagemap->frontend_cache->fast_cache;
     // TODO: make sure negative memory shift works
-    size_t size = 
-            (size_t)MEMORY_SHIFT(data, -TINY_CHUNK_OVERHEAD);
+    size_t size =
+        (size_t)MEMORY_SHIFT(data, -TINY_CHUNK_OVERHEAD);
 
     int index = get_fpage_index(size);
     t_tiny_chunk* tiny = (t_tiny_chunk*)size;
