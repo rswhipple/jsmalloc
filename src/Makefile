@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g3
+CFLAGS = -Wall -Wextra -Werror 
 
 # Using CURDIR to set the directories
 SRCDIR = $(CURDIR)
