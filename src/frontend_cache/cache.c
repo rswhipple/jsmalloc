@@ -69,18 +69,26 @@ void* search_unsorted_cache(size_t size) {
 
 
 void* search_sorted_cache(size_t size) {
-    UNUSED(size);
+    char key[32];
+    snprintf(key, sizeof(key), "%zu", size);
+
+    cache_table* cache_table = g_pagemap->frontend_cache->cache_table;
+    t_chunk* chunk = g_pagemap->top_chunk;
+    if ((cache_table_set(cache_table, key, chunk)) != NULL) {
+        return cache_table_get(cache_table, key);
+    }
+
     printf("Returning NULL\n");
     return NULL;
 }
 
 void* search_cache(size_t size, int page_type) {
-    if (page_type == 2) {
-        void* ptr = NULL;
+    void* ptr = NULL;
 
-        if ((ptr = search_unsorted_cache(size)) != NULL) {
-            return ptr;
-        }
+    if ((ptr = search_unsorted_cache(size)) != NULL) {
+        return ptr;
+    }
+    if (page_type == 2) {
         return search_sorted_cache(size);
     }
     else if (page_type == 3) {

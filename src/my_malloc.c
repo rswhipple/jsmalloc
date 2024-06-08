@@ -12,8 +12,8 @@ void* my_malloc(size_t size) {
 
     // search heap
     void* ptr = search_heap(size, page_type);
-    
-    if (ptr) return ptr; 
+
+    if (ptr) return ptr;
 
     printf("returning NULL\n");
     return NULL;
@@ -22,7 +22,7 @@ void* my_malloc(size_t size) {
 void* search_heap(size_t size, int page_type) {
     switch (page_type) {
     case 1: return search_fast_cache(size);
-    case 2: return search_cache(size, page_type);
+    case 2:
     case 3: return search_cache(size, page_type);
     case 4: return allocate_huge_chunk(size);
     default: break;
