@@ -1,148 +1,138 @@
+# JSMalloc
 
+## Overview
+
+The memory allocator operates through multiple layers: the application, the frontend cache, the backend page heap, and the operating system. Each layer has specific responsibilities for managing memory allocation and deallocation.
+
+### High-Level Architecture
+
+```plaintext
 +--------------------------------------------+
-|                                            |
 |                Application                 |
-|                                            |
 +--------------------------------------------+
                 |         ^
                 |         |
                 v         |
 +--------------------------------------------+
 |               Frontend Cache               |
-|                                            |
 |  +--------------------------------------+  |
-|  |                                      |  |
 |  |          Fast Cache Array            |  |
-|  |                                      |  |
 |  |  +-------------------------------+   |  |
 |  |  | - Tiny Allocation (min to 64) |   |  |
 |  |  | t_tiny_chunk** fast_cache     |   |  |
 |  |  | size_t fcache_size            |   |  |
 |  |  +-------------------------------+   |  |
-|  |                                      |  |
 |  |          Unsorted Cache              |  |
-|  |                                      |  |
 |  |  +-------------------------------+   |  |
 |  |  | t_chunk* unsorted_cache       |   |  |
 |  |  +-------------------------------+   |  |
-|  |                                      |  |
 |  |          Sorted Cache                |  |
-|  |                                      |  |
 |  |  +-------------------------------+   |  |
 |  |  | t_cache_table* cache_table        |  |
 |  |  +-------------------------------+   |  |
 |  +--------------------------------------+  |
-|                                            |
 +--------------------------------------------+
                 |         ^
                 |         |
                 v         |
 +--------------------------------------------+
 |              Backend Pageheap              |
-|                                            |
 |  +--------------------------------------+  |
 |  | Span Organization:                   |  |
 |  | - Spans allocated with mmap()        |  |
 |  | - Pages within spans                 |  |
 |  | - Pagemap structure                  |  |
 |  +--------------------------------------+  |
-|                                            |
-|                                            |
 +--------------------------------------------+
                 |         ^
                 |         |
                 v         |
 +--------------------------------------------+
 |               Operating System             |
-|                                            |
 |  +--------------------------------------+  |
 |  |  Memory Allocation:                  |  |
 |  |  - Direct allocation for huge sizes  |  |
 |  |    (larger than 4KB) using mmap()    |  |
 |  +--------------------------------------+  |
-|                                            |
 +--------------------------------------------+
+```
 
+## Frontend Cache (Detailed)
 
-Frontend Cache (detailed):
-Summary
-    Fast Cache Array: 
-    Quick access to small allocations using a simple array and singly linked lists (t_tiny_chunk).
+### Summary
 
-    Unsorted Cache: 
-    Temporary storage for recently freed chunks, organized as a singly linked list (t_chunk).  
+- **Fast Cache Array**: Quick access to small allocations using a simple array and singly linked lists (`t_tiny_chunk`).
+- **Unsorted Cache**: Temporary storage for recently freed chunks, organized as a singly linked list (`t_chunk`).
+- **Sorted Cache**: Efficient management of small and large allocations using a hash table and doubly linked lists (`t_chunk`).
 
-    Sorted Cache: 
-    Efficient management of small and large allocations using a hash table and doubly linked lists (t_chunk).
+### Fast Cache
 
+```plaintext
 +---------------------------+
 |        Fast Cache         |
-|                           |
 |  +-----------+            |
 |  | [0]       | --> NULL   |
 |  +-----------+            |
-|  | [1]       | --> +------------+     +------------+     +------------+ 
+|  | [1]       | --> +------------+     +------------+     +------------+
 |  +-----------+     |t_tiny_chunk|-->  |t_tiny_chunk|-->  |t_tiny_chunk|--> NULL
-|  | [2]       |     +------------+     +------------+     +------------+ 
+|  | [2]       |     +------------+     +------------+     +------------+
 |  +-----------+            |
 |  | [3]       | --> NULL   |
 |  +-----------+            |
 |  | [4]       | --> NULL   |
-|  +-----------+     +------------+ 
-|  | ...       |     | ...        | 
-|  +-----------+     +------------+ 
-|                           |
+|  +-----------+     +------------+
+|  | ...       |     | ...        |
+|  +-----------+     +------------+
 +---------------------------+
+```
 
+### Unsorted Cache
+
+```plaintext
 +---------------------------+
 |      Unsorted Cache       |
-|                           |
-|  +----------+      +----------+          
-|  | t_chunk  | -->  | t_chunk  | --> NULL   
-|  +----------+      +----------+         
-|                           |
+|  +----------+      +----------+
+|  | t_chunk  | -->  | t_chunk  | --> NULL
+|  +----------+      +----------+
 +---------------------------+
+```
 
+### Sorted Cache
 
+```plaintext
 +---------------------------+
 |       Sorted Cache        |
-|                           |
 |  +-----------+            |
 |  | [0]       | --> NULL   |
 |  +-----------+            |
-|  | [1]       | --> +----------+     +----------+     +----------+ 
+|  | [1]       | --> +----------+     +----------+     +----------+
 |  +-----------+     | t_chunk  |<--> | t_chunk  |<--> |  t_chunk |<--> NULL
-|  | [2]       |     +----------+     +----------+     +----------+ 
+|  | [2]       |     +----------+     +----------+     +----------+
 |  +-----------+            |
 |  | ...       |            |
-|  +-----------+     +----------+     +----------+ 
+|  +-----------+     +----------+     +----------+
 |  | [N]       | --> | t_chunk  |<--> | t_chunk  |<--> NULL
-|  +-----------+     +----------+     +----------+ 
-|                           |
+|  +-----------+     +----------+     +----------+
 +---------------------------+
+```
 
+## Chunk Header Metadata
 
-Chunk Header Metadata
 Each chunk has a header that includes metadata necessary for managing memory. For free chunks, this header includes:
 
-Size and Status:
-The size of the chunk, including a flag indicating whether it is free or allocated.
-Previous Size:
-The size of the previous chunk, which is particularly useful when the current chunk is free, allowing backward traversal.
-Tracking Adjacent Chunks
+- **Size and Status**: The size of the chunk, including a flag indicating whether it is free or allocated.
+- **Previous Size**: The size of the previous chunk, allowing backward traversal.
+
+### Tracking Adjacent Chunks
+
 PtMalloc uses the following methods to track adjacent chunks:
 
-Boundary Tags:
+- **Boundary Tags**: At the end of each chunk, a boundary tag replicates the size of the chunk.
+- **In-Place Headers**: When a chunk is freed, the allocator uses the size and previous size fields to check the status of adjacent chunks.
 
-At the end of each chunk, ptmalloc writes a boundary tag that replicates the size of the chunk. This allows the allocator to quickly find the start of the next chunk by adding the size of the current chunk to its starting address.
-When coalescing, the allocator can easily find the previous chunk using the previous size field and the next chunk using the current chunk’s size.
-In-Place Headers:
+### Example of Adjacent Chunk Tracking
 
-When a chunk is freed, the allocator uses the size and previous size fields to check the status of adjacent chunks. If neighboring chunks are also free, it can coalesce them by updating their headers appropriately.
-Example of Adjacent Chunk Tracking
-Let's consider three contiguous chunks in memory:
-
-
+```plaintext
 [Chunk A (allocated)]
 +------------------+
 | Size             | <- includes a flag indicating in_use
@@ -166,51 +156,22 @@ Let's consider three contiguous chunks in memory:
 [Chunk C (free)]
 +------------------+
 | Size             |
-| FD -> Bin Tail   | <- NULL 
+| FD -> Bin Tail   | <- NULL
 | BK -> Chunk B    |
 +------------------+
 | ...              |
 +------------------+
 | Boundary Tag     | <- size of Chunk C
 +------------------+
+```
 
+## Chunk Structure Definition
 
-[Chunk Header]
-+---------------------+
-| Size                |  <- Contains the size of the chunk and a status bit (in_use/free)
-| FD (Forward Pointer)|  <- Pointer to the next free chunk in the bin list
-| BK (Backward Pointer)| <- Pointer to the previous free chunk in the bin list
-+---------------------+
-| ...                 |  <- User data or unused space
-+---------------------+
-| Boundary Tag (Size) |  <- Copy of the size field from the chunk header
-+---------------------+
+In this example, we use a single `chunk` struct that includes all necessary fields, simplifying the code and reducing redundancy.
 
-
-Determine the Boundary Tag Location:
-
-The boundary tag is placed at the end of the chunk. To find this location, jsmalloc adds the chunk’s size to the chunk’s starting address.
-
-Summary
-Header: Contains the size and pointers for the free list.
-Boundary Tag: A copy of the size field, written at the end of the chunk.
-Coalescing: Boundary tags allow quick access to the previous chunk, facilitating efficient coalescing.
-
-
-Simplified Memory Allocator Example
-Chunk Structure Definition
-First, we define the chunk structure with the necessary fields:
-In this example, we don't really need two separate structs for `chunk` and `chunk_header`. We can combine them into a single struct that includes all necessary fields. This will simplify the code and reduce redundancy.
-
-Here’s a revised version of the code with a single `chunk` struct:
-
-### Simplified Memory Allocator Example with a Single Chunk Struct
-
-#### Chunk Structure Definition
-First, we define the chunk structure with the necessary fields:
+### Chunk Structure Definition
 
 ```c
-
 typedef struct chunk {
     size_t size;          // Size of the chunk (includes the size of the header)
     size_t prev_size;     // Size of the previous chunk
@@ -232,17 +193,22 @@ typedef struct chunk {
 #define MIN_CHUNK_SIZE (sizeof(chunk) + CHUNK_OVERHEAD)
 ```
 
-#### Functions to Write Boundary Tag and Free Chunks
-Next, we implement the functions to free a chunk, write a boundary tag, and coalesce adjacent free chunks:
+## Functions to Write Boundary Tag and Free Chunks
+
+Next, we implement the functions to free a chunk, write a boundary tag, and coalesce adjacent free chunks.
+
+### Function to Write Boundary Tag
 
 ```c
-// Function to write boundary tag
 void write_boundary_tag(chunk* ch) {
     size_t* boundary_tag = (size_t*)((char*)ch + CHUNK_SIZE(ch) - sizeof(size_t));
     *boundary_tag = ch->size;
 }
+```
 
-// Function to free a chunk and coalesce if possible
+### Function to Free a Chunk and Coalesce if Possible
+
+```c
 void free_chunk(chunk* ch) {
     chunk* next_chunk = NEXT_CHUNK(ch);
 
@@ -277,7 +243,8 @@ void free_chunk(chunk* ch) {
 chunk* free_list = NULL;
 ```
 
-#### Usage Example
+### Usage Example
+
 Here's how you might use these functions in a simple program:
 
 ```c
@@ -292,42 +259,9 @@ int main() {
     ch->size &= ~1; // Mark as free
     free_chunk(ch);
 
-    // For demonstration purposes, print the size and boundary tag
-    printf("Chunk size: %zu\n", ch->size);
-    size_t* boundary_tag = (size_t*)((char*)ch + CHUNK_SIZE(ch) - sizeof(size_t));
-    printf("Boundary tag: %zu\n", *boundary_tag);
-
-    free(ch); // Clean up
-    return 0;
-}
+    // For demonstration purposes, print the size
 ```
 
-### Explanation
-- **Chunk Structure**: The `chunk` struct includes the size, previous size, and pointers for the free list.
-- **Helper Macros**: Macros to calculate the size and find the next and previous chunks.
-- **Functions**: Implementations for writing the boundary tag, freeing a chunk, and coalescing adjacent free chunks.
-- **Usage Example**: Demonstrates allocation, freeing, and boundary tag checking.
+```
 
-
-
-
-+---------------------+
-| pagemap             |
-+---------------------+
-|[t_cache]            |
-| cache->fast_cache   |
-| cache->cache_table  |
-| cache->unsorted     |
-| ...                 |
-+---------------------+
-| fast_cache          |
-+---------------------+
-| cache_table         |
-+---------------------+
-| span                |
-+---------------------+
-| first page          |
-|                     |
-|    chunks           |
-+---------------------+
-+---------------------+
+```

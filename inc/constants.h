@@ -11,6 +11,11 @@ extern t_pagemap* g_pagemap;
 
 #define FAST_PAGE_ALLOCATION_SIZE 8
 #define FAST_PAGE_MAX_CHUNK_SIZE 64
+#define FAST_MAX_CHUNK_SIZE 64
+#define SMALL_PAGE_ALLOCATION_SIZE 20
+#define SMALL_MAX_CHUNK_SIZE 512
+#define LARGE_PAGE_ALLOCATION_SIZE 20
+#define LARGE_MAX_CHUNK_SIZE (LARGE_PAGE_ALLOCATION_SIZE * PAGE_SIZE / 12)
 
 // Helper macros to set and check t_chunk status
 #define SET_IN_USE(chunk) ((chunk)->size |= 0x1)
@@ -23,7 +28,7 @@ extern t_pagemap* g_pagemap;
 #define CHUNK_SIZE(chunk) ((chunk)->size & SIZE_MASK) // Mask out lower 3 bits used for status
 
 // Helper macros to access boundary tags
-#define CHUNK_OVERHEAD sizeof(size_t * 2)
+#define CHUNK_OVERHEAD (sizeof(size_t) * 2)
 #define NEXT_CHUNK(chunk) ((chunk*)((char*)(chunk) + CHUNK_SIZE(chunk)))
 #define PREV_CHUNK(chunk, prev_size) ((chunk*)((char*)(chunk) - prev_size))
 #define TINY_CHUNK_OVERHEAD sizeof(size_t)

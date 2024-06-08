@@ -11,8 +11,6 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include "malloc_v1.h"
-
 #include "utils.h"
 #include "constants.h"
 #include "types.h"

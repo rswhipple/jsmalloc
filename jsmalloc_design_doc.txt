@@ -1,6 +1,6 @@
 Drafted outline by RWS:
 
-We are creating a two tiered dynamic allocator. 
+Jsmalloc is a two tiered dynamic allocator. 
 The structure is divided into a "Backend Pageheap" and a "Frontend Cache".
 The Backend Pageheap is organized into spans. 
 Each span represents an isolated heap of memory called from the OS using the mmap() system call.

@@ -1,10 +1,12 @@
-#include "../../inc/main.h" 
+#include "./malloc_v1.h" 
+
+t_heap* global_heap = NULL;
 
 void* my_malloc(size_t size) {
     // initiate pageheap
 
-    // Still need to handle LARGE_HEAP_ALLOCATION_SIZE
-    int allocation_size = size < (size_t)TINY_BLOCK_SIZE ? TINY_HEAP_ALLOCATION_SIZE : SMALL_HEAP_ALLOCATION_SIZE;
+    // Still need to handle LARGE_PAGE_ALLOCATION_SIZE
+    int allocation_size = size < (size_t)TINY_BLOCK_SIZE ? TINY_HEAP_ALLOCATION_SIZE : SMALL_PAGE_ALLOCATION_SIZE;
     printf("allocation size: %d\n", allocation_size);
     if (global_heap == NULL) {
         create_heap(&global_heap, allocation_size);

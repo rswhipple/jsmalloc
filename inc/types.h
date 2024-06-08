@@ -13,11 +13,9 @@ typedef struct s_chunk t_chunk;
 struct s_tiny_chunk {
     size_t size;
     t_tiny_chunk* next;
-    // void* data;
 };
 
 struct s_chunk {
-    // size_t prev_size;
     size_t size;    // bounding size marker
     t_chunk* fd;
     t_chunk* bk;
@@ -100,37 +98,18 @@ struct s_pagemap {
     t_cache* frontend_cache;
     t_span* span_head;
     size_t total_pages;
+    t_chunk* top_chunk;      // Holds the top chunk in the heap
+    // t_chunk* last_chunk;     // Holds the chunk where memory was allocated last. Purpose is to help create objects in proximity to one another.
 };
 
 
 // =================== Enums ===================
 
 enum page_types {
-    fast,
+    fast = 1,
     small,
-    large
-};
-
-// =================== V1 Heap ===================
-
-typedef struct s_heap t_heap;
-typedef struct s_block t_block;
-
-struct s_heap {
-    struct s_heap* prev;
-    struct s_heap* next;
-    size_t total_size;
-    size_t free_size;
-    int block_count;
-    t_cache_table* cache_table;
-};
-
-struct s_block {
-    struct s_block* prev;
-    struct s_block* next;
-    size_t data_size;
-    bool freed;
-    void* object;
+    large,
+    huge
 };
 
 #endif  // TYPES_H

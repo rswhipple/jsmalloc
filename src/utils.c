@@ -2,7 +2,6 @@
 
 size_t min_chunk_size = 0;
 size_t pointer_size = 0;
-t_heap* global_heap = NULL;
 
 void log_info(const char* message) {
     printf("\n=====%s=====\n", message);
@@ -65,6 +64,8 @@ size_t check_system_size_t() {
 
 
 size_t round_up_to_next(size_t number) {
+    // add CHUNK_OVERHEAD before rounding to hold space for boundary markers
+    number += CHUNK_OVERHEAD;
     size_t list[] = { 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168,
     176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 264, 272, 280, 288,
     296, 304, 312, 320, 336, 368, 400, 432, 464, 496, 528, 560, 592, 624, 656,
