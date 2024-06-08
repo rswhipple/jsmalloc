@@ -16,8 +16,8 @@ SOURCES = $(shell find $(SRCDIR) -name '*.c')
 TEST_SOURCES = $(wildcard $(TESTDIR)/*_test.c)
 
 # Generate object file paths
-OBJECTS = $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SOURCES))
-TEST_OBJECTS = $(patsubst $(TESTDIR)/%.c,$(TEST_BUILDDIR)/%.o,$(TEST_SOURCES))
+OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
+TEST_OBJECTS = $(TEST_SOURCES:$(TESTDIR)/%.c=$(TEST_BUILDDIR)/%.o)
 
 # Include directories
 INCLUDES = -I$(INCDIR) -I/opt/homebrew/include
