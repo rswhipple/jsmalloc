@@ -10,6 +10,8 @@ TARGET = $(BUILDDIR)/malloc
 # Recursively gather all source files
 SOURCES = $(shell find $(SRCDIR) -name '*.c')
 OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
+INCLUDES = -I$(INCDIR)
+
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
