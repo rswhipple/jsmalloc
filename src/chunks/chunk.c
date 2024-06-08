@@ -29,7 +29,6 @@ t_chunk* create_top_chunk(t_page* page) {
     // printf("sizeof(t_chunk): %zu\n", sizeof(t_chunk));
     page->top_chunk = chunk;
     // TODO: confirm this is correct?
-    g_pagemap->top_chunk = chunk;
     return chunk;
 }
 
