@@ -63,5 +63,6 @@ t_chunk* allocate_huge_chunk(size_t size) {
         perror("mmap");
         exit(EXIT_FAILURE);
     }
+    huge_chunk->size = size;
     return huge_chunk;
 }
