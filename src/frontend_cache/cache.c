@@ -45,13 +45,16 @@ void* search_fast_cache(size_t size) {
     }
     else {
         // split off new chunk
-        // TODO implement logic to find correct fpage
-        // tiny = create_tiny_chunk(fpage);
+        // TODO check logic
+        fpage = g_pagemap->span_head->fastpages;
+        while (index > 0) {
+            fpage = fpage->next;
+            index--;
+        }
+        tiny = create_tiny_chunk(fpage);
     }
 
-    // return (void*)MEMORY_SHIFT(tiny, TINY_CHUNK_OVERHEAD);
-    printf("Returning NULL\n");
-    return NULL;
+    return (void*)MEMORY_SHIFT(tiny, TINY_CHUNK_OVERHEAD);
 }
 
 void* search_unsorted_cache(size_t size) {
