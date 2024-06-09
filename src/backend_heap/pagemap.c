@@ -23,6 +23,7 @@ void create_pagemap(t_pagemap** pagemap) {
     (*pagemap)->span_head = create_base_span((*pagemap)->frontend_cache);
     (*pagemap)->total_pages = BASE_HEAP_SIZE / PAGE_SIZE;
     (*pagemap)->top_chunk = (*pagemap)->span_head->page_head->top_chunk;
+    (*pagemap)->last_chunk = NULL;
     create_pages(*pagemap, (*pagemap)->span_head);
     // log_info("printing fast_cache before fpages");
     // print_fast_cache((*pagemap)->frontend_cache->fast_cache);
