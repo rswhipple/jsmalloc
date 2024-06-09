@@ -9,7 +9,7 @@ t_cache* create_frontend_cache(t_pagemap* pagemap) {
     if (min_chunk_size == 8) cache->fcache_size = 8;
     else cache->fcache_size = 7;
     cache->fast_cache = create_fast_cache(cache);
-    cache->cache_table = cache_table_create(cache);     // add create_cache_table here or after create pages in base_page?
+    cache->cache_table = cache_table_create(cache);
     cache->unsorted_cache = NULL;
     // void* last_byte = (void*)MEMORY_SHIFT(cache, (NUM_BINS * sizeof(t_chunk*) + sizeof(t_cache)));
     // printf("cache end: %p\n", last_byte);
@@ -35,8 +35,6 @@ void* search_fast_cache(size_t size) {
     t_tiny_chunk** f_cache = g_pagemap->frontend_cache->fast_cache;
     t_fpage* fpage = NULL;
     t_tiny_chunk* tiny;
-    UNUSED(tiny);
-    UNUSED(fpage);
 
     if (f_cache[index]) {
         // allocate top chunk in link list and replace
