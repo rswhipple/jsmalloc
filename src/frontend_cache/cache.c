@@ -33,7 +33,7 @@ t_tiny_chunk** create_fast_cache(t_cache* cache) {
 void* search_fast_cache(size_t size) {
     int index = get_fpage_index(size);
     t_tiny_chunk** f_cache = g_pagemap->frontend_cache->fast_cache;
-    t_page* fpage = NULL;
+    t_fpage* fpage = NULL;
     t_tiny_chunk* tiny;
     UNUSED(tiny);
     UNUSED(fpage);
