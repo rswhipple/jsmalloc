@@ -4,6 +4,7 @@ void create_pages(t_pagemap* pagemap, t_span* span) {
   int pages_left = SMALL_PAGE_ALLOCATION_SIZE;
   t_page* current = NULL;
   span->page_head = create_base_page(pagemap, span);
+  pagemap->top_chunk = span->page_head->top_chunk;
   pages_left -= 1;
   current = span->page_head;
 
@@ -43,6 +44,7 @@ t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
   // void* last_byte = (void*)MEMORY_SHIFT(page, page->memory + sizeof(t_page));
   // printf("base page end: %p\n", last_byte);
   create_top_chunk(page);
+
   return page;
 }
 
