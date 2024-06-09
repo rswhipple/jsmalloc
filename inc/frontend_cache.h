@@ -9,9 +9,6 @@ void print_fast_cache(t_tiny_chunk** fast_cache);
 t_cache* create_frontend_cache(t_pagemap* pagemap);
 t_tiny_chunk** create_fast_cache(t_cache* cache);
 
-size_t round_up_to_next(size_t number);
-int get_fpage_index(size_t nbr);
-
 cache_table* cache_table_create(t_cache* cache);
 void cache_table_destroy(cache_table* table);
 void* cache_table_get(cache_table* table, const char* key);
