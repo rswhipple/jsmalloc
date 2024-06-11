@@ -2,11 +2,19 @@
 
 // TODO: maybe move to unsorted_cache if this gets too big
 void* search_unsorted_cache(size_t size) {
+  // t_chunk* chunk = NULL;
   t_chunk* unsorted_cache = g_pagemap->frontend_cache->unsorted_cache;
   while (unsorted_cache) {
     printf("unsorted_cache->size: %zu\n", unsorted_cache->size);
+    /* QUESTION FOR M: should we sort the entire unsorted list here?
+    OR simply take the first viable chunk and move on? */
     if (unsorted_cache->size >= size) {
+      g_pagemap->frontend_cache->unsorted_cache = unsorted_cache->fd;
       return unsorted_cache;
+    } else {
+      // add function to sort chunk
+      const char* key = "place_holder";   // BEKI TODO: replace "place_holder" with agreed upon key
+      cache_table_set(g_pagemap->frontend_cache->cache_table, key, unsorted_cache);
     }
     unsorted_cache = unsorted_cache->fd;
   }
@@ -46,7 +54,7 @@ void* search_sorted_cache(size_t size, int page_type) {
   char key[32];
   snprintf(key, sizeof(key), "%zu", size);
 
-  cache_table* cache_table = g_pagemap->frontend_cache->cache_table;
+  t_cache_table* cache_table = g_pagemap->frontend_cache->cache_table;
 
   void* ptr = NULL;
 
