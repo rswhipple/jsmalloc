@@ -30,31 +30,6 @@ t_tiny_chunk** create_fast_cache(t_cache* cache) {
     return fast_cache;
 }
 
-void* search_fast_cache(size_t size) {
-    int index = get_fpage_index(size);
-    t_tiny_chunk** f_cache = g_pagemap->frontend_cache->fast_cache;
-    t_fpage* fpage = NULL;
-    t_tiny_chunk* tiny;
-
-    if (f_cache[index]) {
-        // allocate top chunk in link list and replace
-        tiny = f_cache[index];
-        f_cache[index] = f_cache[index]->next;
-    }
-    else {
-        // split off new chunk
-        // TODO check logic
-        fpage = g_pagemap->span_head->fastpages;
-        while (index > 0) {
-            fpage = fpage->next;
-            index--;
-        }
-        tiny = create_tiny_chunk(fpage);
-    }
-
-    return (void*)MEMORY_SHIFT(tiny, TINY_CHUNK_OVERHEAD);
-}
-
 void* search_unsorted_cache(size_t size) {
     t_chunk* unsorted_cache = g_pagemap->frontend_cache->unsorted_cache;
     while (unsorted_cache) {
@@ -65,29 +40,6 @@ void* search_unsorted_cache(size_t size) {
         unsorted_cache = unsorted_cache->fd;
     }
 
-    return NULL;
-}
-
-
-void* search_sorted_cache(size_t size, int page_type) {
-    char key[32];
-    snprintf(key, sizeof(key), "%zu", size);
-
-    cache_table* cache_table = g_pagemap->frontend_cache->cache_table;
-    t_page* page_head = g_pagemap->span_head->page_head;
-    if (page_type == 3) {
-        while ((int)page_head->pagetype != page_type) {
-            page_head = page_head->next;
-        }
-        page_head = g_pagemap->span_head->page_head;
-    }
-    t_chunk* chunk = page_head->top_chunk;
-
-    if ((cache_table_set(cache_table, key, chunk)) != NULL) {
-        return cache_table_get(cache_table, key);
-    }
-
-    printf("Returning NULL\n");
     return NULL;
 }
 
@@ -105,29 +57,4 @@ void* search_cache(size_t size, int page_type) {
     }
     printf("Returning NULL\n");
     return NULL;
-}
-
-void print_fast_cache(t_tiny_chunk** fast_cache) {
-    t_tiny_chunk* temp;
-    int count;
-    int min_align;
-
-    count = (min_chunk_size == 8) ? 8 : 7;
-    min_align = (count == 8) ? 1 : 2;
-
-    for (int i = 0; i < count; i++) {
-        temp = fast_cache[i];
-        if (temp) {
-            while (temp) {
-                log_info("tiny chunk");
-                printf("size = %d\n", (i + min_align) * 8);
-                print_tiny_chunk(temp);
-                temp = temp->next;
-            }
-        }
-        else {
-            printf("fast_cache[%i] = NULL\n", i);
-        }
-
-    }
 }
