@@ -7,6 +7,7 @@
 void* search_fast_cache(size_t size);
 void* search_cache(size_t size, int page_type);
 void* search_sorted_cache(size_t size, int page_type);
+void* search_unsorted_cache(size_t size);
 
 // =================== Print Cache ===================
 void print_fast_cache(t_tiny_chunk** fast_cache);

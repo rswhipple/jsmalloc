@@ -1,5 +1,18 @@
 #include "../../inc/main.h"
 
+t_tiny_chunk** create_fast_cache(t_cache* cache) {
+  t_tiny_chunk** fast_cache = (t_tiny_chunk**)CACHE_SHIFT(cache);
+
+  // printf("fast_cache pointer: %p\n", fast_cache);
+  for (size_t i = 0; i < cache->fcache_size; ++i) {
+    fast_cache[i] = NULL;
+  }
+
+  // void* last_byte = (void*)MEMORY_SHIFT(cache, (cache->fcache_size * sizeof(t_tiny_chunk*)));
+  // printf("fast_cache end: %p\n", last_byte);
+  return fast_cache;
+}
+
 void* search_fast_cache(size_t size) {
   int index = get_fpage_index(size);
   t_tiny_chunk** f_cache = g_pagemap->frontend_cache->fast_cache;
@@ -24,7 +37,6 @@ void* search_fast_cache(size_t size) {
 
   return (void*)MEMORY_SHIFT(tiny, TINY_CHUNK_OVERHEAD);
 }
-
 
 void print_fast_cache(t_tiny_chunk** fast_cache) {
   t_tiny_chunk* temp;

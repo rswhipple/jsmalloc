@@ -1,5 +1,19 @@
 #include "../../inc/main.h"
 
+// TODO: maybe move to unsorted_cache if this gets too big
+void* search_unsorted_cache(size_t size) {
+  t_chunk* unsorted_cache = g_pagemap->frontend_cache->unsorted_cache;
+  while (unsorted_cache) {
+    printf("unsorted_cache->size: %zu\n", unsorted_cache->size);
+    if (unsorted_cache->size >= size) {
+      return unsorted_cache;
+    }
+    unsorted_cache = unsorted_cache->fd;
+  }
+
+  return NULL;
+}
+
 t_page* get_page_head(int page_type) {
   t_page* page_head = g_pagemap->span_head->page_head;
   if (page_type == 3) {
