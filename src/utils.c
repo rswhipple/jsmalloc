@@ -1,11 +1,15 @@
 #include "../inc/main.h"
 
-size_t min_chunk_size = 0;
-size_t pointer_size = 0;
 
 void log_info(const char* message) {
     printf("\n=====%s=====\n", message);
 }
+
+/*
+system_settings(): Sets the global variable min_chunk_size.
+min_chunk_size affects the minimum t_tiny_chunk size and is dependant on whether
+the OS uses 4 byte or 8 byte pointers.
+*/
 
 void system_settings() {
     check_system_pointer();
