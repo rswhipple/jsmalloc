@@ -1,7 +1,13 @@
 
 #include "../../inc/main.h"
 
-
+/*
+create_pagemap(t_pagemap** pagemap): 
+Uses a double pointer to update the global t_pagemap* g_pagemap variable.
+The system call mmap() is used to retrieve memory for the dynamic heap.
+The frontend_cache field is initialized with a pointer to a t_cache struct 
+created by create_frontend_cache().
+*/
 
 void create_pagemap(t_pagemap** pagemap) {
     // log_info("creating pageheap");
