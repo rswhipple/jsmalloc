@@ -5,8 +5,6 @@ void* my_malloc(size_t size) {
         create_pagemap(&g_pagemap);
     }
 
-    // TODO error check for negatives
-
     // get category
     int page_type = get_page_type(size);
 
