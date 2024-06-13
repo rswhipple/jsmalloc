@@ -21,6 +21,7 @@ t_chunk* create_top_chunk(t_page* page) {
     chunk->fd = NULL;
     chunk->bk = NULL;
     // char* data = (char*)MEMORY_SHIFT(chunk, sizeof(size_t));
+    SET_FREE(chunk);
     write_boundary_tag(chunk);
     // log_info("creating top chunk");
     // printf("chunk pointer: %p\n", chunk);
@@ -38,19 +39,25 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
         fprintf(stderr, "Invalid split size: %zu (chunk size: %zu)\n", size, chunk->size);
         exit(EXIT_FAILURE);
     }
+    t_chunk* temp = chunk->fd;
     size_t initial_chunk_size = chunk->size;
+
+    // Update the original chunk's size, free status, next pointer & boundary_tag
     t_chunk* first_chunk = chunk;
     first_chunk->size = size;
+    SET_FREE(first_chunk);
+    write_boundary_tag(chunk);
 
     // Create the second chunk immediately after the first chunk
     t_chunk* second_chunk = (t_chunk*)MEMORY_SHIFT(CHUNK_SHIFT(chunk), size);
     second_chunk->size = initial_chunk_size - size;
+    second_chunk->bk = chunk;
+    second_chunk->fd = temp;
+    SET_FREE(second_chunk);
     write_boundary_tag(second_chunk);
 
-    // Update the original chunk's size, next pointer & boundary_tag
-    chunk->size = size;
+    // Update the original chunk's fd pointer
     chunk->fd = second_chunk;
-    write_boundary_tag(chunk);
 
     // Return the first chunk
     return first_chunk;
