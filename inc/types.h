@@ -37,9 +37,9 @@ struct s_cache_tablei {
 
 struct s_cache {
     t_tiny_chunk** fast_cache;
-    size_t fcache_size;
     t_cache_table* cache_table;
     t_chunk* unsorted_cache;
+    size_t fcache_size;
 };
 
 typedef struct {
@@ -106,9 +106,9 @@ typedef struct s_pagemap t_pagemap;
 struct s_pagemap {
     t_cache* frontend_cache;
     t_span* span_head;
-    size_t total_pages;
     t_chunk* top_chunk;      // Holds the top chunk in the heap
     t_chunk* last_chunk;     // Holds the chunk where memory was allocated last. Purpose is to help create objects in proximity to one another.
+    size_t total_pages;
 };
 
 
