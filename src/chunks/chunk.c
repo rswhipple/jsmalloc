@@ -86,3 +86,8 @@ void free_chunk(void* ptr, size_t size) {
     UNUSED(chunk);
     UNUSED(size);
 }
+
+void free_huge_chunk(void* ptr, size_t size) {
+    UNUSED(ptr);
+    UNUSED(size);
+}
