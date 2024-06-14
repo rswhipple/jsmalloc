@@ -77,6 +77,7 @@ t_chunk* allocate_huge_chunk(size_t size) {
 }
 
 void free_chunk(void* ptr, size_t size) {
+    UNUSED(size);
     t_chunk* unsorted_chunk = g_pagemap->frontend_cache->unsorted_cache;
     // check for other free chunks and write coalescing algp
 
@@ -84,10 +85,9 @@ void free_chunk(void* ptr, size_t size) {
     t_chunk* chunk = (t_chunk*)((char*)ptr - sizeof(size_t));
     UNUSED(unsorted_chunk);
     UNUSED(chunk);
-    UNUSED(size);
 }
 
 void free_huge_chunk(void* ptr, size_t size) {
-    UNUSED(ptr);
     UNUSED(size);
+    UNUSED(ptr);
 }

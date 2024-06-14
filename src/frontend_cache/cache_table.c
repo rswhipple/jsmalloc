@@ -7,7 +7,6 @@ t_cache_table* cache_table_create(t_cache* cache) {
 
   t_cache_table* table = (t_cache_table*)MEMORY_SHIFT(cache, (cache->fcache_size * sizeof(t_tiny_chunk)));
   // printf("cache_table pointer: %p\n", table);
-  table->length = 0;
   table->capacity = NUM_BINS;
 
   table->entries = (cache_table_entry*)mmap(NULL, table->capacity * sizeof(cache_table_entry),
@@ -63,7 +62,7 @@ void* cache_table_get(t_cache_table* table, const char* key) {
 
 // Internal function to set an entry (without expanding table).
 static const char* cache_table_set_entry(cache_table_entry* entries, size_t capacity,
-        const char* key, t_chunk* value, size_t* plength) {
+        const char* key, t_chunk* value) {
   // AND hash with capacity-1 to ensure it's within entries array.
   uint64_t hash = hash_key(key);
   size_t index = (size_t)(hash & (uint64_t)(capacity - 1));
@@ -71,60 +70,22 @@ static const char* cache_table_set_entry(cache_table_entry* entries, size_t capa
   // Loop till we find an empty entry.
   while (entries[index].key != NULL) {
     if (strcmp(key, entries[index].key) == 0) {
-      // Found key (it already exists), update value.
       entries[index].value = value;
       return entries[index].key;
     }
-    // Key wasn't in this slot, move to next (linear probing).
     index++;
     if (index >= capacity) {
-      // At end of entries array, wrap around.
       index = 0;
     }
   }
 
-  // Didn't find key, allocate+copy if needed, then insert it.
-  if (plength != NULL) {
-    key = strdup(key);
-    if (key == NULL) {
-      return NULL;
-    }
-    (*plength)++;
+  key = strdup(key);
+  if (key == NULL) {
+    return NULL;
   }
   entries[index].key = (char*)key;
   entries[index].value = value;
   return key;
-}
-
-// Expand hash table to twice its current size. Return true on success,
-// false if out of memory.
-static bool cache_table_expand(t_cache_table* table) {
-  // Allocate new entries array.
-  size_t new_capacity = table->capacity * 2;
-  if (new_capacity < table->capacity) {
-    return false;  // overflow (capacity would be too big)
-  }
-  cache_table_entry* new_entries = (cache_table_entry*)mmap(NULL, new_capacity * sizeof(cache_table_entry),
-                               PROT_READ | PROT_WRITE,
-                               MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-  if (new_entries == NULL) {
-    return false;
-  }
-
-  // Iterate entries, move all non-empty ones to new table's entries.
-  for (size_t i = 0; i < table->capacity; i++) {
-    cache_table_entry entry = table->entries[i];
-    if (entry.key != NULL) {
-      cache_table_set_entry(new_entries, new_capacity, entry.key,
-                   entry.value, NULL);
-    }
-  }
-
-  // Free old entries array and update this table's details.
-  munmap(table->entries, table->capacity * sizeof(cache_table_entry));
-  table->entries = new_entries;
-  table->capacity = new_capacity;
-  return true;
 }
 
 const char* cache_table_set(t_cache_table* table, const char* key, t_chunk* value) {
@@ -133,42 +94,5 @@ const char* cache_table_set(t_cache_table* table, const char* key, t_chunk* valu
     return NULL;
   }
 
-  // If length will exceed half of current capacity, expand it.
-  if (table->length >= table->capacity / 2) {
-    if (!cache_table_expand(table)) {
-      return NULL;
-    }
-  }
-
-  // Set entry and update length.
-  return cache_table_set_entry(table->entries, table->capacity, key, value,
-                      &table->length);
-}
-
-size_t cache_table_length(t_cache_table* table) {
-  return table->length;
-}
-
-cache_tablei cache_table_iterator(t_cache_table* table) {
-  cache_tablei it;
-  it._table = table;
-  it._index = 0;
-  return it;
-}
-
-bool cache_table_next(cache_tablei* it) {
-  // Loop till we've hit end of entries array.
-  t_cache_table* table = it->_table;
-  while (it->_index < table->capacity) {
-    size_t i = it->_index;
-    it->_index++;
-    if (table->entries[i].key != NULL) {
-      // Found next non-empty item, update iterator key and value.
-      cache_table_entry entry = table->entries[i];
-      it->key = entry.key;
-      it->value = entry.value;
-      return true;
-    }
-  }
-  return false;
+  return cache_table_set_entry(table->entries, table->capacity, key, value);
 }
