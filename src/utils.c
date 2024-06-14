@@ -126,3 +126,4 @@ int my_strlen(char* str)
 
     return i;
 }
+

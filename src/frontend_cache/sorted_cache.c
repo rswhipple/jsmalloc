@@ -10,7 +10,7 @@ void* search_unsorted_cache(size_t size) {
     if (unsorted_chunk->size >= size) {
       if (unsorted_chunk->size > size + 72) {
         unsorted_chunk = split_chunk(unsorted_chunk, size);
-      } 
+      }
       g_pagemap->frontend_cache->unsorted_cache = unsorted_chunk->fd;
       return (void*)MEMORY_SHIFT(unsorted_chunk, CHUNK_OVERHEAD);
     } else {

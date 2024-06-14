@@ -23,17 +23,7 @@ struct s_chunk {
 
 // =================== Cache ===================
 typedef struct s_cache_table t_cache_table;
-typedef struct s_cache_tablei cache_tablei;
 typedef struct s_cache t_cache;
-
-struct s_cache_tablei {
-    const char* key;  // current key
-    void* value;      // current value
-
-    // Don't use these fields directly.
-    t_cache_table* _table;       // reference to hash table being iterated
-    size_t _index;    // current index into cache_table._entries
-};
 
 struct s_cache {
     t_tiny_chunk** fast_cache;
@@ -43,24 +33,14 @@ struct s_cache {
 };
 
 typedef struct {
-  const char* key;  // key is NULL if this slot is empty
-  t_chunk* value;
+    const char* key;  // key is NULL if this slot is empty
+    t_chunk* value;
 } cache_table_entry;
 
 struct s_cache_table {
-  cache_table_entry* entries;
-  size_t capacity;
-  size_t length;
+    cache_table_entry* entries;
+    size_t capacity;
 };
-
-// OLD Hash table structure
-// typedef unsigned int (hash_function)(size_t input, uint32_t);
-// typedef struct cache_table_s t_cache_table;
-// struct cache_table_s {
-//     size_t size;
-//     hash_function* hash;
-//     t_chunk** elements;
-// };
 
 // =================== Pages ===================
 

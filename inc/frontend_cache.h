@@ -21,8 +21,5 @@ t_cache_table* cache_table_create(t_cache* cache);
 void cache_table_destroy(t_cache_table* table);
 void* cache_table_get(t_cache_table* table, const char* key);
 const char* cache_table_set(t_cache_table* table, const char* key, t_chunk* value);
-size_t cache_table_length(t_cache_table* table);
-cache_tablei cache_table_iterator(t_cache_table* table);
-bool cache_table_next(cache_tablei* it);
 
 #endif
