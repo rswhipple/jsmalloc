@@ -3,6 +3,7 @@
 
 void* search_unsorted_cache(size_t size) {
   // t_chunk* chunk = NULL;
+  size = size + CHUNK_OVERHEAD;
   t_chunk* unsorted_chunk = g_pagemap->frontend_cache->unsorted_cache;
   while (unsorted_chunk) {
     printf("unsorted_cache->size: %zu\n", unsorted_chunk->size);
@@ -13,8 +14,8 @@ void* search_unsorted_cache(size_t size) {
       g_pagemap->frontend_cache->unsorted_cache = unsorted_chunk->fd;
       return (void*)MEMORY_SHIFT(unsorted_chunk, CHUNK_OVERHEAD);
     } else {
-      // add function to sort chunk
-      const char* key = "place_holder";   // BEKI TODO: replace "place_holder" with agreed upon key
+      // function to sort chunk
+      const char* key = (const char*)size;  // TODO: make sure this works
       cache_table_set(g_pagemap->frontend_cache->cache_table, key, unsorted_chunk);
     }
     unsorted_chunk = unsorted_chunk->fd;
