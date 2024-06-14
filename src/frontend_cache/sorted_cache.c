@@ -3,6 +3,7 @@
 
 void* search_unsorted_cache(size_t size) {
   // t_chunk* chunk = NULL;
+  size = size + CHUNK_OVERHEAD;
   t_chunk* unsorted_chunk = g_pagemap->frontend_cache->unsorted_cache;
   while (unsorted_chunk) {
     printf("unsorted_cache->size: %zu\n", unsorted_chunk->size);
