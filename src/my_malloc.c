@@ -6,10 +6,8 @@ void* my_malloc(size_t size) {
         create_pagemap(&g_pagemap);
     }
 
-    // get category
+    // get category & search heap
     int page_type = get_page_type(size);
-
-    // search heap
     void* ptr = search_heap(size, page_type);
 
     if (ptr) return ptr;
