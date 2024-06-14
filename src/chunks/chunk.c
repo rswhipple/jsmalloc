@@ -84,4 +84,5 @@ void free_chunk(void* ptr, size_t size) {
     t_chunk* chunk = (t_chunk*)((char*)ptr - sizeof(size_t));
     UNUSED(unsorted_chunk);
     UNUSED(chunk);
+    UNUSED(size);
 }

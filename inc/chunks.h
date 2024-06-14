@@ -14,5 +14,6 @@ t_tiny_chunk* create_tiny_chunk(t_fpage* fpage);
 void free_tiny_chunk(void* ptr, size_t size);
 
 t_chunk* allocate_huge_chunk(size_t size);
+void free_huge_chunk(void* ptr, size_t size);
 
 #endif
