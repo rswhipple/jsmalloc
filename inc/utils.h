@@ -14,4 +14,6 @@ size_t check_system_size_t();
 int get_fpage_index(size_t nbr);
 size_t round_up_to_next(size_t number);
 
+char* my_strcpy(char* dst, char* src);
+
 #endif
