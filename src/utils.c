@@ -103,7 +103,24 @@ size_t round_up_to_next(size_t number) {
 }
 
 char* my_strcpy(char* dst, char* src) {
-    UNUSED(dst);
-    UNUSED(src);
-    return NULL;
+    int i;
+    int length = my_strlen(src);
+
+    for (i = 0; i < length; i++) {
+        dst[i] = src[i];
+    }
+
+    dst[i] = '\0';
+
+    return dst;
+}
+
+int my_strlen(char* str) {
+    int i = 0;
+
+    do {
+        i += 1;
+    } while (str[i] != '\0');
+
+    return i;
 }
