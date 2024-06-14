@@ -11,7 +11,6 @@ void* search_unsorted_cache(size_t size) {
         unsorted_chunk = split_chunk(unsorted_chunk, size);
       } 
       g_pagemap->frontend_cache->unsorted_cache = unsorted_chunk->fd;
-      SET_IN_USE(unsorted_chunk);
       return (void*)MEMORY_SHIFT(unsorted_chunk, CHUNK_OVERHEAD);
     } else {
       // add function to sort chunk
