@@ -101,3 +101,9 @@ size_t round_up_to_next(size_t number) {
     // If no larger or equal number is found, return the largest number in the list
     return list[NUM_BINS - 1]; // Assuming the list is sorted in ascending order
 }
+
+char* my_strcpy(char* dst, char* src) {
+    UNUSED(dst);
+    UNUSED(src);
+    return NULL;
+}

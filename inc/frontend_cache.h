@@ -17,12 +17,9 @@ t_cache* create_frontend_cache(t_pagemap* pagemap);
 t_tiny_chunk** create_fast_cache(t_cache* cache);
 
 // =================== Cache Table ===================
-cache_table* cache_table_create(t_cache* cache);
-void cache_table_destroy(cache_table* table);
-void* cache_table_get(cache_table* table, const char* key);
-const char* cache_table_set(cache_table* table, const char* key, t_chunk* value);
-size_t cache_table_length(cache_table* table);
-cache_tablei cache_table_iterator(cache_table* table);
-bool cache_table_next(cache_tablei* it);
+t_cache_table* cache_table_create(t_cache* cache);
+void cache_table_destroy(t_cache_table* table);
+void* cache_table_get(t_cache_table* table, const char* key);
+const char* cache_table_set(t_cache_table* table, const char* key, t_chunk* value);
 
 #endif

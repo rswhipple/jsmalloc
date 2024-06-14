@@ -8,16 +8,16 @@ void my_free(void* ptr) {
     }
 
     // get chunk category
-    size_t* size = (size_t*)((char*)ptr - sizeof(size_t));
+    size_t size = (size_t)((char*)ptr - sizeof(size_t));
     int page_type = get_page_type(size);
 
     switch (page_type) {
     case 1: free_tiny_chunk(ptr, size);
             break;
     case 2:
-    case 3: free_chunk(size, page_type);
+    case 3: free_chunk(ptr, size);
             break;
-    case 4: free_huge_chunk(size);
+    case 4: free_huge_chunk(ptr, size);
             break;
     default: printf("Error reading memory size: Can not free.\n");
             break;
