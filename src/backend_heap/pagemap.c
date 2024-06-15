@@ -10,19 +10,13 @@ created by create_frontend_cache().
 */
 
 void create_pagemap(t_pagemap** pagemap) {
-    // log_info("creating pageheap");
-    // printf("BASE_HEAP_SIZE: %d\n", BASE_HEAP_SIZE);
-    // printf("PAGE_SIZE: %d\n", PAGE_SIZE);
-
+    log_info("creating pageheap");
     *pagemap = (t_pagemap*)mmap(0, BASE_HEAP_SIZE, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 
-    // printf("pagemap pointer: %p\n", *pagemap);
-    // printf("sizeof(t_pagemap): %zu\n", sizeof(t_pagemap));
-    // void* last_byte = (void*)MEMORY_SHIFT(*pagemap, sizeof(t_pagemap));
-    // printf("pagemap end: %p\n", last_byte);
-    // last_byte = (void*)MEMORY_SHIFT(*pagemap, BASE_HEAP_SIZE);
-    // printf("pageheap end: %p\n", last_byte);
+    printf("pageheap start: %p\n", *pagemap);
+    void* last_byte = (void*)MEMORY_SHIFT(*pagemap, BASE_HEAP_SIZE);
+    printf("pageheap end: %p\n", last_byte);
 
 
     (*pagemap)->frontend_cache = create_frontend_cache(*pagemap);
@@ -31,6 +25,7 @@ void create_pagemap(t_pagemap** pagemap) {
     
     create_pages(*pagemap, (*pagemap)->span_head);
     (*pagemap)->top_chunk = (*pagemap)->span_head->page_head->top_chunk;
+    printf("(*pagemap)->top_chunk pointer: %p\n", (*pagemap)->top_chunk);
     (*pagemap)->last_chunk = NULL;
     // log_info("printing fast_cache before fpages");
     // print_fast_cache((*pagemap)->frontend_cache->fast_cache);

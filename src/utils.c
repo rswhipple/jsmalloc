@@ -102,12 +102,15 @@ size_t round_up_to_next(size_t number) {
     return list[NUM_BINS - 1]; // Assuming the list is sorted in ascending order
 }
 
-char* my_strcpy(char* dst, char* src) {
+
+char* my_strcpy(char* dst, char* src)
+{
+
     int i;
     int length = my_strlen(src);
 
     for (i = 0; i < length; i++) {
-        dst[i] = src[i];
+        dst[i] = src[i]; 
     }
 
     dst[i] = '\0';
@@ -115,7 +118,9 @@ char* my_strcpy(char* dst, char* src) {
     return dst;
 }
 
-int my_strlen(char* str) {
+
+int my_strlen(char* str) 
+{
     int i = 0;
 
     do {
@@ -124,3 +129,4 @@ int my_strlen(char* str) {
 
     return i;
 }
+
