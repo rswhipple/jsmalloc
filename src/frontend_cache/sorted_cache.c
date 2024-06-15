@@ -15,7 +15,8 @@ void* search_unsorted_cache(size_t size) {
     }
     else {
       // add function to sort chunk
-      const char* key = "place_holder";   // BEKI TODO: replace "place_holder" with agreed upon key
+      char key[32];
+      snprintf(key, sizeof(key), "%zu", size);
       cache_table_set(g_pagemap->frontend_cache->cache_table, key, unsorted_chunk);
     }
     unsorted_chunk = unsorted_chunk->fd;
@@ -52,7 +53,6 @@ t_chunk* get_top_chunk(t_page* page) {
 }
 
 void* search_sorted_cache(size_t size, int page_type) {
-  // TODO: determine how to get correct bin_size
   char key[32];
   snprintf(key, sizeof(key), "%zu", size);
 
