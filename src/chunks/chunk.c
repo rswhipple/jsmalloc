@@ -88,6 +88,8 @@ void free_chunk(void* ptr, size_t size) {
 }
 
 void free_huge_chunk(void* ptr, size_t size) {
-    UNUSED(size);
-    UNUSED(ptr);
+    if (munmap(ptr, size) == -1) {
+        perror("munmap");
+        exit(EXIT_FAILURE);
+    }
 }

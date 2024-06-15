@@ -13,9 +13,12 @@ void* search_unsorted_cache(size_t size) {
       }
       g_pagemap->frontend_cache->unsorted_cache = unsorted_chunk->fd;
       return (void*)MEMORY_SHIFT(unsorted_chunk, CHUNK_OVERHEAD);
-    } else {
-      // function to sort chunk
-      const char* key = (const char*)size;  // TODO: make sure this works
+    }
+    else {
+      // add function to sort chunk
+      char key[32];
+      snprintf(key, sizeof(key), "%zu", size);
+
       cache_table_set(g_pagemap->frontend_cache->cache_table, key, unsorted_chunk);
     }
     unsorted_chunk = unsorted_chunk->fd;
