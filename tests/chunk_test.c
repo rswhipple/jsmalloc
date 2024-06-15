@@ -4,7 +4,7 @@ void chunk_test_success(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
 
   t_chunk* split = split_chunk(pagemap->span_head->page_head->top_chunk, 100);
-  printf("pagemap->span_head->page_head->top_chunk->size: %zu\n", pagemap->span_head->page_head->top_chunk->size);
+  printf("pagemap->span_head->page_head->top_chunk->size: %zu\n", CHUNK_SIZE(pagemap->span_head->page_head->top_chunk));
   assert_int_equal(pagemap->span_head->page_head->top_chunk->size, 100);
   printf("split->size: %zu\n", split->size);
   printf("split->fd->size: %zu\n", split->fd->size);
