@@ -1,14 +1,5 @@
 #include "../../inc/main.h" 
 
-/*
-void print_chunks() {
-    t_block *current_block = (t_block *)BLOCK_SHIFT(heap);
-    while (current_block != NULL) {
-        printf("block size: %zu\n", current_block->data_size);
-        current_block = current_block->next;
-    }
-}
-*/
 
 void write_boundary_tag(t_chunk* chunk) {
     size_t* boundary_tag = (size_t*)((char*)chunk + CHUNK_SIZE(chunk) - sizeof(size_t));
@@ -36,6 +27,7 @@ t_chunk* create_top_chunk(t_page* page) {
 
 // input parameters are t_chunk *chunk and size_t chunk_size
 t_chunk* split_chunk(t_chunk* chunk, size_t size) {
+    // log_info("splitting chunk");
     if (CHUNK_SIZE(chunk) <= size) {
         fprintf(stderr, "Invalid split size: %zu (chunk size: %zu)\n", size, chunk->size);
         exit(EXIT_FAILURE);
@@ -48,9 +40,6 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
     // Update the original chunk's size, free status, next pointer & boundary_tag
     t_chunk* first_chunk = chunk;
     first_chunk->size = size;
-    // log_info("splitting chunk");
-    // printf("initial chunk size: %zu\n", chunk->size);
-    // printf("first_chunk size: %zu\n", first_chunk->size);
     write_boundary_tag(chunk);
     SET_IN_USE(first_chunk);    // set in_use after writing boundary tag 
     first_chunk->fd = NULL;
