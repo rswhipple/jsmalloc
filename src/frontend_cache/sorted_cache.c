@@ -53,6 +53,7 @@ t_chunk* get_top_chunk(t_page* page) {
 
 void* search_sorted_cache(size_t size, int page_type) {
   // TODO: determine how to get correct bin_size
+  size = size + CHUNK_OVERHEAD;
   char key[32];
   snprintf(key, sizeof(key), "%zu", size);
 
@@ -68,9 +69,9 @@ void* search_sorted_cache(size_t size, int page_type) {
 
   t_chunk* top_chunk = get_top_chunk(page_head);
 
-  if ((cache_table_set(cache_table, key, top_chunk)) != NULL) {
-    SET_IN_USE(top_chunk);
-    return (void*)MEMORY_SHIFT(cache_table_get(cache_table, key), sizeof(t_chunk));
+  if ((ptr = split_chunk(top_chunk, size)) != NULL) {
+    printf("split top_chunk\n");
+    return (void*)MEMORY_SHIFT(ptr, sizeof(t_chunk));
   }
 
   printf("Returning NULL\n");
