@@ -25,7 +25,7 @@ void create_pagemap(t_pagemap** pagemap) {
     
     create_pages(*pagemap, (*pagemap)->span_head);
     (*pagemap)->top_chunk = (*pagemap)->span_head->page_head->top_chunk;
-    printf("(*pagemap)->top_chunk pointer: %p\n", (*pagemap)->top_chunk);
+    // printf("(*pagemap)->top_chunk pointer: %p\n", (*pagemap)->top_chunk);
     (*pagemap)->last_chunk = NULL;
     // log_info("printing fast_cache before fpages");
     // print_fast_cache((*pagemap)->frontend_cache->fast_cache);
