@@ -17,17 +17,17 @@ void write_boundary_tag(t_chunk* chunk) {
 
 t_chunk* create_top_chunk(t_page* page) {
     t_chunk* chunk = (t_chunk*)PAGE_SHIFT(page);
-    SET_CHUNK_SIZE(chunk, page->memory);
+    chunk->size = page->memory;
     SET_FREE(chunk);
+    write_boundary_tag(chunk);
     chunk->fd = NULL;
     chunk->bk = NULL;
-    write_boundary_tag(chunk);
     page->top_chunk = chunk;
 
-    // log_info("creating top chunk");
+    log_info("creating top chunk");
     // printf("chunk pointer: %p\n", chunk);
     // printf("chunk's data pointer (same memory location as *fd): %p\n", chunk->fd);
-    // printf("chunk size: %zu\n", chunk->size);
+    printf("chunk size: %zu\n", chunk->size);
     // printf("sizeof(t_chunk): %zu\n", sizeof(t_chunk));
     // TODO: confirm this is correct?
 
@@ -36,32 +36,36 @@ t_chunk* create_top_chunk(t_page* page) {
 
 // input parameters are t_chunk *chunk and size_t chunk_size
 t_chunk* split_chunk(t_chunk* chunk, size_t size) {
-    if (chunk->size <= size) {
+    if (CHUNK_SIZE(chunk) <= size) {
         fprintf(stderr, "Invalid split size: %zu (chunk size: %zu)\n", size, chunk->size);
         exit(EXIT_FAILURE);
     }
-
+    log_info("splitting chunk");
+    printf("initial chunk size: %zu\n", chunk->size);
     // Placeholder variables
     t_chunk* temp = chunk->fd;
     size_t initial_chunk_size = chunk->size;
 
     // Update the original chunk's size, free status, next pointer & boundary_tag
     t_chunk* first_chunk = chunk;
-    SET_CHUNK_SIZE(first_chunk, size);
+    first_chunk->size = size;
+    printf("first_chunk size: %zu\n", first_chunk->size);
+    write_boundary_tag(chunk);
     SET_IN_USE(first_chunk);
     first_chunk->fd = NULL;
     first_chunk->bk = NULL;
-    write_boundary_tag(chunk);
 
     // Create the second chunk immediately after the first chunk
     t_chunk* second_chunk = (t_chunk*)MEMORY_SHIFT(CHUNK_SHIFT(chunk), size);
-    SET_CHUNK_SIZE(second_chunk, initial_chunk_size - size);
+    second_chunk->size = initial_chunk_size - size;
+    printf("second_chunk size: %zu\n", second_chunk->size);
     SET_FREE(second_chunk);
     second_chunk->bk = chunk;
     second_chunk->fd = temp;
     write_boundary_tag(second_chunk);
 
     // Return the first chunk
+    printf("first_chunk size (after in use): %zu\n", first_chunk->size);
     return first_chunk;
 }
 

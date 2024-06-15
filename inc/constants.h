@@ -23,9 +23,8 @@ extern t_pagemap* g_pagemap;
 #define SET_FREE(t_chunk) ((t_chunk)->size &= ~0x1)
 
 // Helper macros to set and check t_chunk size
-#define SET_CHUNK_SIZE(t_chunk, sz) ((t_chunk)->size = ((sz) & SIZE_MASK) | ((t_chunk)->size & ~SIZE_MASK))     // MAKE SURE THIS LOGIC WORKS
-#define SIZE_MASK (~0x7)
-#define CHUNK_SIZE(t_chunk) ((t_chunk)->size & SIZE_MASK) // Mask out lower 3 bits used for status
+#define SIZE_MASK (~0x1)  // Mask with all bits set except the least significant bit
+#define CHUNK_SIZE(t_chunk) ((t_chunk)->size & SIZE_MASK) // Mask out least significant bit
 
 // Helper macros to access boundary tags
 #define CHUNK_OVERHEAD (sizeof(size_t) * 2)
