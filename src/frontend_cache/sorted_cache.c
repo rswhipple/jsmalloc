@@ -1,6 +1,10 @@
 #include "../../inc/main.h"
 
-
+/*
+search_unsorted_cache() iterates through the unsorted linked list of t_chunks.
+If the t_chunk is not large enough for allocation, it is sorted into the 
+cache_table (aka sorted_cache). When a suitable t_chunk is found, the 
+*/
 void* search_unsorted_cache(size_t size) {
   // t_chunk* chunk = NULL;
   size = size + CHUNK_OVERHEAD;
