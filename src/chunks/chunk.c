@@ -53,6 +53,12 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
     second_chunk->fd = temp;
     write_boundary_tag(second_chunk);
 
+    // Add second_chunk to cache_table
+    char key[32];
+    snprintf(key, sizeof(key), "%zu", second_chunk->size);
+    // TODO: fix cache_table_set() segfault issues
+    // cache_table_set(g_pagemap->frontend_cache->cache_table, key, second_chunk);
+
     // Return the first chunk
     return first_chunk;
 }
@@ -71,7 +77,7 @@ t_chunk* allocate_huge_chunk(size_t size) {
 void free_chunk(void* ptr, size_t size) {
     UNUSED(size);
     t_chunk* unsorted_chunk = g_pagemap->frontend_cache->unsorted_cache;
-    // check for other free chunks and write coalescing algp
+    // check for other free chunks and write coalescing algo
 
     // cast the memory space back into a chunk, set free and add to unsorted list
     t_chunk* chunk = (t_chunk*)((char*)ptr - sizeof(size_t));
