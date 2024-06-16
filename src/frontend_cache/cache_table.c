@@ -40,6 +40,7 @@ static uint64_t hash_key(const char* key) {
 }
 
 void* cache_table_get(t_cache_table* table, const char* key) {
+  // TODO: make sure cache_table() removes t_chunk from list when it returns
   // AND hash with capacity-1 to ensure it's within entries array.
   uint64_t hash = hash_key(key);
   size_t index = (size_t)(hash & (uint64_t)(table->capacity - 1));
@@ -63,6 +64,7 @@ void* cache_table_get(t_cache_table* table, const char* key) {
 // Internal function to set an entry (without expanding table).
 static const char* cache_table_set_entry(cache_table_entry* entries, size_t capacity,
         const char* key, t_chunk* value) {
+  // TODO: how is the list sorted? We may have to implement old hash format
   // AND hash with capacity-1 to ensure it's within entries array.
   uint64_t hash = hash_key(key);
   size_t index = (size_t)(hash & (uint64_t)(capacity - 1));
