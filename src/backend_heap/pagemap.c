@@ -3,14 +3,14 @@
 
 
 /*
-create_pagemap(t_pagemap** pagemap): 
+create_pagemap(t_pagemap** pagemap):
 Uses a double pointer to update the global t_pagemap* g_pagemap variable.
 The system call mmap() is used to retrieve memory for the dynamic heap.
-The frontend_cache field is initialized with a pointer to a t_cache struct 
+The frontend_cache field is initialized with a pointer to a t_cache struct
 created by create_frontend_cache().
 */
 void create_pagemap(t_pagemap** pagemap) {
-    log_info("creating pageheap");
+    // log_info("creating pageheap");
     *pagemap = (t_pagemap*)mmap(0, BASE_HEAP_SIZE, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 
@@ -22,7 +22,7 @@ void create_pagemap(t_pagemap** pagemap) {
     (*pagemap)->frontend_cache = create_frontend_cache(*pagemap);
     (*pagemap)->span_head = create_base_span((*pagemap)->frontend_cache);
     (*pagemap)->total_pages = BASE_HEAP_SIZE / PAGE_SIZE;
-    
+
     create_pages(*pagemap, (*pagemap)->span_head);
     (*pagemap)->top_chunk = (*pagemap)->span_head->page_head->top_chunk;
     // printf("(*pagemap)->top_chunk pointer: %p\n", (*pagemap)->top_chunk);
@@ -75,7 +75,7 @@ t_span* add_span(t_pagemap* pagemap, void* start, size_t size) {
 }
 
 /*
-destroy_active_page() will be used in a future optimization. It will allow us 
+destroy_active_page() will be used in a future optimization. It will allow us
 to return individual pages to the OS if the program running my_malloc is using
 lower amounts of memory space.
 */
