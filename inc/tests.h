@@ -9,6 +9,6 @@
 
 void null_test_success(void** state);
 void int_test_success(void** state);
-void chunk_test_success(void** state);
+void split_chunk_test_success(void** state);
 
 #endif

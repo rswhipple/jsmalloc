@@ -1,6 +1,6 @@
 #include "../inc/tests.h"
 
-void chunk_test_success(void** state) {
+void split_chunk_test_success(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
 
   t_chunk* split = split_chunk(pagemap->span_head->page_head->top_chunk, 100);

@@ -24,7 +24,7 @@ static int teardown(void** state) {
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(null_test_success),
-        cmocka_unit_test_setup_teardown(chunk_test_success, setup, teardown),
+        cmocka_unit_test_setup_teardown(split_chunk_test_success, setup, teardown),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
