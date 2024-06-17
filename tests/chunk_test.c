@@ -1,5 +1,38 @@
 #include "../inc/tests.h"
 
+void allocate_huge_chunk_test_success(void** state) {
+  UNUSED(state);
+
+  size_t size = 4096;
+  t_chunk* huge_chunk = allocate_huge_chunk(size);
+  assert_int_equal(huge_chunk->size, size);
+}
+
+void allocate_huge_chunk_test_failure(void** state) {
+  UNUSED(state);
+
+  size_t size = 0;
+  t_chunk* huge_chunk = allocate_huge_chunk(size);
+  assert_null(huge_chunk);
+}
+
+// TODO: Implement this test
+void free_chunk_test(void** state) {
+  UNUSED(state);
+
+  //   t_pagemap* pagemap = (t_pagemap*)*state;
+  //   t_chunk* chunk = pagemap->span_head->page_head->top_chunk;
+  //   size_t size = CHUNK_SIZE(chunk);
+  //   free_chunk(chunk, size);
+}
+
+void free_huge_chunk_test(void** state) {
+  UNUSED(state);
+  size_t size = 4096;
+  t_chunk* huge_chunk = allocate_huge_chunk(size);
+  free_huge_chunk(huge_chunk, size);
+}
+
 void split_chunk_test_success(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
 
