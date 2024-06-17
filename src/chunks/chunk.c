@@ -32,7 +32,7 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
         fprintf(stderr, "Invalid split size: %zu (chunk size: %zu)\n", size, chunk->size);
         exit(EXIT_FAILURE);
     }
-  
+
     // Placeholder variables
     t_chunk* temp = chunk->fd;
     size_t initial_chunk_size = chunk->size;
@@ -68,7 +68,7 @@ t_chunk* allocate_huge_chunk(size_t size) {
     t_chunk* huge_chunk = (t_chunk*)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (huge_chunk == MAP_FAILED) {
         perror("mmap");
-        exit(EXIT_FAILURE);
+        return NULL;
     }
     huge_chunk->size = size;
     return huge_chunk;
