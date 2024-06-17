@@ -13,7 +13,7 @@ $(shell mkdir -p $(TEST_BUILDDIR))
 
 # Collect all source files excluding ../src/main.c
 SOURCES = $(shell find $(SRCDIR) -name '*.c')
-TEST_SOURCES = $(wildcard $(TESTDIR)/*_test.c)
+TEST_SOURCES = $(shell find $(TESTDIR) -name '*_test.c')
 
 # Generate object file paths
 OBJECTS = $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SOURCES))

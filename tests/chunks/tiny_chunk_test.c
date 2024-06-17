@@ -1,4 +1,4 @@
-#include "../inc/tests.h"
+#include "../../inc/tests.h"
 
 void create_top_tiny_chunk_test(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
@@ -23,6 +23,7 @@ void create_tiny_chunk_test(void** state) {
 
 // BUG: free_tiny_chunk_test is failing on seg fault when looking up fast_cache, is it connected to fast_cache?
 void free_tiny_chunk_test(void** state) {
+  UNUSED(state);
   // t_pagemap* pagemap = (t_pagemap*)*state;
   // t_fpage* fpage = pagemap->span_head->fastpages;
   // fpage->chunk_size = 16;
