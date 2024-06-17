@@ -30,7 +30,7 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
     // log_info("splitting chunk");
     if (CHUNK_SIZE(chunk) <= size) {
         fprintf(stderr, "Invalid split size: %zu (chunk size: %zu)\n", size, chunk->size);
-        exit(EXIT_FAILURE);
+        return NULL;
     }
 
     // Placeholder variables
