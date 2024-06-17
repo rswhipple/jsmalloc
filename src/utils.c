@@ -56,6 +56,7 @@ size_t check_system_size_t() {
 
 int get_fpage_index(size_t nbr) {
     int num_pages = g_pagemap->frontend_cache->fcache_size;
+
     int i;
     size_t list[] = { 8, 16, 24, 32, 40, 48, 56, 64 };
     int list_len = 8;
