@@ -14,9 +14,9 @@ void create_pagemap(t_pagemap** pagemap) {
     *pagemap = (t_pagemap*)mmap(0, BASE_HEAP_SIZE, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 
-    printf("pageheap start: %p\n", *pagemap);
-    void* last_byte = (void*)MEMORY_SHIFT(*pagemap, BASE_HEAP_SIZE);
-    printf("pageheap end: %p\n", last_byte);
+    // printf("pageheap start: %p\n", *pagemap);
+    // void* last_byte = (void*)MEMORY_SHIFT(*pagemap, BASE_HEAP_SIZE);
+    // printf("pageheap end: %p\n", last_byte);
 
 
     (*pagemap)->frontend_cache = create_frontend_cache(*pagemap);
