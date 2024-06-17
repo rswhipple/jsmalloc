@@ -14,14 +14,13 @@ void create_tiny_chunk_test(void** state) {
   fpage->chunk_size = 16;
   fpage->chunk_count = 0;
   t_tiny_chunk* tiny_chunk = create_tiny_chunk(fpage);
-  printf("fpage->chunk_size: %zu\n", fpage->chunk_size);
 
   assert_null(tiny_chunk->next);
   assert_int_equal(fpage->chunk_count, 1);
   assert_ptr_equal(fpage->last_chunk, tiny_chunk);
 }
 
-// BUG: free_tiny_chunk_test is failing on seg fault when looking up fast_cache, is it connected to fast_cache?
+// TODO: waiting on completion of free_tiny_chunk?
 void free_tiny_chunk_test(void** state) {
   UNUSED(state);
   // t_pagemap* pagemap = (t_pagemap*)*state;
@@ -29,7 +28,6 @@ void free_tiny_chunk_test(void** state) {
   // fpage->chunk_size = 16;
   // fpage->chunk_count = 0;
   // t_tiny_chunk* tiny_chunk = create_tiny_chunk(fpage);
-  // printf("fpage->chunk_size: %zu\n", fpage->chunk_size);
   // free_tiny_chunk(tiny_chunk, tiny_chunk->size);
   // assert_null(tiny_chunk);
 }
