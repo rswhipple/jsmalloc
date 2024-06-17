@@ -1,14 +1,13 @@
 #include "../inc/tests.h"
 #include <stdlib.h>
 
+
 static int setup(void** state) {
     system_settings();
 
-    t_pagemap* pagemap = NULL;
+    create_pagemap(&g_pagemap);
 
-    create_pagemap(&pagemap);
-
-    *state = pagemap;
+    *state = g_pagemap;
     return 0;
 }
 
@@ -36,6 +35,10 @@ int main(void) {
         cmocka_unit_test_setup_teardown(create_top_tiny_chunk_test, setup, teardown),
         cmocka_unit_test_setup_teardown(create_tiny_chunk_test, setup, teardown),
         cmocka_unit_test_setup_teardown(free_tiny_chunk_test, setup, teardown),
+
+        // =================== Fast Cache ===================
+        cmocka_unit_test_setup_teardown(create_fast_cache_test, setup, teardown),
+        cmocka_unit_test_setup_teardown(search_fast_cache_test, setup, teardown),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
