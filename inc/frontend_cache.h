@@ -18,8 +18,7 @@ t_tiny_chunk** create_fast_cache(t_cache* cache);
 
 // =================== Cache Table ===================
 t_cache_table* cache_table_create(t_cache* cache);
-void cache_table_destroy(t_cache_table* table);
-void* cache_table_get(t_cache_table* table, const char* key);
-const char* cache_table_set(t_cache_table* table, const char* key, t_chunk* value);
+t_chunk* cache_table_get(t_cache_table* ct, const char* key);
+const char* cache_table_set(t_cache_table* ct, const char* key, t_chunk* value);
 
 #endif

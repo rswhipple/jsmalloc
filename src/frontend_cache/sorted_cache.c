@@ -19,7 +19,7 @@ void* search_unsorted_cache(size_t size) {
       return (void*)MEMORY_SHIFT(unsorted_chunk, CHUNK_OVERHEAD);
     }
     else {
-      // add function to sort chunk
+      // sort chunk if not correct size
       char key[32];
       snprintf(key, sizeof(key), "%zu", size);
 
@@ -59,7 +59,6 @@ t_chunk* get_top_chunk(t_page* page) {
 }
 
 void* search_sorted_cache(size_t size, int page_type) {
-  // TODO: determine how to get correct bin_size
   size = size + CHUNK_OVERHEAD;
   char key[32];
   snprintf(key, sizeof(key), "%zu", size);
