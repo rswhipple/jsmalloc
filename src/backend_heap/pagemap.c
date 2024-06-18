@@ -37,7 +37,8 @@ void create_pagemap(t_pagemap** pagemap) {
 t_span* create_base_span(t_cache* cache) {
     // log_info("creating span");
     t_span* span = (t_span*)MEMORY_SHIFT(CACHE_SHIFT(cache),
-            ((cache->fcache_size * sizeof(t_tiny_chunk*)) + sizeof(t_cache_table)));
+            ((cache->fcache_size * sizeof(t_tiny_chunk*)) + sizeof(t_cache_table)
+            + (NUM_BINS * sizeof(cache_table_entry))));
     // printf("span pointer: %p\n", span);
     span->next = NULL;
     span->fastpages = NULL;
