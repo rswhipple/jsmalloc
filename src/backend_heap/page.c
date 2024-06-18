@@ -6,7 +6,8 @@ void create_pages(t_pagemap* pagemap, t_span* span) {
   span->page_head = create_base_page(pagemap, span);
   pages_left -= 1;
   current = span->page_head;
-
+  log_info("after base page creation\n");
+  printf("pagemap->frontend_cache->cache_table->capacity: %zu\n", pagemap->frontend_cache->cache_table->capacity);
   while (pages_left > 0) {
     current = create_page(current, span, small);
     pages_left -= 1;
@@ -20,7 +21,7 @@ void create_pages(t_pagemap* pagemap, t_span* span) {
 }
 
 t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
-  // log_info("creating base page");
+  log_info("creating base page");
   t_cache* cache = pagemap->frontend_cache;
   t_page* page = (t_page*)SPAN_SHIFT(span);
   page->chunk_count = 1;
@@ -38,12 +39,14 @@ t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
     page->memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
   }
   page->pagetype = small;
+
   // printf("base page pointer: %p\n", page);
   // printf("sizeof(t_page): %zu\n", sizeof(t_fpage));
   // printf("base page->memory: %zu\n", page->memory);
   // void* last_byte = (void*)MEMORY_SHIFT(page, page->memory + sizeof(t_page));
   // printf("base page end: %p\n", last_byte);
   create_top_chunk(page);
+  printf("pagemap->frontend_cache->cache_table->capacity: %zu\n", pagemap->frontend_cache->cache_table->capacity);
 
   return page;
 }
