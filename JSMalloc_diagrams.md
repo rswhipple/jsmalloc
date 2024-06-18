@@ -135,11 +135,15 @@ The memory allocator operates through multiple layers: the application, the fron
 | single linked list    |
 | [t_tiny_chunk*]       |
 | ...                   |
-+-----------------------+           +---------------------+
-| [t_cache_table] = ct  |           |
-| ct->entries     --------------->  |
-| ct->capacity          |           |
++-----------------------+ 
+| [t_cache_table] = ct  |
+| ct->entries           |
+| ct->capacity          |
 | ...                   |
++-----------------------+
+| cache_table_entries   |
+|                       |
+|                       |
 +-----------------------+
 | [t_span] = s          |
 +-----------------------+
