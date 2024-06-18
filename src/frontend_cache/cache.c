@@ -18,9 +18,9 @@ t_cache* create_frontend_cache(t_pagemap* pagemap) {
     cache->unsorted_cache = NULL;
     // void* last_byte = (void*)MEMORY_SHIFT(cache, (NUM_BINS * sizeof(t_chunk*) + sizeof(t_cache)));
     // printf("cache end: %p\n", last_byte);
-    log_info("created frontend cache");
+    // log_info("created frontend cache");
 
-    printf("cache->cache_table->capacity: %zu\n", cache->cache_table->capacity);
+    // printf("cache->cache_table->capacity: %zu\n", cache->cache_table->capacity);
     return cache;
 }
 

@@ -44,8 +44,8 @@ t_span* create_base_span(t_cache* cache) {
     span->fastpages = NULL;
     // TODO: do we need this? commenting out prevents cache_table->capacity from being wiped out (goes from 16 to 0)
     span->page_head = NULL;
-    log_info("setting span page_head to NULL");
-    printf("cache_table->capacity: %zu\n", cache->cache_table->capacity);
+    // log_info("setting span page_head to NULL");
+    // printf("cache_table->capacity: %zu\n", cache->cache_table->capacity);
     span->top_chunk = NULL;
     span->last_chunk = NULL;
     span->num_pages = BASE_HEAP_SIZE / PAGE_SIZE;
@@ -119,5 +119,5 @@ void destroy_pagemap(t_pagemap* pagemap) {
         }
         span = span->next;
     }
-    printf("success\n");
+    // printf("success\n");
 }
