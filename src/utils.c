@@ -15,47 +15,48 @@ void system_settings() {
     check_system_pointer();
     if (pointer_size == 4) {
         min_chunk_size = 16;
-        log_info("Minimum chunk size is 8 bytes (4 free).");
+        // log_info("Minimum chunk size is 8 bytes (4 free).");
     }
     else {
         min_chunk_size = 16;
-        log_info("Minimum chunk size is 16 bytes (8 free).");
+        // log_info("Minimum chunk size is 16 bytes (8 free).");
     }
 }
 
 void check_system_pointer() {
     pointer_size = sizeof(void*);
-    if (pointer_size == 4) {
-        log_info("System has 4-byte pointers.");
-    }
-    else if (pointer_size == 8) {
-        log_info("System has 8-byte pointers.");
-    }
-    else {
-        printf("Unexpected pointer size: %zu bytes\n", pointer_size);
-        // add error exit
-    }
+    // if (pointer_size == 4) {
+    //     log_info("System has 4-byte pointers.");
+    // }
+    // else if (pointer_size == 8) {
+    //     log_info("System has 8-byte pointers.");
+    // }
+    // else {
+    //     printf("Unexpected pointer size: %zu bytes\n", pointer_size);
+    //     // add error exit
+    // }
 }
 
 size_t check_system_size_t() {
     size_t size_t_size = sizeof(size_t);
 
-    if (size_t_size == 4) {
-        log_info("System has 4-byte size_t.");
-    }
-    else if (size_t_size == 8) {
-        log_info("System has 8-byte size_t.");
-    }
-    else {
-        printf("Unexpected size_t size: %zu bytes\n", size_t_size);
-        // add error exit
-    }
+    // if (size_t_size == 4) {
+    //     log_info("System has 4-byte size_t.");
+    // }
+    // else if (size_t_size == 8) {
+    //     log_info("System has 8-byte size_t.");
+    // }
+    // else {
+    //     printf("Unexpected size_t size: %zu bytes\n", size_t_size);
+    //     // add error exit
+    // }
 
     return size_t_size;
 }
 
 int get_fpage_index(size_t nbr) {
     int num_pages = g_pagemap->frontend_cache->fcache_size;
+
     int i;
     size_t list[] = { 8, 16, 24, 32, 40, 48, 56, 64 };
     int list_len = 8;
@@ -103,14 +104,13 @@ size_t round_up_to_next(size_t number) {
 }
 
 
-char* my_strcpy(char* dst, char* src)
-{
+char* my_strcpy(char* dst, char* src) {
 
     int i;
     int length = my_strlen(src);
 
     for (i = 0; i < length; i++) {
-        dst[i] = src[i]; 
+        dst[i] = src[i];
     }
 
     dst[i] = '\0';
@@ -119,8 +119,7 @@ char* my_strcpy(char* dst, char* src)
 }
 
 
-int my_strlen(char* str) 
-{
+int my_strlen(char* str) {
     int i = 0;
 
     do {
