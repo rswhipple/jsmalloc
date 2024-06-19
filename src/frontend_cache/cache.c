@@ -2,10 +2,6 @@
 #include "../../inc/main.h"
 
 
-/*
-
-*/
-
 t_cache* create_frontend_cache(t_pagemap* pagemap) {
     t_cache* cache = (t_cache*)PAGEMAP_SHIFT(pagemap);
 
