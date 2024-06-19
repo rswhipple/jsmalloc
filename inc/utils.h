@@ -6,6 +6,7 @@
 #define UNUSED(x) (void)(x)
 
 void log_info(const char* message);
+void log_heap();
 
 void system_settings();
 void check_system_pointer();

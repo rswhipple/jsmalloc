@@ -5,53 +5,44 @@ void log_info(const char* message) {
     printf("\n=====%s=====\n", message);
 }
 
+void log_heap() {
+    printf("System has %zu-byte pointers.", pointer_size);
+
+    log_info("pageheap");
+    printf("pageheap start: %p\n", g_pagemap);
+    void* last_byte = (void*)MEMORY_SHIFT(g_pagemap, BASE_HEAP_SIZE);
+    printf("pageheap end: %p\n", last_byte);
+
+    log_info("frontend cache");
+    
+
+    log_info("span");
+    printf("span pointer: %p\n", g_pagemap->span_head);
+    void* last_byte = (void*)MEMORY_SHIFT(g_pagemap->span_head, sizeof(t_span));
+    printf("span end: %p\n", last_byte);
+}
+
 /*
 system_settings(): Sets the global variable min_chunk_size.
 min_chunk_size affects the minimum t_tiny_chunk size and is dependant on whether
 the OS uses 4 byte or 8 byte pointers.
 */
-
 void system_settings() {
     check_system_pointer();
     if (pointer_size == 4) {
         min_chunk_size = 16;
-        // log_info("Minimum chunk size is 8 bytes (4 free).");
     }
     else {
         min_chunk_size = 16;
-        // log_info("Minimum chunk size is 16 bytes (8 free).");
     }
 }
 
 void check_system_pointer() {
     pointer_size = sizeof(void*);
-    // if (pointer_size == 4) {
-    //     log_info("System has 4-byte pointers.");
-    // }
-    // else if (pointer_size == 8) {
-    //     log_info("System has 8-byte pointers.");
-    // }
-    // else {
-    //     printf("Unexpected pointer size: %zu bytes\n", pointer_size);
-    //     // add error exit
-    // }
 }
 
 size_t check_system_size_t() {
-    size_t size_t_size = sizeof(size_t);
-
-    // if (size_t_size == 4) {
-    //     log_info("System has 4-byte size_t.");
-    // }
-    // else if (size_t_size == 8) {
-    //     log_info("System has 8-byte size_t.");
-    // }
-    // else {
-    //     printf("Unexpected size_t size: %zu bytes\n", size_t_size);
-    //     // add error exit
-    // }
-
-    return size_t_size;
+    return sizeof(size_t);
 }
 
 int get_fpage_index(size_t nbr) {
