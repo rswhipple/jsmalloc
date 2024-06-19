@@ -1,9 +1,5 @@
 #include "../../inc/main.h"
 
-#include <string.h>
-
-#define FNV_OFFSET 14695981039346656037UL
-#define FNV_PRIME 1099511628211UL
 
 t_cache_table* cache_table_create(t_cache* cache) {
   // log_info("creating true cache table");
@@ -34,9 +30,8 @@ static size_t cache_table_index(t_cache_table *ct, uint64_t hash) {
   return (size_t)(hash & (uint64_t)(ct->capacity - 1));
 }
 
-/* Removes first entry in linked list and update head.
-If linked list is empty, return NULL
-*/
+/* Removes first entry in linked list and update head. If linked list is empty, 
+return NULL. */
 t_chunk* cache_table_get(t_cache_table* ct, const char* key) {
   uint64_t hash = hash_key(key);
   size_t index = cache_table_index(ct, hash);
@@ -50,9 +45,7 @@ t_chunk* cache_table_get(t_cache_table* ct, const char* key) {
   return value;
 }
 
-/* Adds t_chunk to the tail of the linked list.
-Returns key
-*/
+/* Adds t_chunk to the tail of the linked list. Returns key. */
 static const char* cache_table_set_entry(t_cache_table* ct,
         const char* key, t_chunk* value) {
   uint64_t hash = hash_key(key);
@@ -75,7 +68,7 @@ static const char* cache_table_set_entry(t_cache_table* ct,
     }
   }
 
-  // Didn't find key, allocate+copy if needed, then insert it.
+  // Didn't find key, insert new key and value.
   ct->entries[index].key = (char*)key;
   ct->entries[index].value = value;
   return key;

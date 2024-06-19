@@ -56,14 +56,12 @@ size_t check_system_size_t() {
 
 int get_fpage_index(size_t nbr) {
     int num_pages = g_pagemap->frontend_cache->fcache_size;
-
     int i;
     size_t list[] = { 8, 16, 24, 32, 40, 48, 56, 64 };
     int list_len = 8;
 
     // Iterate through the list
     for (i = 0; i < list_len; i++) {
-        // If the current list element is greater than or equal to the number
         if (list[i] >= nbr) {
             break;
         }
@@ -101,6 +99,34 @@ size_t round_up_to_next(size_t number) {
     }
     // If no larger or equal number is found, return the largest number in the list
     return list[NUM_BINS - 1]; // Assuming the list is sorted in ascending order
+}
+
+
+t_page* get_page_head(int page_type) {
+  t_page* page_head = g_pagemap->span_head->page_head;
+  if (page_type == 3) {
+    while ((int)page_head->pagetype != page_type) {
+      page_head = page_head->next;
+    }
+    page_head = g_pagemap->span_head->page_head;
+  }
+  return page_head;
+}
+
+t_chunk* get_top_chunk(t_page* page) {
+  t_chunk* top_chunk = page->top_chunk;
+  while (IS_IN_USE(top_chunk)) {
+    top_chunk = top_chunk->fd;
+  }
+
+  if (top_chunk == NULL) {
+    t_chunk* new_chunk = create_top_chunk(page);
+    top_chunk->fd = new_chunk;
+    new_chunk->bk = top_chunk;
+    top_chunk = new_chunk;
+  }
+
+  return top_chunk;
 }
 
 
