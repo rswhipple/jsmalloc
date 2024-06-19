@@ -12,11 +12,7 @@
 
 #include "../inc/main.h"
 
-/*
-Jsmalloc uses 3 global variables, t_pagemap* g_pagemap, size_t min_chunk_size 
-and size_t pointer_size.
-*/
-
+// global variable initialization
 t_pagemap* g_pagemap = NULL;
 size_t min_chunk_size = 0;
 size_t pointer_size = 0;
