@@ -1,6 +1,6 @@
 .PHONY: all clean test
 
-all: source test run_tests
+all: source test
 
 source:
 		$(MAKE) -C src

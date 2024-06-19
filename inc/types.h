@@ -22,35 +22,24 @@ struct s_chunk {
 };
 
 // =================== Cache ===================
-typedef struct cache_table cache_table;
-
-struct s_cache_tablei {
-    const char* key;  // current key
-    void* value;      // current value
-
-    // Don't use these fields directly.
-    cache_table* _table;       // reference to hash table being iterated
-    size_t _index;    // current index into cache_table._entries
-};
-
-typedef struct s_cache_tablei cache_tablei;
-
+typedef struct s_cache_table t_cache_table;
 typedef struct s_cache t_cache;
-typedef struct cache_table_s t_cache_table;
+
 struct s_cache {
     t_tiny_chunk** fast_cache;
-    size_t fcache_size;
-    cache_table* cache_table;
+    t_cache_table* cache_table;
     t_chunk* unsorted_cache;
+    size_t fcache_size;
 };
 
-// Hash table structure
-typedef unsigned int (hash_function)(size_t input, uint32_t);
+typedef struct {
+    const char* key;  // key is NULL if this slot is empty
+    t_chunk* value;
+} cache_table_entry;
 
-struct cache_table_s {
-    size_t size;
-    hash_function* hash;
-    t_chunk** elements;
+struct s_cache_table {
+    cache_table_entry* entries;
+    size_t capacity;
 };
 
 // =================== Pages ===================
@@ -97,9 +86,9 @@ typedef struct s_pagemap t_pagemap;
 struct s_pagemap {
     t_cache* frontend_cache;
     t_span* span_head;
-    size_t total_pages;
     t_chunk* top_chunk;      // Holds the top chunk in the heap
-    // t_chunk* last_chunk;     // Holds the chunk where memory was allocated last. Purpose is to help create objects in proximity to one another.
+    t_chunk* last_chunk;     // Holds the chunk where memory was allocated last. Purpose is to help create objects in proximity to one another.
+    size_t total_pages;
 };
 
 

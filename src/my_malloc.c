@@ -1,16 +1,14 @@
 #include "../inc/main.h" 
 
+
 void* my_malloc(size_t size) {
     if (g_pagemap == NULL) {
+        system_settings();
         create_pagemap(&g_pagemap);
     }
 
-    // TODO error check for negatives
-
-    // get category
+    // get category & search heap
     int page_type = get_page_type(size);
-
-    // search heap
     void* ptr = search_heap(size, page_type);
 
     if (ptr) return ptr;
@@ -28,7 +26,6 @@ void* search_heap(size_t size, int page_type) {
     default: break;
     }
 
-    printf("returning NULL\n");
     return NULL;
 }
 

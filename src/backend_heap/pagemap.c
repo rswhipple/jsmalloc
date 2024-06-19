@@ -2,26 +2,31 @@
 #include "../../inc/main.h"
 
 
-
+/*
+create_pagemap(t_pagemap** pagemap):
+Uses a double pointer to update the global t_pagemap* g_pagemap variable.
+The system call mmap() is used to retrieve memory for the dynamic heap.
+The frontend_cache field is initialized with a pointer to a t_cache struct
+created by create_frontend_cache().
+*/
 void create_pagemap(t_pagemap** pagemap) {
     // log_info("creating pageheap");
-    // printf("BASE_HEAP_SIZE: %d\n", BASE_HEAP_SIZE);
-    // printf("PAGE_SIZE: %d\n", PAGE_SIZE);
-
     *pagemap = (t_pagemap*)mmap(0, BASE_HEAP_SIZE, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 
-    // printf("pagemap pointer: %p\n", *pagemap);
-    // printf("sizeof(t_pagemap): %zu\n", sizeof(t_pagemap));
-    // void* last_byte = (void*)MEMORY_SHIFT(*pagemap, sizeof(t_pagemap));
-    // printf("pagemap end: %p\n", last_byte);
-    // last_byte = (void*)MEMORY_SHIFT(*pagemap, BASE_HEAP_SIZE);
+    // printf("pageheap start: %p\n", *pagemap);
+    // void* last_byte = (void*)MEMORY_SHIFT(*pagemap, BASE_HEAP_SIZE);
     // printf("pageheap end: %p\n", last_byte);
+
 
     (*pagemap)->frontend_cache = create_frontend_cache(*pagemap);
     (*pagemap)->span_head = create_base_span((*pagemap)->frontend_cache);
     (*pagemap)->total_pages = BASE_HEAP_SIZE / PAGE_SIZE;
+
     create_pages(*pagemap, (*pagemap)->span_head);
+    (*pagemap)->top_chunk = (*pagemap)->span_head->page_head->top_chunk;
+    // printf("(*pagemap)->top_chunk pointer: %p\n", (*pagemap)->top_chunk);
+    (*pagemap)->last_chunk = NULL;
     // log_info("printing fast_cache before fpages");
     // print_fast_cache((*pagemap)->frontend_cache->fast_cache);
     create_fpages(*pagemap);
@@ -32,11 +37,15 @@ void create_pagemap(t_pagemap** pagemap) {
 t_span* create_base_span(t_cache* cache) {
     // log_info("creating span");
     t_span* span = (t_span*)MEMORY_SHIFT(CACHE_SHIFT(cache),
-            ((cache->fcache_size * sizeof(t_tiny_chunk*)) + (NUM_BINS * sizeof(t_chunk*))));
+            ((cache->fcache_size * sizeof(t_tiny_chunk*)) + sizeof(t_cache_table)
+            + (NUM_BINS * sizeof(cache_table_entry))));
     // printf("span pointer: %p\n", span);
     span->next = NULL;
     span->fastpages = NULL;
+    // TODO: do we need this? commenting out prevents cache_table->capacity from being wiped out (goes from 16 to 0)
     span->page_head = NULL;
+    // log_info("setting span page_head to NULL");
+    // printf("cache_table->capacity: %zu\n", cache->cache_table->capacity);
     span->top_chunk = NULL;
     span->last_chunk = NULL;
     span->num_pages = BASE_HEAP_SIZE / PAGE_SIZE;
@@ -69,6 +78,11 @@ t_span* add_span(t_pagemap* pagemap, void* start, size_t size) {
     return span;
 }
 
+/*
+destroy_active_page() will be used in a future optimization. It will allow us
+to return individual pages to the OS if the program running my_malloc is using
+lower amounts of memory space.
+*/
 void destroy_active_page(t_page* page) {
     if (page->next && page->prev) {
         page->next->prev = page->prev;
@@ -105,5 +119,5 @@ void destroy_pagemap(t_pagemap* pagemap) {
         }
         span = span->next;
     }
-    printf("success\n");
+    // printf("success\n");
 }

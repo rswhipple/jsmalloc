@@ -28,7 +28,7 @@ The memory allocator operates through multiple layers: the application, the fron
 |  |  +-------------------------------+   |  |
 |  |          Sorted Cache                |  |
 |  |  +-------------------------------+   |  |
-|  |  | t_cache_table* cache_table        |  |
+|  |  | t_cache_table* cache_table    |   |  |
 |  |  +-------------------------------+   |  |
 |  +--------------------------------------+  |
 +--------------------------------------------+
@@ -115,6 +115,44 @@ The memory allocator operates through multiple layers: the application, the fron
 |  +-----------+     +----------+     +----------+
 +---------------------------+
 ```
+
+## Pageheap Diagram
+
++-----------------------+
+|[t_pagemap] = p        |
+| p->frontend_cache     |
+| p->span_head          |
+| p->top_chunk          |
+| ...                   |
++-----------------------+          
+|[t_cache] = c          |
+| c->fast_cache         |
+| c->cache_table        |
+| c->unsorted_cache     |
+| ...                   |
++-----------------------+
+| fast_cache            |
+| single linked list    |
+| [t_tiny_chunk*]       |
+| ...                   |
++-----------------------+ 
+| [t_cache_table] = ct  |
+| ct->entries           |
+| ct->capacity          |
+| ...                   |
++-----------------------+
+| cache_table_entries   |
+|                       |
+|                       |
++-----------------------+
+| [t_span] = s          |
++-----------------------+
+| first page            |
+|                       |
+|    chunks             |
++-----------------------+
++-----------------------+
+
 
 ## Chunk Header Metadata
 

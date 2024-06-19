@@ -18,24 +18,19 @@ extern t_pagemap* g_pagemap;
 #define LARGE_MAX_CHUNK_SIZE (LARGE_PAGE_ALLOCATION_SIZE * PAGE_SIZE / 12)
 
 // Helper macros to set and check t_chunk status
-#define SET_IN_USE(chunk) ((chunk)->size |= 0x1)
-#define IS_IN_USE(chunk) ((chunk)->size & 0x1)
-#define SET_FREE(chunk) ((chunk)->size &= ~0x1)
+#define SET_IN_USE(t_chunk) ((t_chunk)->size |= 0x1)
+#define IS_IN_USE(t_chunk) ((t_chunk)->size & 0x1)
+#define SET_FREE(t_chunk) ((t_chunk)->size &= ~0x1)
 
 // Helper macros to set and check t_chunk size
-#define SET_CHUNK_SIZE(chunk, sz) ((chunk)->size = ((sz) & SIZE_MASK) | ((chunk)->size & ~SIZE_MASK))
-#define SIZE_MASK (~0x7)
-#define CHUNK_SIZE(chunk) ((chunk)->size & SIZE_MASK) // Mask out lower 3 bits used for status
+#define SIZE_MASK (~0x1)  // Mask with all bits set except the least significant bit
+#define CHUNK_SIZE(t_chunk) ((t_chunk)->size & SIZE_MASK) // Mask out least significant bit
 
 // Helper macros to access boundary tags
 #define CHUNK_OVERHEAD (sizeof(size_t) * 2)
-#define NEXT_CHUNK(chunk) ((chunk*)((char*)(chunk) + CHUNK_SIZE(chunk)))
-#define PREV_CHUNK(chunk, prev_size) ((chunk*)((char*)(chunk) - prev_size))
+#define NEXT_CHUNK(chunk) ((t_chunk*)((char*)(chunk) + CHUNK_SIZE(chunk)))
+#define PREV_CHUNK(chunk, prev_size) ((t_chunk*)((char*)(chunk) - prev_size))
 #define TINY_CHUNK_OVERHEAD sizeof(size_t)
-
-// Helper macros to access boundary tags
-#define NEXT_CHUNK(chunk) ((chunk*)((char*)(chunk) + CHUNK_SIZE(chunk)))
-#define CHUNK_SIZE(chunk) ((chunk)->size & SIZE_MASK) // Mask out lower 3 bits used for status
 
 // Alignment to ensure proper boundaries
 #define ALIGN_SIZE 8
@@ -59,3 +54,4 @@ extern t_pagemap* g_pagemap;
 #define NUM_BINS 149
 
 #endif // CONSTANTS_H
+;

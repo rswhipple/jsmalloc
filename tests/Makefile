@@ -1,7 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
-LDFLAGS := -lcmocka -L/usr/local/lib -lcmocka -L/opt/homebrew/lib
-
+CFLAGS = -Wall -Wextra -Werror -g3 -O0
+LDFLAGS := -lcmocka -L/usr/local/lib
 SRCDIR = ../src
 TESTDIR = .
 INCDIR = ../include
@@ -13,7 +12,7 @@ $(shell mkdir -p $(TEST_BUILDDIR))
 
 # Collect all source files excluding ../src/main.c
 SOURCES = $(shell find $(SRCDIR) -name '*.c')
-TEST_SOURCES = $(wildcard $(TESTDIR)/*_test.c)
+TEST_SOURCES = $(shell find $(TESTDIR) -name '*_test.c')
 
 # Generate object file paths
 OBJECTS = $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SOURCES))
