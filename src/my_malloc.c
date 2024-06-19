@@ -3,6 +3,7 @@
 
 void* my_malloc(size_t size) {
     if (g_pagemap == NULL) {
+        system_settings();
         create_pagemap(&g_pagemap);
     }
 
@@ -25,7 +26,6 @@ void* search_heap(size_t size, int page_type) {
     default: break;
     }
 
-    printf("returning NULL\n");
     return NULL;
 }
 

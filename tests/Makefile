@@ -1,7 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
-LDFLAGS := -lcmocka -L/usr/local/lib -lcmocka
-
+CFLAGS = -Wall -Wextra -Werror -g3 -O0
+LDFLAGS := -lcmocka -L/usr/local/lib
 SRCDIR = ../src
 TESTDIR = .
 INCDIR = ../include

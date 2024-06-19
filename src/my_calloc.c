@@ -9,7 +9,7 @@ nitem or itsize is 0, then:
         implementation-defined value
 */
 
-void* calloc(size_t nitems, size_t itsize) {
+void* my_calloc(size_t nitems, size_t itsize) {
     if (nitems == 0 || itsize == 0) {
         printf("returning NULL\n");
         return NULL;
