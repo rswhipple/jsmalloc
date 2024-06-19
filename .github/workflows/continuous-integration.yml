@@ -5,7 +5,7 @@ on:
     branches: ["main"]
   pull_request:
     branches:
-      - '*' 
+      - "*"
 
 jobs:
   build:
@@ -13,9 +13,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Install dependencies
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y cmake libcmocka-dev
-      - name: make
-        run: make
+          sudo apt-get install -y cmake libcmocka-dev gdb
+
+      - name: Log Installed Libraries
+        run: dpkg -l | grep cmocka
+
+      - name: Build
+        run: |
+          make V=1
+
+      - name: Run Tests with Core Dumps
+        run: |
+          sudo sysctl -w kernel.core_pattern=core_dumps/core.%e.%p
+          ulimit -c unlimited
+          ./tests/build/tests/run || gdb ./tests/build/tests/run core_dumps/core* -ex "bt" -ex "quit"
