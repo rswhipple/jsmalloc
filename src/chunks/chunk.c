@@ -15,19 +15,11 @@ t_chunk* create_top_chunk(t_page* page) {
     chunk->bk = NULL;
     page->top_chunk = chunk;
 
-    // log_info("creating top chunk");
-    // printf("chunk pointer: %p\n", chunk);
-    // printf("chunk's data pointer (same memory location as *fd): %p\n", chunk->fd);
-    // printf("chunk size: %zu\n", chunk->size);
-    // printf("sizeof(t_chunk): %zu\n", sizeof(t_chunk));
-    // TODO: confirm this is correct?
-
     return chunk;
 }
 
 // input parameters are t_chunk *chunk and size_t chunk_size
 t_chunk* split_chunk(t_chunk* chunk, size_t size) {
-    // log_info("splitting chunk");
     if (CHUNK_SIZE(chunk) <= size) {
         fprintf(stderr, "Invalid split size: %zu (chunk size: %zu)\n", size, chunk->size);
         return NULL;
@@ -56,8 +48,7 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
     // Add second_chunk to cache_table
     char key[32];
     snprintf(key, sizeof(key), "%zu", second_chunk->size);
-    // TODO: fix cache_table_set() segfault issues
-    // cache_table_set(g_pagemap->frontend_cache->cache_table, key, second_chunk);
+    cache_table_set(g_pagemap->frontend_cache->cache_table, key, second_chunk);
 
     // Return the first chunk
     return first_chunk;

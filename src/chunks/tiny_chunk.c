@@ -2,7 +2,7 @@
 
 
 void print_tiny_chunk(t_tiny_chunk* tiny) {
-    // printf("t_tiny_chunk pointer = %p\n", tiny);
+    printf("t_tiny_chunk pointer = %p\n", tiny);
     if (tiny->next) printf("next t_tiny_chunk = %p\n", tiny->next);
 }
 

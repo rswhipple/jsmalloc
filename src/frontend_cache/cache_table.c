@@ -2,15 +2,13 @@
 
 
 t_cache_table* cache_table_create(t_cache* cache) {
-  // log_info("creating true cache table");
   /* The next line shifts the starting point of the t_cache_table struct 
   beyond fastcache. */
   t_cache_table* table = (t_cache_table*)MEMORY_SHIFT(cache, 
       (cache->fcache_size * sizeof(t_tiny_chunk)));    
-  // printf("cache_table pointer: %p\n", table);
   table->capacity = NUM_BINS;
   table->entries = (cache_table_entry*)MEMORY_SHIFT(table, sizeof(t_cache_table));
-  // printf("cache_table->entries pointer: %p\n", table->entries);
+
   return table;
 }
 

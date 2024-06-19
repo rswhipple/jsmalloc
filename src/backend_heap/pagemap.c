@@ -36,8 +36,7 @@ t_span* create_base_span(t_cache* cache) {
     return span;
 }
 
-t_span* add_span(t_pagemap* pagemap, void* start, size_t size) {
-    UNUSED(start);
+t_span* add_span(t_pagemap* pagemap, size_t size) {
     // map memory to span
     t_span* span = (t_span*)mmap(0, size, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
