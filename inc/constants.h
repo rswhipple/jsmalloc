@@ -29,13 +29,13 @@ extern t_pagemap* g_pagemap;
 // Helper macros to access boundary tags
 #define CHUNK_OVERHEAD (sizeof(size_t) * 2)
 #define NEXT_CHUNK(chunk) ((t_chunk*)((char*)(chunk) + CHUNK_SIZE(chunk)))
+#define PREV_SIZE(chunk) ((size_t)((char*)(chunk) - CHUNK_OVERHEAD))
 #define PREV_CHUNK(chunk, prev_size) ((t_chunk*)((char*)(chunk) - prev_size))
 #define TINY_CHUNK_OVERHEAD sizeof(size_t)
 
-// Alignment to ensure proper boundaries
-#define ALIGN_SIZE 8
-#define ALIGN_MASK (ALIGN_SIZE - 1)
-#define ALIGN(n) (((n) + ALIGN_MASK) & ~ALIGN_MASK)
+// Helper macros for cache_table
+#define FNV_OFFSET 14695981039346656037UL
+#define FNV_PRIME 1099511628211UL
 
 // =================== Shifters ===================
 
@@ -54,4 +54,3 @@ extern t_pagemap* g_pagemap;
 #define NUM_BINS 149
 
 #endif // CONSTANTS_H
-;

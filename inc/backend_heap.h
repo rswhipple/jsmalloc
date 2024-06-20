@@ -4,7 +4,7 @@
 #include "types.h"
 
 t_span* create_base_span(t_cache* cache);
-t_span* add_span(t_pagemap* pagemap, void* start, size_t size);
+t_span* add_span(t_pagemap* pagemap, size_t size);
 void create_pagemap(t_pagemap** pagemap);
 void destroy_pagemap(t_pagemap* pagemap);
 

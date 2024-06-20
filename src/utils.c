@@ -5,65 +5,63 @@ void log_info(const char* message) {
     printf("\n=====%s=====\n", message);
 }
 
+void log_heap() {
+    printf("System has %zu-byte pointers.", pointer_size);
+
+    log_info("pageheap");
+    printf("pageheap start: %p\n", g_pagemap);
+    void* last_byte = (void*)MEMORY_SHIFT(g_pagemap, BASE_HEAP_SIZE);
+    printf("pageheap end: %p\n", last_byte);
+
+  // printf("fpage pointer: %p\n", fpage);
+  // printf("sizeof(t_fpage): %zu\n", sizeof(t_fpage));
+  // printf("available memory: %zu\n", fpage->memory);
+  // printf("chunk size: %zu\n", fpage->chunk_size);
+  // printf("maximum number of chunks: %zu\n", fpage->max_chunks);
+  // void* last_byte = (void*)MEMORY_SHIFT(fpage, fpage->memory + sizeof(t_fpage));
+  // printf("fpage end = %p\n", last_byte);
+
+
+  // log_info("frontend cache");
+
+
+    log_info("span");
+    printf("span pointer: %p\n", g_pagemap->span_head);
+    last_byte = (void*)MEMORY_SHIFT(g_pagemap->span_head, sizeof(t_span));
+    printf("span end: %p\n", last_byte);
+}
+
 /*
 system_settings(): Sets the global variable min_chunk_size.
 min_chunk_size affects the minimum t_tiny_chunk size and is dependant on whether
 the OS uses 4 byte or 8 byte pointers.
 */
-
 void system_settings() {
     check_system_pointer();
     if (pointer_size == 4) {
         min_chunk_size = 16;
-        // log_info("Minimum chunk size is 8 bytes (4 free).");
     }
     else {
         min_chunk_size = 16;
-        // log_info("Minimum chunk size is 16 bytes (8 free).");
     }
 }
 
 void check_system_pointer() {
     pointer_size = sizeof(void*);
-    // if (pointer_size == 4) {
-    //     log_info("System has 4-byte pointers.");
-    // }
-    // else if (pointer_size == 8) {
-    //     log_info("System has 8-byte pointers.");
-    // }
-    // else {
-    //     printf("Unexpected pointer size: %zu bytes\n", pointer_size);
-    //     // add error exit
-    // }
 }
 
 size_t check_system_size_t() {
-    size_t size_t_size = sizeof(size_t);
-
-    // if (size_t_size == 4) {
-    //     log_info("System has 4-byte size_t.");
-    // }
-    // else if (size_t_size == 8) {
-    //     log_info("System has 8-byte size_t.");
-    // }
-    // else {
-    //     printf("Unexpected size_t size: %zu bytes\n", size_t_size);
-    //     // add error exit
-    // }
-
-    return size_t_size;
+    return sizeof(size_t);
 }
 
 int get_fpage_index(size_t nbr) {
     int num_pages = g_pagemap->frontend_cache->fcache_size;
-
     int i;
     size_t list[] = { 8, 16, 24, 32, 40, 48, 56, 64 };
     int list_len = 8;
 
     // Iterate through the list
     for (i = 0; i < list_len; i++) {
-        // If the current list element is greater than or equal to the number
         if (list[i] >= nbr) {
             break;
         }
@@ -101,6 +99,34 @@ size_t round_up_to_next(size_t number) {
     }
     // If no larger or equal number is found, return the largest number in the list
     return list[NUM_BINS - 1]; // Assuming the list is sorted in ascending order
+}
+
+
+t_page* get_page_head(int page_type) {
+  t_page* page_head = g_pagemap->span_head->page_head;
+  if (page_type == 3) {
+    while ((int)page_head->pagetype != page_type) {
+      page_head = page_head->next;
+    }
+    page_head = g_pagemap->span_head->page_head;
+  }
+  return page_head;
+}
+
+t_chunk* get_top_chunk(t_page* page) {
+  t_chunk* top_chunk = page->top_chunk;
+  while (IS_IN_USE(top_chunk)) {
+    top_chunk = top_chunk->fd;
+  }
+
+  if (top_chunk == NULL) {
+    t_chunk* new_chunk = create_top_chunk(page);
+    top_chunk->fd = new_chunk;
+    new_chunk->bk = top_chunk;
+    top_chunk = new_chunk;
+  }
+
+  return top_chunk;
 }
 
 
