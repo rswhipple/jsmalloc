@@ -64,3 +64,37 @@ void free_huge_chunk_test(void** state) {
   t_chunk* huge_chunk = allocate_huge_chunk(size);
   free_huge_chunk(huge_chunk, size);
 }
+
+
+void merge_chunks_test(void** state) {
+  t_pagemap* pagemap = (t_pagemap*)*state;
+  t_chunk* chunk1 = pagemap->span_head->page_head->top_chunk;
+  t_chunk* chunk2 = split_chunk(chunk1, 100);
+  t_chunk* merged_chunk = merge_chunks(chunk1, chunk2);
+
+  assert_int_equal(merged_chunk->size, chunk1->size);
+  assert_int_equal(merged_chunk->size, chunk2->size);
+  assert_null(merged_chunk->fd);
+  assert_null(merged_chunk->bk);
+  assert_false(cache_table_is_bin_head(chunk1));
+  assert_false(cache_table_is_bin_head(chunk2));
+  assert_null(chunk1->bk);
+  assert_null(chunk1->fd);
+  assert_null(chunk2->bk);
+  assert_null(chunk2->fd);
+}
+
+void try_merge_is_in_use_test(void** state) {
+  t_pagemap* pagemap = (t_pagemap*)*state;
+  t_chunk* chunk1 = pagemap->span_head->page_head->top_chunk;
+  t_chunk* chunk2 = split_chunk(chunk1, 100);
+  t_chunk* chunk3 = split_chunk(chunk2, 50);
+
+  t_chunk* merged_chunk = try_merge(chunk1);
+  assert_ptr_equal(merged_chunk, chunk1);
+
+  t_chunk* merged_chunk2 = try_merge(chunk2);
+  assert_ptr_equal(merged_chunk2, chunk2);
+  assert_ptr_not_equal(merged_chunk2, chunk3);
+  assert_ptr_not_equal(merged_chunk2, merged_chunk);
+}
