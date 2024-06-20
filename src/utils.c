@@ -27,7 +27,7 @@ void log_heap() {
 
     log_info("span");
     printf("span pointer: %p\n", g_pagemap->span_head);
-    void* last_byte = (void*)MEMORY_SHIFT(g_pagemap->span_head, sizeof(t_span));
+    last_byte = (void*)MEMORY_SHIFT(g_pagemap->span_head, sizeof(t_span));
     printf("span end: %p\n", last_byte);
 }
 
