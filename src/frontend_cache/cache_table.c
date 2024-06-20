@@ -24,15 +24,17 @@ static uint64_t hash_key(const char* key) {
 }
 
 /* AND hash with capacity-1 to ensure it's within entries array. */
-static size_t cache_table_index(t_cache_table *ct, uint64_t hash) {
+static size_t cache_table_index(t_cache_table *ct, size_t size) {
+  char key[32];
+  snprintf(key, sizeof(key), "%zu", size);
+  uint64_t hash = hash_key(key);
   return (size_t)(hash & (uint64_t)(ct->capacity - 1));
 }
 
-/* Removes first entry in linked list and update head. If linked list is empty, 
-return NULL. */
-t_chunk* cache_table_get(t_cache_table* ct, const char* key) {
-  uint64_t hash = hash_key(key);
-  size_t index = cache_table_index(ct, hash);
+/* Get first entry in bin, update head. If empty, return NULL. */
+t_chunk* cache_table_get(size_t size) {
+  t_cache_table* ct = g_pagemap->frontend_cache->cache_table;
+  size_t index = cache_table_index(ct, size);
 
   if (!ct->entries[index].value) {
     return NULL;
@@ -43,11 +45,12 @@ t_chunk* cache_table_get(t_cache_table* ct, const char* key) {
   return value;
 }
 
-/* Adds t_chunk to the tail of the linked list. Returns key. */
-static const char* cache_table_set_entry(t_cache_table* ct,
-        const char* key, t_chunk* value) {
-  uint64_t hash = hash_key(key);
-  size_t index = cache_table_index(ct, hash);
+/* Add t_chunk to tail of bin linked list. */
+static int cache_table_set_entry(t_chunk* value) {
+  t_cache_table* ct = g_pagemap->frontend_cache->cache_table;
+  char key[32];
+  snprintf(key, sizeof(key), "%zu", value->size);
+  size_t index = cache_table_index(ct, value->size);
 
   // Loop till we find an empty entry.
   while (ct->entries[index].key != NULL) {
@@ -56,7 +59,7 @@ static const char* cache_table_set_entry(t_cache_table* ct,
       value->fd = ct->entries[index].value;
       ct->entries[index].value->bk = value;
       ct->entries[index].value = value;
-      return ct->entries[index].key;
+      return EXIT_SUCCESS;
     }
     // Key wasn't in this slot, move to next (linear probing).
     index++;
@@ -69,14 +72,21 @@ static const char* cache_table_set_entry(t_cache_table* ct,
   // Didn't find key, insert new key and value.
   ct->entries[index].key = (char*)key;
   ct->entries[index].value = value;
-  return key;
+  return EXIT_SUCCESS;
 }
 
-const char* cache_table_set(t_cache_table* ct, const char* key, t_chunk* value) {
+int cache_table_set(t_chunk* value) {
   assert(value != NULL);
   if (value == NULL) {
-    return NULL;
+    return EXIT_FAILURE;
   }
 
-  return cache_table_set_entry(ct, key, value);
+  return cache_table_set_entry(value);
+}
+
+bool cache_table_is_bin_head(t_chunk* value) {
+  t_cache_table* ct = g_pagemap->frontend_cache->cache_table;
+  size_t index = cache_table_index(ct, value->size);
+
+  return ct->entries[index].value == value;
 }
