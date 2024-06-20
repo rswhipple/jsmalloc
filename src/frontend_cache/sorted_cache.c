@@ -2,7 +2,7 @@
 
 /*
 search_unsorted_cache() iterates through the unsorted linked list of t_chunks.
-If the t_chunk is not large enough for allocation, it is sorted into the 
+If the t_chunk is not large enough for allocation, it is sorted into the
 cache_table (aka sorted_cache). If a suitable t_chunk is found, it is either
 split or a void* to the data field is returned.
 */
@@ -27,10 +27,10 @@ void* search_unsorted_cache(size_t size) {
 }
 
 /*
-search_sorted_cache() checks to see if there are any t_chunks in the 
-corresponding cache_table bin by calling cache_table_get(). If the t_chunk is 
+search_sorted_cache() checks to see if there are any t_chunks in the
+corresponding cache_table bin by calling cache_table_get(). If the t_chunk is
 found a void* to the data field is returned.
-If no t_chunk is found, split_chunk is called and creates a new t_chunk from 
+If no t_chunk is found, split_chunk is called and creates a new t_chunk from
 t_pagemap* g_pagemap->top_chunk.
 */
 void* search_sorted_cache(size_t size, int page_type) {
