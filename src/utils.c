@@ -1,5 +1,8 @@
-#include "../inc/main.h"
+/* For testing comment out line 4 and line 41.
+For use uncomment lines 4/41, comment out lines 5 and 42 */
 
+// #include "../inc/main.h"
+#include "../inc/tests.h"
 
 void log_info(const char* message) {
     printf("\n=====%s=====\n", message);
@@ -35,7 +38,8 @@ void log_heap() {
 
 void custom_exit(const char *error) {
     log_error(error);
-    exit(EXIT_FAILURE);
+    // exit(EXIT_FAILURE);
+    function_called();
 }
 
 /*

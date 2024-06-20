@@ -1,11 +1,11 @@
+#ifndef TESTS_H_
+#define TESTS_H_
+
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
 #include <cmocka.h>
 #include "main.h"
-
-#ifndef TESTS_H_
-#define TESTS_H_
 
 
 // =================== Chunk ===================
@@ -28,6 +28,11 @@ void free_tiny_chunk_test(void** state);
 // =================== Fast Cache ===================
 void create_fast_cache_test(void** state);
 void search_fast_cache_test(void** state);
+
+// =================== Cache Table ===================
+void cache_table_create_test(void** state);
+void cache_table_set_test(void** state);
+void cache_table_get_test(void** state);
 
 // =================== Unsorted Cache ===================
 void search_unsorted_cache_test(void** state);

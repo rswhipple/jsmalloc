@@ -17,17 +17,8 @@ t_tiny_chunk* create_top_tiny_chunk(t_fpage* page) {
 t_tiny_chunk* create_tiny_chunk(t_fpage* fpage) {
     t_tiny_chunk* tiny;
     tiny = (t_tiny_chunk*)MEMORY_SHIFT(fpage->last_chunk, fpage->chunk_size);
-
-    log_info("create_tiny_chunk()");
-    printf("fpage->chunk_count: %zu\n", fpage->chunk_count);
-    printf("fpage->last_chunk: %p\n", fpage->last_chunk);
-
     fpage->chunk_count += 1;
     fpage->last_chunk = tiny;
-
-    printf("fpage->chunk_count: %zu\n", fpage->chunk_count);
-    printf("fpage->last_chunk: %p\n", fpage->last_chunk);
-    
     tiny->next = NULL;
 
     return tiny;

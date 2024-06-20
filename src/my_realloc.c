@@ -13,7 +13,6 @@ void* my_realloc(void* ptr, size_t size) {
     void* new_ptr = my_malloc(size);
 
     if (new_ptr != NULL) {
-        // TODO: make sure cast works
         my_strcpy((char*)new_ptr, (char*)ptr);
         my_free(ptr);
         return new_ptr;
