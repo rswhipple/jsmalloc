@@ -65,11 +65,16 @@ t_chunk* allocate_huge_chunk(size_t size) {
 }
 
 static t_chunk* merge_chunks(t_chunk* value_1, t_chunk* value_2) {
+    // update cache_table bin head
+    if (cache_table_is_bin_head(value_1)) cache_table_remove_head(value_1);
+    if (cache_table_is_bin_head(value_2)) cache_table_remove_head(value_2);
+
     // remove t_chunks from cache_table
     if (value_1->bk) value_1->bk->fd = value_1->fd;
     if (value_1->fd) value_1->fd->bk = value_1->bk;
     if (value_2->bk) value_2->bk->fd = value_2->fd;
     if (value_2->fd) value_2->fd->bk = value_2->bk;
+
     printf("value_1->size before merge: %zu", value_1->size);
     value_1->size += value_2->size;
     printf("value_1->size after merge: %zu", value_1->size);
