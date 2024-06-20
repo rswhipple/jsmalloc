@@ -29,6 +29,7 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
     t_chunk* temp = chunk->fd;
     size_t initial_chunk_size = chunk->size;
 
+    // WHAT HAPPENS TO THIS CHUNK?
     // Update the original chunk's size, free status, next pointer & boundary_tag
     t_chunk* first_chunk = chunk;
     first_chunk->size = size;
@@ -64,7 +65,7 @@ t_chunk* allocate_huge_chunk(size_t size) {
     return huge_chunk;
 }
 
-static t_chunk* merge_chunks(t_chunk* value_1, t_chunk* value_2) {
+t_chunk* merge_chunks(t_chunk* value_1, t_chunk* value_2) {
     // update cache_table bin head
     if (cache_table_is_bin_head(value_1)) cache_table_remove_head(value_1);
     if (cache_table_is_bin_head(value_2)) cache_table_remove_head(value_2);
@@ -75,19 +76,37 @@ static t_chunk* merge_chunks(t_chunk* value_1, t_chunk* value_2) {
     if (value_2->bk) value_2->bk->fd = value_2->fd;
     if (value_2->fd) value_2->fd->bk = value_2->bk;
 
-    printf("value_1->size before merge: %zu", value_1->size);
+    printf("value_1->size before merge: %zu\n", value_1->size);
     value_1->size += value_2->size;
-    printf("value_1->size after merge: %zu", value_1->size);
+    printf("value_1->size after merge: %zu\n", value_1->size);
     write_boundary_tag(value_1);
 
     return value_1;
 }
 
-static t_chunk* try_merge(t_chunk* value) {
+t_chunk* try_merge(t_chunk* value) {
+    if (IS_IN_USE(value)) {
+        printf("chunk is in use\n");
+        return value;
+    }
+    if (value->fd == NULL && value->bk == NULL) {
+        printf("chunk list is empty\n");
+        printf("value->size: %zu\n", value->size);
+        return value;
+    }
     // coalescing algo
     int flag = 0;
+    printf("value->size: %zu\n", value->size);
+    printf("value pointer: %p\n", value);
+    printf("value->fd: %p\n", value->fd);
+    printf("value->bk: %p\n", value->bk);
+    printf("is_in_use: %lu\n", IS_IN_USE(value));
     t_chunk* prev = PREV_CHUNK(value, PREV_SIZE(value));
-    t_chunk* next = NEXT_CHUNK(value); 
+    printf("prev->size: %zu\n", prev->size);
+    printf("prev pointer: %p\n", prev);
+    t_chunk* next = NEXT_CHUNK(value);
+    printf("next->size: %zu\n", next->size);
+    printf("next pointer: %p\n", next);
 
     if (!IS_IN_USE(prev)) flag += 1;
     if (!IS_IN_USE(next)) flag += 2;
@@ -107,9 +126,14 @@ void free_chunk(void* ptr, size_t size) {
     t_chunk* value = (t_chunk*)((char*)ptr - sizeof(size_t));
     value->bk = NULL;
     value->fd = NULL;
+    value->size = size;
     SET_FREE(value);
-    value = try_merge(value);
 
+    value = try_merge(value);
+    if (g_pagemap->frontend_cache->unsorted_cache == NULL) {
+        g_pagemap->frontend_cache->unsorted_cache = value;
+        return;
+    }
     // add to unsorted_cache
     t_chunk* unsorted_chunk = g_pagemap->frontend_cache->unsorted_cache;
     value->fd = unsorted_chunk;
