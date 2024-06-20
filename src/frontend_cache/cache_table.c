@@ -90,3 +90,12 @@ bool cache_table_is_bin_head(t_chunk* value) {
 
   return ct->entries[index].value == value;
 }
+
+int cache_table_remove_head(t_chunk* value) {
+  t_cache_table* ct = g_pagemap->frontend_cache->cache_table;
+  size_t index = cache_table_index(ct, value->size);
+
+  ct->entries[index].value = value->fd;
+
+  return EXIT_SUCCESS;
+}
