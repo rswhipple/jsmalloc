@@ -27,6 +27,7 @@ t_fpage* create_base_fpage(t_pagemap* pagemap) {
   allocation size. */
   size_t pages_area = PAGE_SIZE *
     (SMALL_PAGE_ALLOCATION_SIZE + LARGE_PAGE_ALLOCATION_SIZE);
+
   t_fpage* fpage = (t_fpage*)MEMORY_SHIFT(pagemap, pages_area);
   fpage->chunk_count = 1;
   fpage->next = NULL;
@@ -34,6 +35,7 @@ t_fpage* create_base_fpage(t_pagemap* pagemap) {
   fpage->chunk_size = min_chunk_size;
   fpage->max_chunks = fpage->memory / fpage->chunk_size;
   fpage->last_chunk = create_top_tiny_chunk(fpage);
+
   /* The tiny_chunk is immediately added to the fast_cache. */
   pagemap->frontend_cache->fast_cache[0] = fpage->last_chunk;
 
@@ -62,5 +64,6 @@ t_fpage* create_fpage(t_fpage* prev_page, int count,
   else {
     cache->fast_cache[count] = fpage->last_chunk;
   }
+  
   return fpage;
 }

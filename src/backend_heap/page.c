@@ -9,13 +9,13 @@ void create_pages(t_pagemap* pagemap, t_span* span) {
   current = span->page_head;
 
   while (pages_left > 0) {
-    current = create_page(current, span, small);
+    current = create_page(current, small);
     pages_left -= 1;
   }
 
   pages_left = LARGE_PAGE_ALLOCATION_SIZE;
   while (pages_left > 0) {
-    current = create_page(current, span, large);
+    current = create_page(current, large);
     pages_left -= 1;
   }
 }
@@ -44,8 +44,7 @@ t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
   return page;
 }
 
-t_page* create_page(t_page* prev_page, t_span* span, int pagetype) {
-  UNUSED(span);
+t_page* create_page(t_page* prev_page, int pagetype) {
   t_page* page = (t_page*)MEMORY_SHIFT(PAGE_SHIFT(prev_page), prev_page->memory);
   page->chunk_count = 1;
   page->prev = prev_page;

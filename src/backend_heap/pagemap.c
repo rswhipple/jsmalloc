@@ -12,6 +12,8 @@ created by create_frontend_cache().
 void create_pagemap(t_pagemap** pagemap) {
     *pagemap = (t_pagemap*)mmap(0, BASE_HEAP_SIZE, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+    if (*pagemap == MAP_FAILED) custom_exit("mmap");
+
     (*pagemap)->frontend_cache = create_frontend_cache(*pagemap);
     (*pagemap)->span_head = create_base_span((*pagemap)->frontend_cache);
     (*pagemap)->total_pages = BASE_HEAP_SIZE / PAGE_SIZE;
@@ -40,6 +42,8 @@ t_span* add_span(t_pagemap* pagemap, size_t size) {
     // map memory to span
     t_span* span = (t_span*)mmap(0, size, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+    if (span == MAP_FAILED) custom_exit("mmap");
+    
     span->next = NULL;
     span->fastpages = NULL;
     span->page_head = NULL;
@@ -74,11 +78,11 @@ void destroy_active_page(t_page* page) {
     else {
         page->prev->next = NULL;
     }
-    munmap(page, PAGE_SIZE);
+    if (munmap(page, PAGE_SIZE) == -1) custom_exit("munmap error");
 }
 
 void destroy_page(t_page* page) {
-    munmap(page, PAGE_SIZE);
+    if (munmap(page, PAGE_SIZE) == -1) custom_exit("munmap error");
 }
 
 void destroy_pagemap(t_pagemap* pagemap) {
@@ -94,7 +98,8 @@ void destroy_pagemap(t_pagemap* pagemap) {
             }
         }
         else {
-            munmap(span, (span->num_pages * PAGE_SIZE));
+            if (munmap(span, (span->num_pages * PAGE_SIZE)) == -1) 
+                    custom_exit("munmap error");
         }
         span = span->next;
     }

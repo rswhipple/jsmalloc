@@ -22,14 +22,14 @@ t_chunk* create_top_chunk(t_page* page) {
 t_chunk* split_chunk(t_chunk* chunk, size_t size) {
     if (CHUNK_SIZE(chunk) <= size) {
         fprintf(stderr, "Invalid split size: %zu (chunk size: %zu)\n", size, chunk->size);
-        return NULL;
+        custom_exit("Error in split_chunk()\n");
     }
 
     // Placeholder variables
     t_chunk* temp = chunk->fd;
     size_t initial_chunk_size = chunk->size;
 
-    // WHAT HAPPENS TO THIS CHUNK?
+    // WHAT HAPPENS TO THIS CHUNK? it is returned for use
     // Update the original chunk's size, free status, next pointer & boundary_tag
     t_chunk* first_chunk = chunk;
     first_chunk->size = size;
@@ -46,21 +46,17 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
     second_chunk->fd = temp;
     write_boundary_tag(second_chunk);
 
-    if (cache_table_set(second_chunk)) {    // add second_chunk to cache_table
-        fprintf(stderr, "Unable to add chunk to cache_table in split_chun()");
-        return NULL;
-    };
+    if (cache_table_set(second_chunk))  // add second_chunk to cache_table
+        custom_exit("Unable to add chunk to cache_table in split_chunk()\n");
 
     return first_chunk;
 }
 
 t_chunk* allocate_huge_chunk(size_t size) {
     // Allocate a huge chunk
-    t_chunk* huge_chunk = (t_chunk*)mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    if (huge_chunk == MAP_FAILED) {
-        perror("mmap");
-        return NULL;
-    }
+    t_chunk* huge_chunk = (t_chunk*)mmap(NULL, size, PROT_READ | 
+                PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    if (huge_chunk == MAP_FAILED) custom_exit("mmap");
     huge_chunk->size = size;
     return huge_chunk;
 }
@@ -122,7 +118,6 @@ t_chunk* try_merge(t_chunk* value) {
 }
 
 void free_chunk(void* ptr, size_t size) {
-    UNUSED(size);
     t_chunk* value = (t_chunk*)((char*)ptr - sizeof(size_t));
     value->bk = NULL;
     value->fd = NULL;
@@ -141,8 +136,5 @@ void free_chunk(void* ptr, size_t size) {
 }
 
 void free_huge_chunk(void* ptr, size_t size) {
-    if (munmap(ptr, size) == -1) {
-        perror("munmap");
-        exit(EXIT_FAILURE);
-    }
+    if (munmap(ptr, size) == -1) custom_exit("munmap error");
 }
