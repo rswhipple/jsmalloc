@@ -29,6 +29,7 @@ extern t_pagemap* g_pagemap;
 // Helper macros to access boundary tags
 #define CHUNK_OVERHEAD (sizeof(size_t) * 2)
 #define NEXT_CHUNK(chunk) ((t_chunk*)((char*)(chunk) + CHUNK_SIZE(chunk)))
+#define PREV_SIZE(chunk) ((size_t)((char*)(chunk) - CHUNK_OVERHEAD))
 #define PREV_CHUNK(chunk, prev_size) ((t_chunk*)((char*)(chunk) - prev_size))
 #define TINY_CHUNK_OVERHEAD sizeof(size_t)
 
