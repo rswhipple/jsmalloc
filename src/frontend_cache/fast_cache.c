@@ -16,20 +16,25 @@ void* search_fast_cache(size_t size) {
   t_tiny_chunk** f_cache = g_pagemap->frontend_cache->fast_cache;
   t_fpage* fpage = NULL;
   t_tiny_chunk* tiny;
+  log_info("search_fast_cache()");
 
   if (f_cache[index]) {
     // allocate top chunk in link list and replace
+    printf("f_cache[index]: %p\n", f_cache[index]);
     tiny = f_cache[index];
     f_cache[index] = f_cache[index]->next;
+    if (f_cache[index]) printf("f_cache[index]: %p\n", f_cache[index]);
+    else printf("f_cache[index] is NULL\n");
   }
   else {
     // split off new chunk
-    // TODO check logic
     fpage = g_pagemap->span_head->fastpages;
     while (index > 0) {
       fpage = fpage->next;
       index--;
     }
+    printf("creating new t_tiny_chunk:\nsize: %zu, fpage->size %zu\n", 
+        size, fpage->chunk_size);
     tiny = create_tiny_chunk(fpage);
   }
 
