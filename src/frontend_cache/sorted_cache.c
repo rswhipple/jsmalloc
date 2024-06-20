@@ -18,9 +18,7 @@ void* search_unsorted_cache(size_t size) {
       return (void*)MEMORY_SHIFT(unsorted_chunk, CHUNK_OVERHEAD);
     }
     else {
-      char key[32];
-      snprintf(key, sizeof(key), "%zu", size);
-      cache_table_set(g_pagemap->frontend_cache->cache_table, key, unsorted_chunk);
+      cache_table_set(unsorted_chunk);
     }
     unsorted_chunk = unsorted_chunk->fd;
   }
@@ -37,12 +35,9 @@ t_pagemap* g_pagemap->top_chunk.
 */
 void* search_sorted_cache(size_t size, int page_type) {
   UNUSED(page_type);
-  char key[32];
-  snprintf(key, sizeof(key), "%zu", size);
-  t_cache_table* cache_table = g_pagemap->frontend_cache->cache_table;
   void* ptr = NULL;
 
-  if ((ptr = cache_table_get(cache_table, key)) != NULL) {
+  if ((ptr = cache_table_get(size)) != NULL) {
     return (void*)MEMORY_SHIFT(ptr, sizeof(t_chunk));
   }
 
