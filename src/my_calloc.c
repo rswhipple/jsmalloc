@@ -17,6 +17,7 @@ void* my_calloc(size_t nitems, size_t itsize) {
 
     size_t size = nitems * itsize;
     void* ptr = my_malloc(size);
+    memset(ptr, 0, size);
     if (ptr) return ptr;
 
     return NULL;
