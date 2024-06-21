@@ -1,5 +1,5 @@
-/* For testing comment out line 4 and line 41.
-For use uncomment lines 4/41, comment out lines 5 and 42 */
+/* For testing comment out line 4 and line 30.
+For use uncomment lines 4 and 30, comment out lines 5 and 31 */
 
 // #include "../inc/main.h"
 #include "../inc/tests.h"
@@ -15,21 +15,10 @@ void log_error(const char *error)
 
 void log_heap() {
     printf("System has %zu-byte pointers.", pointer_size);
-
     log_info("pageheap");
     printf("pageheap start: %p\n", g_pagemap);
     void* last_byte = (void*)MEMORY_SHIFT(g_pagemap, BASE_HEAP_SIZE);
     printf("pageheap end: %p\n", last_byte);
-
-  // printf("fpage pointer: %p\n", fpage);
-  // printf("sizeof(t_fpage): %zu\n", sizeof(t_fpage));
-  // printf("available memory: %zu\n", fpage->memory);
-  // printf("chunk size: %zu\n", fpage->chunk_size);
-  // printf("maximum number of chunks: %zu\n", fpage->max_chunks);
-  // void* last_byte = (void*)MEMORY_SHIFT(fpage, fpage->memory + sizeof(t_fpage));
-  // printf("fpage end = %p\n", last_byte);
-  // log_info("frontend cache");
-
     log_info("span");
     printf("span pointer: %p\n", g_pagemap->span_head);
     last_byte = (void*)MEMORY_SHIFT(g_pagemap->span_head, sizeof(t_span));
@@ -72,13 +61,11 @@ int get_fpage_index(size_t nbr) {
     int list_len = 8;
 
     // Iterate through the list
-    for (i = 0; i < list_len; i++) {
-        if (list[i] >= nbr) {
-            break;
-        }
+    for (i = 0; i <= list_len; i++) {
+        if (i == list_len) 
+            custom_exit("get_fpage_index(): size too large for fast_cache.\n");
+        if (list[i] >= nbr) break;
     }
-
-    // TODO: If no larger or equal number is found, throw error
 
     // Logic if min_chunk_size is 16
     if (num_pages == 7 && i > 0) return i - 1;
@@ -127,21 +114,14 @@ t_page* get_page_head(int page_type) {
   return page_head;
 }
 
-t_chunk* get_top_chunk(t_page* page) {
-  t_chunk* top_chunk = page->top_chunk;
+t_chunk* get_first_free_chunk(t_page* page) {
+  t_chunk* first_free = (t_chunk*)page->memory;
 
-  while (IS_IN_USE(top_chunk)) {
-    top_chunk = top_chunk->fd;
+  while (IS_IN_USE(first_free)) {
+    first_free = NEXT_CHUNK(first_free);
   }
 
-  if (top_chunk == NULL) {
-    t_chunk* new_chunk = chunk_top_create(page);
-    top_chunk->fd = new_chunk;
-    new_chunk->bk = top_chunk;
-    top_chunk = new_chunk;
-  }
-
-  return top_chunk;
+  return first_free;
 }
 
 
