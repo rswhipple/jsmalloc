@@ -5,28 +5,27 @@ void chunk_top_create_test(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
   t_page* page = pagemap->span_head->page_head;
   t_chunk* top_chunk = chunk_top_create(page);
-  assert_int_equal(top_chunk->size, page->memory);
+  assert_int_equal(top_chunk->size, page->memory_size);
   assert_false(IS_IN_USE(top_chunk));
   assert_null(top_chunk->fd);
   assert_null(top_chunk->bk);
-  assert_ptr_equal(page->top_chunk, top_chunk);
+  assert_ptr_equal(page->memory, top_chunk);
 }
 
 void chunk_split_test_success(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
-
-  t_chunk* split = chunk_split(pagemap->span_head->page_head->top_chunk, 100);
+  size_t new_top_size = pagemap->top_chunk->size - 100;
+  t_chunk* split = chunk_split(pagemap->top_chunk, 100);
   assert_int_equal(CHUNK_SIZE(split), 100);
-  assert_int_equal(CHUNK_SIZE(pagemap->span_head->page_head->top_chunk), CHUNK_SIZE(split));
-  assert_int_equal(pagemap->span_head->page_head->top_chunk->fd, split->fd);
+  assert_int_equal(pagemap->top_chunk->fd, split->fd);
   assert_int_equal(split->fd, NULL);
-  assert_int_equal(pagemap->span_head->page_head->top_chunk->bk, NULL);
-  assert_int_equal(split, pagemap->span_head->page_head->top_chunk);
+  assert_int_equal(split->bk, NULL);
+  assert_int_equal(new_top_size, pagemap->top_chunk->size);
 }
 
 void chunk_split_test_failure(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
-  t_chunk* top_chunk = pagemap->span_head->page_head->top_chunk;
+  t_chunk* top_chunk = pagemap->top_chunk;
   size_t size = CHUNK_SIZE(top_chunk);
   expect_function_call(custom_exit);
 
