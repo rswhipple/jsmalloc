@@ -8,17 +8,18 @@ split or a void* to the data field is returned.
 */
 void* search_unsorted_cache(size_t size) {
   t_chunk* unsorted_chunk = g_pagemap->frontend_cache->unsorted_cache;
-  t_chunk* new = NULL;
+  t_chunk* split_chunk = NULL;
 
   while (unsorted_chunk) {
     if (unsorted_chunk->size >= size) {
-      // printf("found unsorted_chunk %p, size: %zu\n", unsorted_chunk, unsorted_chunk->size);
       if (unsorted_chunk->size > size + 72) {
         g_pagemap->frontend_cache->unsorted_cache = unsorted_chunk->fd;
-        new = chunk_split(unsorted_chunk, size);
+        split_chunk = chunk_split(unsorted_chunk, size);
+        return (void*)MEMORY_SHIFT(split_chunk, pointer_size);
+      } else {
+        g_pagemap->frontend_cache->unsorted_cache = unsorted_chunk->fd;
+        return (void*)MEMORY_SHIFT(unsorted_chunk, pointer_size);
       }
-      // printf("here\n");
-      return (void*)MEMORY_SHIFT(new, CHUNK_OVERHEAD);
     }
     else {
       cache_table_set(unsorted_chunk);
@@ -38,16 +39,29 @@ t_pagemap* g_pagemap->top_chunk.
 */
 void* search_sorted_cache(size_t size, int page_type) {
   UNUSED(page_type);
+  t_page* page = g_pagemap->span_head->page_head;
   void* ptr = NULL;
 
   if ((ptr = cache_table_get(size)) != NULL) {
-    return (void*)MEMORY_SHIFT(ptr, sizeof(t_chunk));
+    return (void*)MEMORY_SHIFT(ptr, pointer_size);
   }
 
-  // TODO: add last_chunk logic
-  if ((ptr = chunk_split(g_pagemap->top_chunk, size)) != NULL) {
-    printf("split top_chunk\n");
-    return (void*)MEMORY_SHIFT(ptr, sizeof(t_chunk));
+  // NEXT VERSION TODO: add last_chunk logic
+  if (g_pagemap->top_chunk->size > size + 72) {
+    if ((ptr = chunk_split(g_pagemap->top_chunk, size)) != NULL) 
+      return (void*)MEMORY_SHIFT(ptr, pointer_size);
+    else custom_exit("search_sorted_cache(): first error creating chunk.\n");
+  } 
+  else if (g_pagemap->top_chunk->size > size) {
+    ptr = (void*)MEMORY_SHIFT(g_pagemap->top_chunk, pointer_size);
+    g_pagemap->top_chunk = NEXT_CHUNK(g_pagemap->top_chunk);
+    return ptr;
+  }
+  else {
+    g_pagemap->top_chunk = NEXT_CHUNK(g_pagemap->top_chunk);
+    if ((ptr = chunk_split(g_pagemap->top_chunk, size)) != NULL) 
+      return (void*)MEMORY_SHIFT(ptr, pointer_size);
+    else custom_exit("search_sorted_cache(): second error creating chunk.\n");
   }
 
   printf("Returning NULL\n");
