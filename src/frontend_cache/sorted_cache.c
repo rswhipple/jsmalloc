@@ -39,14 +39,16 @@ t_pagemap* g_pagemap->top_chunk.
 */
 void* search_sorted_cache(size_t size, int page_type) {
   UNUSED(page_type);
-  t_page* page = g_pagemap->span_head->page_head;
   void* ptr = NULL;
 
   if ((ptr = cache_table_get(size)) != NULL) {
     return (void*)MEMORY_SHIFT(ptr, pointer_size);
   }
 
-  // NEXT VERSION TODO: add last_chunk logic
+  /* NEXT VERSION TODO: 
+      add last_chunk logic
+      add error handling if we get near the end of the heap
+  */
   if (g_pagemap->top_chunk->size > size + 72) {
     if ((ptr = chunk_split(g_pagemap->top_chunk, size)) != NULL) 
       return (void*)MEMORY_SHIFT(ptr, pointer_size);
