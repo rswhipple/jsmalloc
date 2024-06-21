@@ -11,7 +11,6 @@ void cache_table_create_test(void** state) {
 void cache_table_set_and_get_test(void** state) {
   // create chunks
   t_pagemap* pagemap = (t_pagemap*)*state;
-  t_cache* table = pagemap->frontend_cache->cache_table;
   t_chunk* top_chunk = pagemap->top_chunk;
   t_chunk* chunk1 = chunk_split(top_chunk, 72);
   top_chunk = pagemap->top_chunk;
@@ -25,7 +24,18 @@ void cache_table_set_and_get_test(void** state) {
   // add chunks to cache_table
   int success;
   success = cache_table_set(chunk1);
+  assert_int_not_equal(success, 1);
+  void* result = cache_table_get(chunk1->size);
+  assert_ptr_equal(result, chunk1);
 
+  success = cache_table_set(chunk2);
+  assert_int_not_equal(success, 1);
+  result = cache_table_get(chunk2->size);
+  assert_ptr_equal(result, chunk2);
 
+  success = cache_table_set(chunk3);
+  assert_int_not_equal(success, 1);
+  result = cache_table_get(chunk3->size);
+  assert_ptr_equal(result, chunk3);
 }
 
