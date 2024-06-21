@@ -10,7 +10,7 @@ void* my_malloc(size_t size) {
     // get category & search heap
     int page_type = get_page_type(size);
     void* ptr = search_heap(size, page_type);
-
+    memset(ptr, 0, size);
     if (ptr) return ptr;
 
     printf("returning NULL\n");
