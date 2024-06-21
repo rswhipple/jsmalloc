@@ -28,19 +28,18 @@ void pages_create(t_pagemap* pagemap, t_span* span) {
 t_page* page_base_create(t_pagemap* pagemap, t_span* span) {
   t_cache* cache = pagemap->frontend_cache;
   t_page* page = (t_page*)SPAN_SHIFT(span);
-  page->chunk_count = 1;
-  page->prev = NULL;
   page->next = NULL;
+  page->memory = (void*)PAGE_SHIFT(page);
   page->pagetype = small;
 
   if (span == pagemap->span_head) {
-    page->memory = PAGE_SIZE - sizeof(t_pagemap) - sizeof(t_cache) -
+    page->memory_size = PAGE_SIZE - sizeof(t_pagemap) - sizeof(t_cache) -
       (cache->fcache_size * sizeof(t_tiny_chunk*)) -
       sizeof(t_cache_table) - (NUM_BINS * sizeof(cache_table_entry))- 
       sizeof(t_span) - sizeof(t_page);
   }
   else {
-    page->memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
+    page->memory_size = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
   }
 
   page->pagetype = small;
@@ -50,11 +49,11 @@ t_page* page_base_create(t_pagemap* pagemap, t_span* span) {
 }
 
 t_page* page_create(t_page* prev_page, int pagetype) {
-  t_page* page = (t_page*)MEMORY_SHIFT(PAGE_SHIFT(prev_page), prev_page->memory);
-  page->chunk_count = 1;
-  page->prev = prev_page;
+  t_page* page = (t_page*)PAGE_SHIFT(prev_page);
+  page->memory = (void*)MEMORY_SHIFT(prev_page->memory, prev_page->memory_size);
+  // prev_page->memory
   page->next = NULL;
-  page->memory = PAGE_SIZE - sizeof(t_page);
+  page->memory_size = PAGE_SIZE - sizeof(t_page);
   page->pagetype = pagetype;
   chunk_top_create(page);
 
