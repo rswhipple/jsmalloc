@@ -1,5 +1,6 @@
 #include "../../inc/tests.h"
 
+
 void create_top_chunk_test(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
   t_page* page = pagemap->span_head->page_head;
@@ -27,8 +28,9 @@ void split_chunk_test_failure(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
   t_chunk* top_chunk = pagemap->span_head->page_head->top_chunk;
   size_t size = CHUNK_SIZE(top_chunk);
-  t_chunk* split = split_chunk(top_chunk, size + 1);
-  assert_null(split);
+  expect_function_call(custom_exit);
+
+  split_chunk(top_chunk, size + 1);
 }
 
 
@@ -68,12 +70,17 @@ void free_huge_chunk_test(void** state) {
 
 void merge_chunks_test(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
-  t_chunk* chunk1 = pagemap->span_head->page_head->top_chunk;
-  t_chunk* chunk2 = split_chunk(chunk1, 100);
+  t_chunk* top_chunk = pagemap->top_chunk;
+  t_chunk* chunk1 = split_chunk(top_chunk, 72);
+  top_chunk = pagemap->top_chunk;
+  t_chunk* chunk2 = split_chunk(top_chunk, 100);
+  SET_FREE(chunk1);
+  SET_FREE(chunk2);
+  size_t merge_size = chunk1->size + chunk2->size;
   t_chunk* merged_chunk = merge_chunks(chunk1, chunk2);
 
+  assert_int_equal(merged_chunk->size, merge_size);
   assert_int_equal(merged_chunk->size, chunk1->size);
-  assert_int_equal(merged_chunk->size, chunk2->size);
   assert_null(merged_chunk->fd);
   assert_null(merged_chunk->bk);
   assert_false(cache_table_is_bin_head(chunk1));
@@ -86,15 +93,11 @@ void merge_chunks_test(void** state) {
 
 void try_merge_is_in_use_test(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
-  t_chunk* chunk1 = pagemap->span_head->page_head->top_chunk;
-  t_chunk* chunk2 = split_chunk(chunk1, 100);
-  t_chunk* chunk3 = split_chunk(chunk2, 50);
+  t_chunk* top_chunk = pagemap->top_chunk;
+  t_chunk* chunk1 = split_chunk(top_chunk, 72);
+  top_chunk = pagemap->top_chunk;
+  SET_FREE(chunk1);
 
   t_chunk* merged_chunk = try_merge(chunk1);
   assert_ptr_equal(merged_chunk, chunk1);
-
-  t_chunk* merged_chunk2 = try_merge(chunk2);
-  assert_ptr_equal(merged_chunk2, chunk2);
-  assert_ptr_not_equal(merged_chunk2, chunk3);
-  assert_ptr_not_equal(merged_chunk2, merged_chunk);
 }
