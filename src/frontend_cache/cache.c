@@ -2,13 +2,13 @@
 #include "../../inc/main.h"
 
 
-t_cache* create_frontend_cache(t_pagemap* pagemap) {
+t_cache* frontend_cache_create(t_pagemap* pagemap) {
     t_cache* cache = (t_cache*)PAGEMAP_SHIFT(pagemap);
 
     if (min_chunk_size == 8) cache->fcache_size = 8;
     else cache->fcache_size = 7;
 
-    cache->fast_cache = create_fast_cache(cache);
+    cache->fast_cache = fast_cache_create(cache);
     cache->cache_table = cache_table_create(cache);
     cache->unsorted_cache = NULL;
 

@@ -3,27 +3,27 @@
 
 
 /*
-create_pagemap(t_pagemap** pagemap):
+pagemap_create(t_pagemap** pagemap):
 Uses a double pointer to update the global t_pagemap* g_pagemap variable.
 The system call mmap() is used to retrieve memory for the dynamic heap.
 The frontend_cache field is initialized with a pointer to a t_cache struct
-created by create_frontend_cache().
+created by frontend_cache_create().
 */
-void create_pagemap(t_pagemap** pagemap) {
+void pagemap_create(t_pagemap** pagemap) {
     *pagemap = (t_pagemap*)mmap(0, BASE_HEAP_SIZE, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
     if (*pagemap == MAP_FAILED) custom_exit("mmap");
 
-    (*pagemap)->frontend_cache = create_frontend_cache(*pagemap);
-    (*pagemap)->span_head = create_base_span((*pagemap)->frontend_cache);
+    (*pagemap)->frontend_cache = frontend_cache_create(*pagemap);
+    (*pagemap)->span_head = span_base_create((*pagemap)->frontend_cache);
     (*pagemap)->total_pages = BASE_HEAP_SIZE / PAGE_SIZE;
-    create_pages(*pagemap, (*pagemap)->span_head);
+    pages_create(*pagemap, (*pagemap)->span_head);
     (*pagemap)->top_chunk = (*pagemap)->span_head->page_head->top_chunk;
     (*pagemap)->last_chunk = NULL;
-    create_fpages(*pagemap);
+    fpages_create(*pagemap);
 }
 
-t_span* create_base_span(t_cache* cache) {
+t_span* span_base_create(t_cache* cache) {
     t_span* span = (t_span*)MEMORY_SHIFT(CACHE_SHIFT(cache),
             ((cache->fcache_size * sizeof(t_tiny_chunk*)) + sizeof(t_cache_table)
             + (NUM_BINS * sizeof(cache_table_entry))));
@@ -38,7 +38,7 @@ t_span* create_base_span(t_cache* cache) {
     return span;
 }
 
-t_span* add_span(t_pagemap* pagemap, size_t size) {
+t_span* span_add(t_pagemap* pagemap, size_t size) {
     // map memory to span
     t_span* span = (t_span*)mmap(0, size, PROT_READ |
                 PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
@@ -85,7 +85,7 @@ void destroy_page(t_page* page) {
     if (munmap(page, PAGE_SIZE) == -1) custom_exit("munmap error");
 }
 
-void destroy_pagemap(t_pagemap* pagemap) {
+void pagemap_destroy(t_pagemap* pagemap) {
     t_span* span = pagemap->span_head;
     while (span) {
         t_page* cur = span->page_head;

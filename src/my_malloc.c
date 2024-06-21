@@ -4,7 +4,7 @@
 void* my_malloc(size_t size) {
     if (g_pagemap == NULL) {
         system_settings();
-        create_pagemap(&g_pagemap);
+        pagemap_create(&g_pagemap);
     }
 
     // get category & search heap
@@ -22,7 +22,7 @@ void* search_heap(size_t size, int page_type) {
     case 1: return search_fast_cache(size);
     case 2:
     case 3: return search_cache(size, page_type);
-    case 4: return allocate_huge_chunk(size);
+    case 4: return huge_chunk_allocate(size);
     default: break;
     }
 

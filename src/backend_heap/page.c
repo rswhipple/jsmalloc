@@ -1,17 +1,17 @@
 #include "../../inc/main.h"
 
 
-void create_pages(t_pagemap* pagemap, t_span* span) {
+void pages_create(t_pagemap* pagemap, t_span* span) {
   int pages_left = SMALL_PAGE_ALLOCATION_SIZE;
   t_page* current = NULL;
   t_page* temp = NULL;
-  span->page_head = create_base_page(pagemap, span);
+  span->page_head = page_base_create(pagemap, span);
   pages_left -= 1;
   current = span->page_head;
 
   while (pages_left > 0) {
     temp = current;
-    current = create_page(current, small);
+    current = page_create(current, small);
     temp->next = current;
     pages_left -= 1;
   }
@@ -19,13 +19,13 @@ void create_pages(t_pagemap* pagemap, t_span* span) {
   pages_left = LARGE_PAGE_ALLOCATION_SIZE;
   while (pages_left > 0) {
     temp = current;
-    current = create_page(current, large);
+    current = page_create(current, large);
     temp->next = current;
     pages_left -= 1;
   }
 }
 
-t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
+t_page* page_base_create(t_pagemap* pagemap, t_span* span) {
   t_cache* cache = pagemap->frontend_cache;
   t_page* page = (t_page*)SPAN_SHIFT(span);
   page->chunk_count = 1;
@@ -44,19 +44,19 @@ t_page* create_base_page(t_pagemap* pagemap, t_span* span) {
   }
 
   page->pagetype = small;
-  create_top_chunk(page);
+  chunk_top_create(page);
 
   return page;
 }
 
-t_page* create_page(t_page* prev_page, int pagetype) {
+t_page* page_create(t_page* prev_page, int pagetype) {
   t_page* page = (t_page*)MEMORY_SHIFT(PAGE_SHIFT(prev_page), prev_page->memory);
   page->chunk_count = 1;
   page->prev = prev_page;
   page->next = NULL;
   page->memory = PAGE_SIZE - sizeof(t_page);
   page->pagetype = pagetype;
-  create_top_chunk(page);
+  chunk_top_create(page);
 
   return page;
 }

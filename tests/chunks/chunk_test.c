@@ -1,10 +1,10 @@
 #include "../../inc/tests.h"
 
 
-void create_top_chunk_test(void** state) {
+void chunk_top_create_test(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
   t_page* page = pagemap->span_head->page_head;
-  t_chunk* top_chunk = create_top_chunk(page);
+  t_chunk* top_chunk = chunk_top_create(page);
   assert_int_equal(top_chunk->size, page->memory);
   assert_false(IS_IN_USE(top_chunk));
   assert_null(top_chunk->fd);
@@ -12,10 +12,10 @@ void create_top_chunk_test(void** state) {
   assert_ptr_equal(page->top_chunk, top_chunk);
 }
 
-void split_chunk_test_success(void** state) {
+void chunk_split_test_success(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
 
-  t_chunk* split = split_chunk(pagemap->span_head->page_head->top_chunk, 100);
+  t_chunk* split = chunk_split(pagemap->span_head->page_head->top_chunk, 100);
   assert_int_equal(CHUNK_SIZE(split), 100);
   assert_int_equal(CHUNK_SIZE(pagemap->span_head->page_head->top_chunk), CHUNK_SIZE(split));
   assert_int_equal(pagemap->span_head->page_head->top_chunk->fd, split->fd);
@@ -24,60 +24,60 @@ void split_chunk_test_success(void** state) {
   assert_int_equal(split, pagemap->span_head->page_head->top_chunk);
 }
 
-void split_chunk_test_failure(void** state) {
+void chunk_split_test_failure(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
   t_chunk* top_chunk = pagemap->span_head->page_head->top_chunk;
   size_t size = CHUNK_SIZE(top_chunk);
   expect_function_call(custom_exit);
 
-  split_chunk(top_chunk, size + 1);
+  chunk_split(top_chunk, size + 1);
 }
 
 
-void allocate_huge_chunk_test_success(void** state) {
+void huge_chunk_allocate_test_success(void** state) {
   UNUSED(state);
 
   size_t size = 4096;
-  t_chunk* huge_chunk = allocate_huge_chunk(size);
+  t_chunk* huge_chunk = huge_chunk_allocate(size);
   assert_int_equal(huge_chunk->size, size);
 }
 
-void allocate_huge_chunk_test_failure(void** state) {
+void huge_chunk_allocate_test_failure(void** state) {
   UNUSED(state);
 
   size_t size = 0;
-  t_chunk* huge_chunk = allocate_huge_chunk(size);
+  t_chunk* huge_chunk = huge_chunk_allocate(size);
   assert_null(huge_chunk);
 }
 
 // TODO: Implement this test
-void free_chunk_test(void** state) {
+void chunk_free_test(void** state) {
   UNUSED(state);
 
   //   t_pagemap* pagemap = (t_pagemap*)*state;
   //   t_chunk* chunk = pagemap->span_head->page_head->top_chunk;
   //   size_t size = CHUNK_SIZE(chunk);
-  //   free_chunk(chunk, size);
+  //   chunk_free(chunk, size);
 }
 
-void free_huge_chunk_test(void** state) {
+void huge_chunk_free_test(void** state) {
   UNUSED(state);
   size_t size = 4096;
-  t_chunk* huge_chunk = allocate_huge_chunk(size);
-  free_huge_chunk(huge_chunk, size);
+  t_chunk* huge_chunk = huge_chunk_allocate(size);
+  huge_chunk_free(huge_chunk, size);
 }
 
 
-void merge_chunks_test(void** state) {
+void chunk_merge_test(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
   t_chunk* top_chunk = pagemap->top_chunk;
-  t_chunk* chunk1 = split_chunk(top_chunk, 72);
+  t_chunk* chunk1 = chunk_split(top_chunk, 72);
   top_chunk = pagemap->top_chunk;
-  t_chunk* chunk2 = split_chunk(top_chunk, 100);
+  t_chunk* chunk2 = chunk_split(top_chunk, 100);
   SET_FREE(chunk1);
   SET_FREE(chunk2);
   size_t merge_size = chunk1->size + chunk2->size;
-  t_chunk* merged_chunk = merge_chunks(chunk1, chunk2);
+  t_chunk* merged_chunk = chunk_merge(chunk1, chunk2);
 
   assert_int_equal(merged_chunk->size, merge_size);
   assert_int_equal(merged_chunk->size, chunk1->size);
@@ -94,7 +94,7 @@ void merge_chunks_test(void** state) {
 void try_merge_is_in_use_test(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
   t_chunk* top_chunk = pagemap->top_chunk;
-  t_chunk* chunk1 = split_chunk(top_chunk, 72);
+  t_chunk* chunk1 = chunk_split(top_chunk, 72);
   top_chunk = pagemap->top_chunk;
   SET_FREE(chunk1);
 

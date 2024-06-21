@@ -1,16 +1,16 @@
 #include "../../inc/main.h" 
 
 
-void write_boundary_tag(t_chunk* chunk) {
+void chunk_write_boundary_tag(t_chunk* chunk) {
     size_t* boundary_tag = (size_t*)((char*)chunk + CHUNK_SIZE(chunk) - sizeof(size_t));
     *boundary_tag = chunk->size;
 }
 
-t_chunk* create_top_chunk(t_page* page) {
+t_chunk* chunk_top_create(t_page* page) {
     t_chunk* chunk = (t_chunk*)PAGE_SHIFT(page);
     chunk->size = page->memory;
     SET_FREE(chunk);
-    write_boundary_tag(chunk);
+    chunk_write_boundary_tag(chunk);
     chunk->fd = NULL;
     chunk->bk = NULL;
     page->top_chunk = chunk;
@@ -19,10 +19,10 @@ t_chunk* create_top_chunk(t_page* page) {
 }
 
 // input parameters are t_chunk *chunk and size_t chunk_size
-t_chunk* split_chunk(t_chunk* chunk, size_t size) {
+t_chunk* chunk_split(t_chunk* chunk, size_t size) {
     if (CHUNK_SIZE(chunk) <= (size + 72)) {
         fprintf(stderr, "Invalid split size: %zu (chunk size: %zu)\n", size, chunk->size);
-        custom_exit("Error in split_chunk()\n");
+        custom_exit("Error in chunk_split()\n");
     }
 
     // Placeholder variables
@@ -37,7 +37,7 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
     // Update the original chunk's size, free status, next pointer & boundary_tag
     t_chunk* first_chunk = chunk;
     first_chunk->size = size;
-    write_boundary_tag(chunk);
+    chunk_write_boundary_tag(chunk);
     SET_IN_USE(first_chunk);    // set in_use after writing boundary tag 
     first_chunk->fd = NULL;
     first_chunk->bk = NULL;
@@ -48,7 +48,7 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
     SET_FREE(second_chunk);
     second_chunk->bk = chunk;
     second_chunk->fd = temp;
-    write_boundary_tag(second_chunk);
+    chunk_write_boundary_tag(second_chunk);
 
     if (flag == 1) g_pagemap->top_chunk = second_chunk;
     else if (flag == 2) g_pagemap->last_chunk = second_chunk;
@@ -61,7 +61,7 @@ t_chunk* split_chunk(t_chunk* chunk, size_t size) {
 }
 
 
-t_chunk* allocate_huge_chunk(size_t size) {
+t_chunk* huge_chunk_allocate(size_t size) {
     if (size < (size_t)PAGE_SIZE) {
         log_error("Error: allocation size too small.\n");
         return NULL;
@@ -75,7 +75,7 @@ t_chunk* allocate_huge_chunk(size_t size) {
     return huge_chunk;
 }
 
-t_chunk* merge_chunks(t_chunk* value_1, t_chunk* value_2) {
+t_chunk* chunk_merge(t_chunk* value_1, t_chunk* value_2) {
     // update cache_table bin head
     if (cache_table_is_bin_head(value_1)) cache_table_remove_head(value_1);
     if (cache_table_is_bin_head(value_2)) cache_table_remove_head(value_2);
@@ -87,19 +87,15 @@ t_chunk* merge_chunks(t_chunk* value_1, t_chunk* value_2) {
     if (value_2->fd) value_2->fd->bk = value_2->bk;
 
     value_1->size += value_2->size;
-    write_boundary_tag(value_1);
+    chunk_write_boundary_tag(value_1);
 
     return value_1;
 }
 
 t_chunk* try_merge(t_chunk* value) {
     // coalescing algo
+    // find out if chunk is first chunk in page or rearrange pageheaders
     int flag = 0;
-    printf("value->size: %zu\n", value->size);
-    printf("value pointer: %p\n", value);
-    printf("value->fd: %p\n", value->fd);
-    printf("value->bk: %p\n", value->bk);
-    printf("is_in_use: %lu\n", IS_IN_USE(value));
     t_chunk* prev = PREV_CHUNK(value, PREV_SIZE(value));
     if (prev) {
         printf("prev->size: %zu\n", prev->size);
@@ -115,16 +111,16 @@ t_chunk* try_merge(t_chunk* value) {
 
 
     switch (flag) {
-    case 1: return merge_chunks(prev, value);
-    case 2: return merge_chunks(value, next);
-    case 3: return merge_chunks(merge_chunks(prev, value), next);
+    case 1: return chunk_merge(prev, value);
+    case 2: return chunk_merge(value, next);
+    case 3: return chunk_merge(chunk_merge(prev, value), next);
     default: break;
     }
 
     return value;
 }
 
-void free_chunk(void* ptr, size_t size) {
+void chunk_free(void* ptr, size_t size) {
     t_chunk* value = (t_chunk*)((char*)ptr - sizeof(size_t));
     value->bk = NULL;
     value->fd = NULL;
@@ -142,6 +138,6 @@ void free_chunk(void* ptr, size_t size) {
     g_pagemap->frontend_cache->unsorted_cache = value;
 }
 
-void free_huge_chunk(void* ptr, size_t size) {
+void huge_chunk_free(void* ptr, size_t size) {
     if (munmap(ptr, size) == -1) custom_exit("munmap error");
 }

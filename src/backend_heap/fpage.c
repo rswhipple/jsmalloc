@@ -1,9 +1,9 @@
 #include "../../inc/main.h"
 
 
-void create_fpages(t_pagemap* pagemap) {
+void fpages_create(t_pagemap* pagemap) {
   int count = 0;
-  pagemap->span_head->fastpages = create_base_fpage(pagemap);
+  pagemap->span_head->fastpages = fpage_base_create(pagemap);
   count += 1;
 
   t_cache* cache = pagemap->frontend_cache;
@@ -13,7 +13,7 @@ void create_fpages(t_pagemap* pagemap) {
   if (chunk_size == 8) chunk_size += 8;
 
   while (count < FAST_PAGE_ALLOCATION_SIZE && chunk_size <= 64) {
-    temp = create_fpage(current, count, chunk_size, cache);
+    temp = fpage_create(current, count, chunk_size, cache);
     current->next = temp;
     current = temp;
     chunk_size += 8;
@@ -21,7 +21,7 @@ void create_fpages(t_pagemap* pagemap) {
   }
 }
 
-t_fpage* create_base_fpage(t_pagemap* pagemap) {
+t_fpage* fpage_base_create(t_pagemap* pagemap) {
   /* Beginning pointer for fastpages is found by starting at the start of
   the pageheap and using MEMORY_SHIFT to add the standard pages total
   allocation size. */
@@ -34,7 +34,7 @@ t_fpage* create_base_fpage(t_pagemap* pagemap) {
   fpage->memory = PAGE_SIZE - sizeof(t_fpage);
   fpage->chunk_size = min_chunk_size;
   fpage->max_chunks = fpage->memory / fpage->chunk_size;
-  fpage->last_chunk = create_top_tiny_chunk(fpage);
+  fpage->last_chunk = tiny_chunk_top_create(fpage);
 
   /* The tiny_chunk is immediately added to the fast_cache. */
   pagemap->frontend_cache->fast_cache[0] = fpage->last_chunk;
@@ -42,7 +42,7 @@ t_fpage* create_base_fpage(t_pagemap* pagemap) {
   return fpage;
 }
 
-t_fpage* create_fpage(t_fpage* prev_page, int count,
+t_fpage* fpage_create(t_fpage* prev_page, int count,
         size_t chunk_size, t_cache* cache) {
   t_fpage* fpage = (t_fpage*)MEMORY_SHIFT(FASTPAGE_SHIFT(prev_page), prev_page->memory);
   fpage->chunk_count = 1;
@@ -50,7 +50,7 @@ t_fpage* create_fpage(t_fpage* prev_page, int count,
   fpage->memory = PAGE_SIZE - sizeof(t_fpage);
   fpage->chunk_size = chunk_size;
   fpage->max_chunks = fpage->memory / fpage->chunk_size;
-  fpage->last_chunk = create_top_tiny_chunk(fpage);
+  fpage->last_chunk = tiny_chunk_top_create(fpage);
 
   /* The tiny_chunk is immediately added to the fast_cache.
   Logic takes into account 2 pages for size 16 bytes when the

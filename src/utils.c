@@ -135,7 +135,7 @@ t_chunk* get_top_chunk(t_page* page) {
   }
 
   if (top_chunk == NULL) {
-    t_chunk* new_chunk = create_top_chunk(page);
+    t_chunk* new_chunk = chunk_top_create(page);
     top_chunk->fd = new_chunk;
     new_chunk->bk = top_chunk;
     top_chunk = new_chunk;
