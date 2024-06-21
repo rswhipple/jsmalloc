@@ -8,14 +8,17 @@ split or a void* to the data field is returned.
 */
 void* search_unsorted_cache(size_t size) {
   t_chunk* unsorted_chunk = g_pagemap->frontend_cache->unsorted_cache;
+  t_chunk* new = NULL;
 
   while (unsorted_chunk) {
     if (unsorted_chunk->size >= size) {
+      // printf("found unsorted_chunk %p, size: %zu\n", unsorted_chunk, unsorted_chunk->size);
       if (unsorted_chunk->size > size + 72) {
-        unsorted_chunk = split_chunk(unsorted_chunk, size);
+        g_pagemap->frontend_cache->unsorted_cache = unsorted_chunk->fd;
+        new = split_chunk(unsorted_chunk, size);
       }
-      g_pagemap->frontend_cache->unsorted_cache = unsorted_chunk->fd;
-      return (void*)MEMORY_SHIFT(unsorted_chunk, CHUNK_OVERHEAD);
+      // printf("here\n");
+      return (void*)MEMORY_SHIFT(new, CHUNK_OVERHEAD);
     }
     else {
       cache_table_set(unsorted_chunk);
