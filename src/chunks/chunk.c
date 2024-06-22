@@ -94,21 +94,16 @@ t_chunk* chunk_merge(t_chunk* value_1, t_chunk* value_2) {
 
 t_chunk* try_merge(t_chunk* value) {
     // coalescing algo
-    // find out if chunk is first chunk in page or rearrange pageheaders
+    // TODO find out if chunk is first chunk in page or rearrange pageheaders
     int flag = 0;
     t_chunk* prev = PREV_CHUNK(value, PREV_SIZE(value));
-    if (prev) {
-        printf("prev->size: %zu\n", prev->size);
-        printf("prev pointer: %p\n", prev);
+    if (prev && prev->size && prev->size > 64) {
         if (!IS_IN_USE(prev)) flag += 1;
     }
     t_chunk* next = NEXT_CHUNK(value);
-    if (next) {
+    if (next && next->size && next->size > 64) {
         if (!IS_IN_USE(next)) flag += 2;
-        printf("next->size: %zu\n", next->size);
-        printf("next pointer: %p\n", next);
     }
-
 
     switch (flag) {
     case 1: return chunk_merge(prev, value);
