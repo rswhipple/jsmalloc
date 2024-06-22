@@ -38,4 +38,9 @@ void search_unsorted_cache_test(void** state);
 void search_unsorted_cache_null_test(void** state);
 void search_unsorted_cache_large_test(void** state);
 
+// =================== Sorted Cache ===================
+void search_sorted_cache_test(void** state);
+void search_sorted_cache_null_test(void** state);
+// void search_sorted_cache_large_test(void** state);
+
 #endif
