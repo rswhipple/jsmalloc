@@ -1,16 +1,16 @@
-.PHONY: all clean test
+.PHONY: all clean test run_tests
 
-all: source test
+all: source
 
 source:
-		$(MAKE) -C src
+	$(MAKE) -C src
 
 test:
-		$(MAKE) -C tests
+	$(MAKE) -C tests
 
 run_tests:
-		./tests/build/tests/run
+	./tests/build/tests/run
 
 clean:
-		$(MAKE) -C src clean
-		$(MAKE) -C tests clean
+	$(MAKE) -C src clean
+	$(MAKE) -C tests clean
