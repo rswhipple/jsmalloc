@@ -43,7 +43,6 @@ t_page* page_base_create(t_pagemap* pagemap, t_span* span) {
     page->memory = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
   }
 
-  page->pagetype = small;
   chunk_top_create(page);
 
   return page;
