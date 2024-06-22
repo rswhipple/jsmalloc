@@ -2,12 +2,12 @@
 
 
 t_cache_table* cache_table_create(t_cache* cache) {
-  /* The next line shifts the starting point of the t_cache_table struct 
-  beyond fastcache. */
+  /* Shift starting point of t_cache_table struct beyond fastcache. */
   t_cache_table* table = (t_cache_table*)MEMORY_SHIFT(cache, 
-      (cache->fcache_size * sizeof(t_tiny_chunk)));    
+                        (cache->fcache_size * sizeof(t_tiny_chunk)));
   table->capacity = NUM_BINS;
-  table->entries = (cache_table_entry*)MEMORY_SHIFT(table, sizeof(t_cache_table));
+  table->entries = (cache_table_entry*)MEMORY_SHIFT(table, 
+                  sizeof(t_cache_table));
 
   return table;
 }
