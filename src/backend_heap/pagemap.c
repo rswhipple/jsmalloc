@@ -18,7 +18,7 @@ void pagemap_create(t_pagemap** pagemap) {
     (*pagemap)->span_head = span_base_create((*pagemap)->frontend_cache);
     (*pagemap)->total_pages = BASE_HEAP_SIZE / PAGE_SIZE;
     pages_create(*pagemap, (*pagemap)->span_head);
-    (*pagemap)->top_chunk = (*pagemap)->span_head->page_head->top_chunk;
+    (*pagemap)->top_chunk = (*pagemap)->top_chunk;
     (*pagemap)->last_chunk = NULL;
     fpages_create(*pagemap);
 }
@@ -67,19 +67,7 @@ destroy_active_page() will be used in a future optimization. It will allow us
 to return individual pages to the OS if the program running my_malloc is using
 lower amounts of memory space.
 */
-void destroy_active_page(t_page* page) {
-    if (page->next && page->prev) {
-        page->next->prev = page->prev;
-        page->prev->next = page->next;
-    }
-    else if (page->next) {
-        page->next->prev = NULL;
-    }
-    else {
-        page->prev->next = NULL;
-    }
-    if (munmap(page, PAGE_SIZE) == -1) custom_exit("munmap error");
-}
+// void destroy_active_page(t_page* page) {}
 
 void destroy_page(t_page* page) {
     if (munmap(page, PAGE_SIZE) == -1) custom_exit("munmap error");

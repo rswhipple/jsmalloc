@@ -50,7 +50,7 @@ typedef struct s_fpage t_fpage;
 struct s_page {
     t_page* next;
     void* memory;
-    size_t memory_size;
+    size_t mem_size;
     size_t pagetype;
 };
 

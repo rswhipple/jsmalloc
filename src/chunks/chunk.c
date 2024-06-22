@@ -8,7 +8,7 @@ void chunk_write_boundary_tag(t_chunk* chunk) {
 
 t_chunk* chunk_top_create(t_page* page) {
     t_chunk* chunk = (t_chunk*)page->memory;
-    chunk->size = page->memory_size;
+    chunk->size = page->mem_size;
     SET_FREE(chunk);
     chunk_write_boundary_tag(chunk);
     chunk->fd = NULL;

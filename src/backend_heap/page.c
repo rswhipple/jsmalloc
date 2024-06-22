@@ -33,16 +33,15 @@ t_page* page_base_create(t_pagemap* pagemap, t_span* span) {
   page->pagetype = small;
 
   if (span == pagemap->span_head) {
-    page->memory_size = PAGE_SIZE - sizeof(t_pagemap) - sizeof(t_cache) -
+    page->mem_size = PAGE_SIZE - sizeof(t_pagemap) - sizeof(t_cache) -
       (cache->fcache_size * sizeof(t_tiny_chunk*)) -
       sizeof(t_cache_table) - (NUM_BINS * sizeof(cache_table_entry))- 
       sizeof(t_span) - sizeof(t_page);
   }
   else {
-    page->memory_size = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
+    page->mem_size = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
   }
 
-  page->pagetype = small;
   chunk_top_create(page);
 
   return page;
@@ -50,10 +49,9 @@ t_page* page_base_create(t_pagemap* pagemap, t_span* span) {
 
 t_page* page_create(t_page* prev_page, int pagetype) {
   t_page* page = (t_page*)PAGE_SHIFT(prev_page);
-  page->memory = (void*)MEMORY_SHIFT(prev_page->memory, prev_page->memory_size);
-  // prev_page->memory
+  page->memory = (void*)MEMORY_SHIFT(prev_page->memory, prev_page->mem_size);
   page->next = NULL;
-  page->memory_size = PAGE_SIZE - sizeof(t_page);
+  page->mem_size = PAGE_SIZE - sizeof(t_page);
   page->pagetype = pagetype;
   chunk_top_create(page);
 

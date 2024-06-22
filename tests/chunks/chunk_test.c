@@ -5,7 +5,7 @@ void chunk_top_create_test(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
   t_page* page = pagemap->span_head->page_head;
   t_chunk* top_chunk = chunk_top_create(page);
-  assert_int_equal(top_chunk->size, page->memory_size);
+  assert_int_equal(top_chunk->size, page->mem_size);
   assert_false(IS_IN_USE(top_chunk));
   assert_null(top_chunk->fd);
   assert_null(top_chunk->bk);
