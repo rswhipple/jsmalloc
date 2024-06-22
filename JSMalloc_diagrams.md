@@ -163,7 +163,7 @@ Each chunk has a header that includes metadata necessary for managing memory. Fo
 
 ### Tracking Adjacent Chunks
 
-PtMalloc uses the following methods to track adjacent chunks:
+JSMalloc uses the following methods to track adjacent chunks:
 
 - **Boundary Tags**: At the end of each chunk, a boundary tag replicates the size of the chunk.
 - **In-Place Headers**: When a chunk is freed, the allocator uses the size and previous size fields to check the status of adjacent chunks.
