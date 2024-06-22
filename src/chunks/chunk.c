@@ -4,6 +4,7 @@
 void chunk_write_boundary_tag(t_chunk* chunk) {
     size_t* boundary_tag = (size_t*)((char*)chunk + CHUNK_SIZE(chunk) - sizeof(size_t));
     *boundary_tag = chunk->size;
+    // printf("&boundary_tag = %zu\n", *boundary_tag);
 }
 
 t_chunk* chunk_top_create(t_page* page) {
@@ -21,8 +22,11 @@ t_chunk* chunk_top_create(t_page* page) {
 // input parameters are t_chunk *chunk and size_t chunk_size
 t_chunk* chunk_split(t_chunk* chunk, size_t size) {
     if (CHUNK_SIZE(chunk) <= (size + 72)) {
-        fprintf(stderr, "Invalid split size: %zu (chunk size: %zu)\n", size, chunk->size);
-        custom_exit("Error in chunk_split()\n");
+        t_page* page = g_pagemap->span_head->page_head;
+        while (IS_IN_USE(page->base_chunk) && page->base_chunk->size <= (size + 72)) {
+            page = page->next;
+        }
+        chunk = page->base_chunk;
     }
 
     // Placeholder variables
@@ -96,14 +100,26 @@ t_chunk* try_merge(t_chunk* value) {
     // coalescing algo
     // TODO find out if chunk is first chunk in page or rearrange pageheaders
     int flag = 0;
-    t_chunk* prev = PREV_CHUNK(value, PREV_SIZE(value));
-    if (prev && prev->size && prev->size > 64) {
-        if (!IS_IN_USE(prev)) flag += 1;
-    }
+
     t_chunk* next = NEXT_CHUNK(value);
+    printf("next->size: %zu\n", next->size);
     if (next && next->size && next->size > 64) {
         if (!IS_IN_USE(next)) flag += 2;
     }
+
+
+    printf("After if(next)\n");
+    size_t prev_size = (size_t)MEMORY_SHIFT(value, -sizeof(size_t));
+    printf("PREV_SIZE(value): %zu\n", PREV_SIZE(value));
+    printf("prev_size: %zu\n", prev_size);
+    t_chunk* prev = PREV_CHUNK(value, prev_size);
+    printf("Before if(prev)\n");
+    if (prev && prev->size && prev->size > 64) {
+        printf("IN if(prev)\n");
+        if (!IS_IN_USE(prev)) flag += 1;
+    }
+    printf("After if(prev)\n");
+   
 
     switch (flag) {
     case 1: return chunk_merge(prev, value);
