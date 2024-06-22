@@ -127,23 +127,6 @@ t_page* get_page_head(int page_type) {
   return page_head;
 }
 
-t_chunk* get_top_chunk(t_page* page) {
-  t_chunk* top_chunk = page->top_chunk;
-
-  while (IS_IN_USE(top_chunk)) {
-    top_chunk = top_chunk->fd;
-  }
-
-  if (top_chunk == NULL) {
-    t_chunk* new_chunk = chunk_top_create(page);
-    top_chunk->fd = new_chunk;
-    new_chunk->bk = top_chunk;
-    top_chunk = new_chunk;
-  }
-
-  return top_chunk;
-}
-
 
 char* my_strcpy(char* dst, char* src) {
 
