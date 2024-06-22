@@ -24,7 +24,7 @@ jobs:
 
       - name: Build
         run: |
-          make V=1
+          make test V=1
 
       - name: Run Tests with Core Dumps
         run: |
