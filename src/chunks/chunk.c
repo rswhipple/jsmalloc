@@ -98,7 +98,7 @@ t_chunk* chunk_merge(t_chunk* value_1, t_chunk* value_2) {
 
 t_chunk* try_merge(t_chunk* value) {
     // coalescing algo
-    // TODO find out if chunk is first chunk in page or rearrange pageheaders
+    // TODO trouble shoot boundary tag reading
     int flag = 0;
 
     t_chunk* next = NEXT_CHUNK(value);
@@ -138,7 +138,9 @@ void chunk_free(void* ptr, size_t size) {
     value->size = size;
     SET_FREE(value);
 
-    value = try_merge(value);
+    /* merge aka coalescing chunk system not yet working
+    TODO: V3 implementation of merge */
+    // value = try_merge(value);
     if (g_pagemap->frontend_cache->unsorted_cache == NULL) {
         g_pagemap->frontend_cache->unsorted_cache = value;
         return;
