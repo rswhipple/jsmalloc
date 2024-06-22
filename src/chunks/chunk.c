@@ -13,7 +13,7 @@ t_chunk* chunk_top_create(t_page* page) {
     chunk_write_boundary_tag(chunk);
     chunk->fd = NULL;
     chunk->bk = NULL;
-    page->top_chunk = chunk;
+    page->base_chunk = chunk;
 
     return chunk;
 }

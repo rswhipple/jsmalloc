@@ -53,7 +53,7 @@ struct s_page {
     size_t pagetype;
     size_t memory;
     size_t chunk_count;
-    t_chunk* top_chunk;
+    t_chunk* base_chunk;
 };
 
 struct s_fpage {
