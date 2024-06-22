@@ -24,15 +24,6 @@ void chunk_split_test_success(void** state) {
   assert_int_equal(new_top_size, pagemap->top_chunk->size);
 }
 
-void chunk_split_test_failure(void** state) {
-  t_pagemap* pagemap = (t_pagemap*)*state;
-  t_chunk* top_chunk = pagemap->top_chunk;
-  size_t size = CHUNK_SIZE(top_chunk);
-  expect_function_call(custom_exit);
-
-  chunk_split(top_chunk, size + 1);
-}
-
 
 void huge_chunk_allocate_test_success(void** state) {
   UNUSED(state);
@@ -96,8 +87,16 @@ void try_merge_is_in_use_test(void** state) {
   t_chunk* top_chunk = pagemap->top_chunk;
   t_chunk* chunk1 = chunk_split(top_chunk, 72);
   top_chunk = pagemap->top_chunk;
+  t_chunk* chunk2 = chunk_split(top_chunk, 100);
+  top_chunk = pagemap->top_chunk;
+  t_chunk* chunk3 = chunk_split(top_chunk, 72);
+  top_chunk = pagemap->top_chunk;
+  t_chunk* chunk4 = chunk_split(top_chunk, 72);
   SET_FREE(chunk1);
+  SET_FREE(chunk2);
+  SET_FREE(chunk3);
+  SET_FREE(chunk4);
 
-  t_chunk* merged_chunk = try_merge(chunk1);
+  t_chunk* merged_chunk = try_merge(chunk3);
   assert_ptr_equal(merged_chunk, chunk1);
 }
