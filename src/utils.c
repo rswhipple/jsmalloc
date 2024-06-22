@@ -21,15 +21,6 @@ void log_heap() {
     void* last_byte = (void*)MEMORY_SHIFT(g_pagemap, BASE_HEAP_SIZE);
     printf("pageheap end: %p\n", last_byte);
 
-  // printf("fpage pointer: %p\n", fpage);
-  // printf("sizeof(t_fpage): %zu\n", sizeof(t_fpage));
-  // printf("available memory: %zu\n", fpage->memory);
-  // printf("chunk size: %zu\n", fpage->chunk_size);
-  // printf("maximum number of chunks: %zu\n", fpage->max_chunks);
-  // void* last_byte = (void*)MEMORY_SHIFT(fpage, fpage->memory + sizeof(t_fpage));
-  // printf("fpage end = %p\n", last_byte);
-  // log_info("frontend cache");
-
     log_info("span");
     printf("span pointer: %p\n", g_pagemap->span_head);
     last_byte = (void*)MEMORY_SHIFT(g_pagemap->span_head, sizeof(t_span));
