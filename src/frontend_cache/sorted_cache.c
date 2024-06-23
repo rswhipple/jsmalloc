@@ -38,16 +38,20 @@ t_pagemap* g_pagemap->top_chunk.
 */
 void* search_sorted_cache(size_t size, int page_type) {
   UNUSED(page_type);
-  void* ptr = NULL;
+  t_chunk* ck = NULL;
 
-  if ((ptr = cache_table_get(size)) != NULL) {
-    return (void*)MEMORY_SHIFT(ptr, sizeof(t_chunk));
+  if ((ck = cache_table_get(size)) != NULL) {
+    // split chunk if too large
+    if (ck->size > size + 72) {
+      ck = chunk_split(ck, size);
+      return CHUNK_TO_DATA(ck);
+    }
+    return CHUNK_TO_DATA(ck);
   }
 
   // TODO: add last_chunk logic
-  if ((ptr = chunk_split(g_pagemap->top_chunk, size)) != NULL) {
-    printf("split top_chunk\n");
-    return (void*)MEMORY_SHIFT(ptr, sizeof(t_chunk));
+  if ((ck = chunk_split(g_pagemap->top_chunk, size)) != NULL) {
+    return CHUNK_TO_DATA(ck);
   }
 
   printf("Returning NULL\n");

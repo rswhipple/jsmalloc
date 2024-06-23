@@ -83,20 +83,34 @@ void chunk_merge_test(void** state) {
 }
 
 void try_merge_is_in_use_test(void** state) {
+  UNUSED(state);
   t_pagemap* pagemap = (t_pagemap*)*state;
   t_chunk* top_chunk = pagemap->top_chunk;
-  t_chunk* chunk1 = chunk_split(top_chunk, 72);
+  size_t size = round_up_to_next(72);
+  t_chunk* chunk1 = chunk_split(top_chunk, size);
   top_chunk = pagemap->top_chunk;
-  t_chunk* chunk2 = chunk_split(top_chunk, 100);
-  top_chunk = pagemap->top_chunk;
-  t_chunk* chunk3 = chunk_split(top_chunk, 72);
-  top_chunk = pagemap->top_chunk;
-  t_chunk* chunk4 = chunk_split(top_chunk, 72);
   SET_FREE(chunk1);
-  SET_FREE(chunk2);
-  SET_FREE(chunk3);
-  SET_FREE(chunk4);
+  cache_table_set(chunk1);
 
-  t_chunk* merged_chunk = try_merge(chunk3);
+  top_chunk = pagemap->top_chunk;
+  size = round_up_to_next(100);
+  t_chunk* chunk2 = chunk_split(top_chunk, size);
+  SET_FREE(chunk2);
+  cache_table_set(chunk2);
+  
+  top_chunk = pagemap->top_chunk;
+  size = round_up_to_next(212);
+  t_chunk* chunk3 = chunk_split(top_chunk, size);
+  SET_FREE(chunk3);
+  cache_table_set(chunk3);
+
+  t_chunk* merged_chunk = try_merge(chunk2);
+  assert_ptr_equal(merged_chunk, chunk2);
+  printf("**After merge** chunk2->size: %zu\n", chunk2->size);
+  merged_chunk = try_merge(chunk1);
   assert_ptr_equal(merged_chunk, chunk1);
+  printf("**After merge** chunk1->size: %zu\n", chunk1->size);
+  merged_chunk = try_merge(chunk3);
+  assert_ptr_equal(merged_chunk, chunk3); // no free chunks?
+  printf("**After merge** chunk3->size: %zu\n", chunk3->size);
 }

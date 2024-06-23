@@ -41,15 +41,14 @@ t_chunk* chunk_split(t_chunk* chunk, size_t size) {
     // Update the original chunk's size, free status, next pointer & boundary_tag
     t_chunk* first_chunk = chunk;
     first_chunk->size = size;
-    chunk_write_boundary_tag(chunk);
-    SET_IN_USE(first_chunk);    // set in_use after writing boundary tag 
     first_chunk->fd = NULL;
     first_chunk->bk = NULL;
+    chunk_write_boundary_tag(chunk);
+    SET_IN_USE(first_chunk);    // set in_use after writing boundary tag 
 
     // Create the second chunk immediately after the first chunk
-    t_chunk* second_chunk = (t_chunk*)MEMORY_SHIFT(CHUNK_SHIFT(chunk), size);
+    t_chunk* second_chunk = (t_chunk*)MEMORY_SHIFT(chunk, size);
     second_chunk->size = initial_chunk_size - size;
-    SET_FREE(second_chunk);
     second_chunk->bk = chunk;
     second_chunk->fd = temp;
     chunk_write_boundary_tag(second_chunk);
@@ -102,29 +101,23 @@ t_chunk* try_merge(t_chunk* value) {
     int flag = 0;
 
     t_chunk* next = NEXT_CHUNK(value);
-    printf("next->size: %zu\n", next->size);
+    t_chunk* prev = PREV_CHUNK(value, PREV_SIZE(value));
     if (next && next->size && next->size > 64) {
-        if (!IS_IN_USE(next)) flag += 2;
+        if (!IS_IN_USE(next)) {
+            // printf("next is free\n");
+            flag += 2;
+        }
     }
-
-
-    printf("After if(next)\n");
-    size_t prev_size = (size_t)MEMORY_SHIFT(value, -sizeof(size_t));
-    printf("PREV_SIZE(value): %zu\n", PREV_SIZE(value));
-    printf("prev_size: %zu\n", prev_size);
-    t_chunk* prev = PREV_CHUNK(value, prev_size);
-    printf("Before if(prev)\n");
-    if (prev && prev->size && prev->size > 64) {
-        printf("IN if(prev)\n");
-        if (!IS_IN_USE(prev)) flag += 1;
+    else if (prev && prev->size && prev->size > 64 && prev->size < (size_t)PAGE_SIZE) {
+        if (!IS_IN_USE(next)) {
+            // printf("prev is free\n");
+            flag += 1;
+        }
     }
-    printf("After if(prev)\n");
-   
 
     switch (flag) {
     case 1: return chunk_merge(prev, value);
     case 2: return chunk_merge(value, next);
-    case 3: return chunk_merge(chunk_merge(prev, value), next);
     default: break;
     }
 

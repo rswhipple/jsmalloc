@@ -36,7 +36,7 @@ int main(void) {
         cmocka_unit_test_setup_teardown(chunk_free_test, setup, teardown),
         cmocka_unit_test_setup_teardown(huge_chunk_free_test, setup, teardown),
         cmocka_unit_test_setup_teardown(chunk_merge_test, setup, teardown),
-        // cmocka_unit_test_setup_teardown(try_merge_is_in_use_test, setup, teardown),
+        cmocka_unit_test_setup_teardown(try_merge_is_in_use_test, setup, teardown),
 
         // =================== Tiny Chunk ===================
         cmocka_unit_test_setup_teardown(tiny_chunk_top_create_test, setup, teardown),
