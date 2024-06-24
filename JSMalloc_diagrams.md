@@ -238,7 +238,7 @@ Next, we implement the functions to free a chunk, write a boundary tag, and coal
 ### Function to Write Boundary Tag
 
 ```c
-void write_boundary_tag(chunk* ch) {
+void chunk_write_boundary_tag(chunk* ch) {
     size_t* boundary_tag = (size_t*)((char*)ch + CHUNK_SIZE(ch) - sizeof(size_t));
     *boundary_tag = ch->size;
 }
@@ -247,7 +247,7 @@ void write_boundary_tag(chunk* ch) {
 ### Function to Free a Chunk and Coalesce if Possible
 
 ```c
-void free_chunk(chunk* ch) {
+void chunk_free(chunk* ch) {
     chunk* next_chunk = NEXT_CHUNK(ch);
 
     // Coalesce with next chunk if it's free
@@ -257,7 +257,7 @@ void free_chunk(chunk* ch) {
     }
 
     // Write the boundary tag
-    write_boundary_tag(ch);
+    chunk_write_boundary_tag(ch);
 
     // Coalesce with previous chunk if it's free
     if (!(ch->prev_size & 1)) { // Check if previous chunk is free
@@ -266,7 +266,7 @@ void free_chunk(chunk* ch) {
         ch = prev_chunk;
 
         // Write the boundary tag
-        write_boundary_tag(ch);
+        chunk_write_boundary_tag(ch);
     }
 
     // Insert chunk into the free list (simplified for this example)
@@ -295,7 +295,7 @@ int main() {
 
     // Simulate freeing the chunk
     ch->size &= ~1; // Mark as free
-    free_chunk(ch);
+    chunk_free(ch);
 
     // For demonstration purposes, print the size
 ```

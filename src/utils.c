@@ -1,8 +1,16 @@
-#include "../inc/main.h"
+/* For testing comment out line 4 and line 41.
+For use uncomment lines 4/41, comment out lines 5 and 42 */
 
+// #include "../inc/main.h"
+#include "../inc/tests.h"
 
 void log_info(const char* message) {
     printf("\n=====%s=====\n", message);
+}
+
+void log_error(const char *error)
+{
+    write(STDERR_FILENO, error, my_strlen((char*)error));
 }
 
 void log_heap() {
@@ -13,22 +21,16 @@ void log_heap() {
     void* last_byte = (void*)MEMORY_SHIFT(g_pagemap, BASE_HEAP_SIZE);
     printf("pageheap end: %p\n", last_byte);
 
-  // printf("fpage pointer: %p\n", fpage);
-  // printf("sizeof(t_fpage): %zu\n", sizeof(t_fpage));
-  // printf("available memory: %zu\n", fpage->memory);
-  // printf("chunk size: %zu\n", fpage->chunk_size);
-  // printf("maximum number of chunks: %zu\n", fpage->max_chunks);
-  // void* last_byte = (void*)MEMORY_SHIFT(fpage, fpage->memory + sizeof(t_fpage));
-  // printf("fpage end = %p\n", last_byte);
-
-
-  // log_info("frontend cache");
-
-
     log_info("span");
     printf("span pointer: %p\n", g_pagemap->span_head);
     last_byte = (void*)MEMORY_SHIFT(g_pagemap->span_head, sizeof(t_span));
     printf("span end: %p\n", last_byte);
+}
+
+void custom_exit(const char *error) {
+    log_error(error);
+    // exit(EXIT_FAILURE);
+    function_called();
 }
 
 /*
@@ -39,7 +41,7 @@ the OS uses 4 byte or 8 byte pointers.
 void system_settings() {
     check_system_pointer();
     if (pointer_size == 4) {
-        min_chunk_size = 16;
+        min_chunk_size = 8;
     }
     else {
         min_chunk_size = 16;
@@ -104,29 +106,16 @@ size_t round_up_to_next(size_t number) {
 
 t_page* get_page_head(int page_type) {
   t_page* page_head = g_pagemap->span_head->page_head;
+
+  if (!page_head) custom_exit("t_pagemap->spanhead->page_head not found");
   if (page_type == 3) {
     while ((int)page_head->pagetype != page_type) {
       page_head = page_head->next;
     }
     page_head = g_pagemap->span_head->page_head;
   }
+
   return page_head;
-}
-
-t_chunk* get_top_chunk(t_page* page) {
-  t_chunk* top_chunk = page->top_chunk;
-  while (IS_IN_USE(top_chunk)) {
-    top_chunk = top_chunk->fd;
-  }
-
-  if (top_chunk == NULL) {
-    t_chunk* new_chunk = create_top_chunk(page);
-    top_chunk->fd = new_chunk;
-    new_chunk->bk = top_chunk;
-    top_chunk = new_chunk;
-  }
-
-  return top_chunk;
 }
 
 

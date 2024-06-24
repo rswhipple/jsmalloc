@@ -2,12 +2,12 @@
 
 
 t_cache_table* cache_table_create(t_cache* cache) {
-  /* The next line shifts the starting point of the t_cache_table struct 
-  beyond fastcache. */
+  /* Shift starting point of t_cache_table struct beyond fastcache. */
   t_cache_table* table = (t_cache_table*)MEMORY_SHIFT(cache, 
-      (cache->fcache_size * sizeof(t_tiny_chunk)));    
+                        (cache->fcache_size * sizeof(t_tiny_chunk)));
   table->capacity = NUM_BINS;
-  table->entries = (cache_table_entry*)MEMORY_SHIFT(table, sizeof(t_cache_table));
+  table->entries = (cache_table_entry*)MEMORY_SHIFT(table, 
+                  sizeof(t_cache_table));
 
   return table;
 }
@@ -36,8 +36,9 @@ t_chunk* cache_table_get(size_t size) {
   t_cache_table* ct = g_pagemap->frontend_cache->cache_table;
   size_t index = cache_table_index(ct, size);
 
-  if (!ct->entries[index].value) {
-    return NULL;
+  while (!ct->entries[index].value && index < ct->capacity) {
+    index++;
+    if (index == ct->capacity - 1) return NULL;
   }
 
   t_chunk* value = ct->entries[index].value;
@@ -53,19 +54,19 @@ static int cache_table_set_entry(t_chunk* value) {
   size_t index = cache_table_index(ct, value->size);
 
   // Loop till we find an empty entry.
-  while (ct->entries[index].key != NULL) {
+  if (ct->entries[index].key != NULL) {
     if (strcmp(key, ct->entries[index].key) == 0) {
-      // Found key (it already exists), add value to head, update pointers.
+      // Found key (it already exists)
+      // If bin is empty, add t_chunk to .value
+      if (!ct->entries[index].value) {
+        ct->entries[index].value = value;
+        return EXIT_SUCCESS;
+      }
+      // If bin is NOT empty, add value to head, update pointers.
       value->fd = ct->entries[index].value;
       ct->entries[index].value->bk = value;
       ct->entries[index].value = value;
       return EXIT_SUCCESS;
-    }
-    // Key wasn't in this slot, move to next (linear probing).
-    index++;
-    if (index >= ct->capacity) {
-      // At end of entries array, wrap around.
-      index = 0;
     }
   }
 

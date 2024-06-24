@@ -49,11 +49,9 @@ typedef struct s_fpage t_fpage;
 
 struct s_page {
     t_page* next;
-    t_page* prev;
+    t_chunk* base_chunk;
+    size_t mem_size;
     size_t pagetype;
-    size_t memory;
-    size_t chunk_count;
-    t_chunk* top_chunk;
 };
 
 struct s_fpage {

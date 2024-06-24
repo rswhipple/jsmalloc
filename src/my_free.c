@@ -12,12 +12,12 @@ void my_free(void* ptr) {
     int page_type = get_page_type(size);
 
     switch (page_type) {
-    case 1: free_tiny_chunk(ptr, size);
+    case 1: tiny_chunk_free(ptr, size);
             break;
     case 2:
-    case 3: free_chunk(ptr, size);
+    case 3: chunk_free(ptr, size);
             break;
-    case 4: free_huge_chunk(ptr, size);
+    case 4: huge_chunk_free(ptr, size);
             break;
     default: printf("Error reading memory size: Can not free.\n");
             break;

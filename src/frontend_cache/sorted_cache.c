@@ -8,14 +8,17 @@ split or a void* to the data field is returned.
 */
 void* search_unsorted_cache(size_t size) {
   t_chunk* unsorted_chunk = g_pagemap->frontend_cache->unsorted_cache;
+  t_chunk* new = NULL;
 
   while (unsorted_chunk) {
     if (unsorted_chunk->size >= size) {
+      // printf("found unsorted_chunk %p, size: %zu\n", unsorted_chunk, unsorted_chunk->size);
       if (unsorted_chunk->size > size + 72) {
-        unsorted_chunk = split_chunk(unsorted_chunk, size);
+        g_pagemap->frontend_cache->unsorted_cache = unsorted_chunk->fd;
+        new = chunk_split(unsorted_chunk, size);
       }
-      g_pagemap->frontend_cache->unsorted_cache = unsorted_chunk->fd;
-      return (void*)MEMORY_SHIFT(unsorted_chunk, CHUNK_OVERHEAD);
+      // printf("here\n");
+      return (void*)MEMORY_SHIFT(new, CHUNK_OVERHEAD);
     }
     else {
       cache_table_set(unsorted_chunk);
@@ -30,21 +33,25 @@ void* search_unsorted_cache(size_t size) {
 search_sorted_cache() checks to see if there are any t_chunks in the
 corresponding cache_table bin by calling cache_table_get(). If the t_chunk is
 found a void* to the data field is returned.
-If no t_chunk is found, split_chunk is called and creates a new t_chunk from
+If no t_chunk is found, chunk_split is called and creates a new t_chunk from
 t_pagemap* g_pagemap->top_chunk.
 */
 void* search_sorted_cache(size_t size, int page_type) {
   UNUSED(page_type);
-  void* ptr = NULL;
+  t_chunk* ck = NULL;
 
-  if ((ptr = cache_table_get(size)) != NULL) {
-    return (void*)MEMORY_SHIFT(ptr, sizeof(t_chunk));
+  if ((ck = cache_table_get(size)) != NULL) {
+    // split chunk if too large
+    if (ck->size > size + 72) {
+      ck = chunk_split(ck, size);
+      return CHUNK_TO_DATA(ck);
+    }
+    return CHUNK_TO_DATA(ck);
   }
 
   // TODO: add last_chunk logic
-  if ((ptr = split_chunk(g_pagemap->top_chunk, size)) != NULL) {
-    printf("split top_chunk\n");
-    return (void*)MEMORY_SHIFT(ptr, sizeof(t_chunk));
+  if ((ck = chunk_split(g_pagemap->top_chunk, size)) != NULL) {
+    return CHUNK_TO_DATA(ck);
   }
 
   printf("Returning NULL\n");

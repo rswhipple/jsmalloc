@@ -20,11 +20,11 @@ size_t pointer_size = 0;
 #ifndef TESTING
 int main() {
     system_settings();
-    create_pagemap(&g_pagemap);
+    pagemap_create(&g_pagemap);
 
     void* ptr = my_malloc(100);
     printf("ptr: %p\n", ptr);
-    destroy_pagemap(g_pagemap);
+    pagemap_destroy(g_pagemap);
 
     return 0;
 }
