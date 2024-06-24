@@ -34,7 +34,7 @@ t_fpage* fpage_base_create(t_pagemap* pagemap) {
   fpage->memory = PAGE_SIZE - sizeof(t_fpage);
   fpage->chunk_size = min_chunk_size;
   fpage->max_chunks = fpage->memory / fpage->chunk_size;
-  fpage->last_chunk = tiny_chunk_top_create(fpage);
+  fpage->last_chunk = tiny_chunk_base_create(fpage);
 
   /* The tiny_chunk is immediately added to the fast_cache. */
   pagemap->frontend_cache->fast_cache[0] = fpage->last_chunk;
@@ -50,7 +50,7 @@ t_fpage* fpage_create(t_fpage* prev_page, int count,
   fpage->memory = PAGE_SIZE - sizeof(t_fpage);
   fpage->chunk_size = chunk_size;
   fpage->max_chunks = fpage->memory / fpage->chunk_size;
-  fpage->last_chunk = tiny_chunk_top_create(fpage);
+  fpage->last_chunk = tiny_chunk_base_create(fpage);
 
   /* The tiny_chunk is immediately added to the fast_cache.
   Logic takes into account 2 pages for size 16 bytes when the

@@ -6,7 +6,7 @@ void tiny_chunk_print(t_tiny_chunk* tiny) {
     if (tiny->next) printf("next t_tiny_chunk = %p\n", tiny->next);
 }
 
-t_tiny_chunk* tiny_chunk_top_create(t_fpage* page) {
+t_tiny_chunk* tiny_chunk_base_create(t_fpage* page) {
     t_tiny_chunk* tiny = (t_tiny_chunk*)FASTPAGE_SHIFT(page);
     tiny->size = page->chunk_size;
     tiny->next = NULL;

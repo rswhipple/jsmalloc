@@ -9,7 +9,7 @@
 
 
 // =================== Chunk ===================
-void chunk_top_create_test(void** state);
+void chunk_base_create_test(void** state);
 void chunk_split_test_success(void** state);
 void chunk_split_test_failure(void** state);
 void huge_chunk_allocate_test_success(void** state);
@@ -20,7 +20,7 @@ void chunk_merge_test(void** state);
 void try_merge_is_in_use_test(void** state);
 
 // =================== Tiny Chunk ===================
-void tiny_chunk_top_create_test(void** state);
+void tiny_chunk_base_create_test(void** state);
 void tiny_chunk_create_test(void** state);
 void tiny_chunk_free_test(void** state);
 

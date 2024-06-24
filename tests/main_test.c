@@ -9,10 +9,10 @@ static int setup(void** state) {
     /* pagemap_create() integrated function path:
     frontend_cache_create() -> fast_cache_create()
     frontend_cache_create() -> cache_table_create()
-    span_base_create() -> pages_create() -> page_base_create() -> chunk_top_create()
-    pages_create() -> page_create() -> chunk_top_create()
-    span_base_create() -> fpages_create() - fpage_base_create() -> tiny_chunk_top_create()
-    fpages_create() - fpage_create() -> tiny_chunk_top_create()
+    span_base_create() -> pages_create() -> page_base_create() -> chunk_base_create()
+    pages_create() -> page_create() -> chunk_base_create()
+    span_base_create() -> fpages_create() - fpage_base_create() -> tiny_chunk_base_create()
+    fpages_create() - fpage_create() -> tiny_chunk_base_create()
     */
 
     *state = g_pagemap;
@@ -29,7 +29,7 @@ static int teardown(void** state) {
 int main(void) {
     const struct CMUnitTest tests[] = {
         // =================== Chunk ===================
-        cmocka_unit_test_setup_teardown(chunk_top_create_test, setup, teardown),
+        cmocka_unit_test_setup_teardown(chunk_base_create_test, setup, teardown),
         cmocka_unit_test_setup_teardown(chunk_split_test_success, setup, teardown),
         cmocka_unit_test_setup_teardown(huge_chunk_allocate_test_success, setup, teardown),
         cmocka_unit_test_setup_teardown(huge_chunk_allocate_test_failure, setup, teardown),
@@ -39,7 +39,7 @@ int main(void) {
         cmocka_unit_test_setup_teardown(try_merge_is_in_use_test, setup, teardown),
 
         // =================== Tiny Chunk ===================
-        cmocka_unit_test_setup_teardown(tiny_chunk_top_create_test, setup, teardown),
+        cmocka_unit_test_setup_teardown(tiny_chunk_base_create_test, setup, teardown),
         cmocka_unit_test_setup_teardown(tiny_chunk_create_test, setup, teardown),
         cmocka_unit_test_setup_teardown(tiny_chunk_free_test, setup, teardown),
 
