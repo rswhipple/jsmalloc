@@ -7,14 +7,13 @@ void chunk_write_boundary_tag(t_chunk* chunk) {
     // printf("&boundary_tag = %zu\n", *boundary_tag);
 }
 
-t_chunk* chunk_top_create(t_page* page) {
-    t_chunk* chunk = (t_chunk*)PAGE_SHIFT(page);
-    chunk->size = page->memory;
+t_chunk* chunk_base_create(void* start, size_t size) {
+    t_chunk* chunk = (t_chunk*)PAGE_SHIFT(start);
+    chunk->size = size;
     SET_FREE(chunk);
     chunk_write_boundary_tag(chunk);
     chunk->fd = NULL;
     chunk->bk = NULL;
-    page->base_chunk = chunk;
 
     return chunk;
 }

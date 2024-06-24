@@ -1,15 +1,16 @@
 #include "../../inc/tests.h"
 
 
-void chunk_top_create_test(void** state) {
+void chunk_base_create_test(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
-  t_page* page = pagemap->span_head->page_head;
-  t_chunk* top_chunk = chunk_top_create(page);
-  assert_int_equal(top_chunk->size, page->memory);
-  assert_false(IS_IN_USE(top_chunk));
-  assert_null(top_chunk->fd);
-  assert_null(top_chunk->bk);
-  assert_ptr_equal(page->base_chunk, top_chunk);
+  t_page* page = pagemap->span_head->page_head->next;
+  size_t mem_size = PAGE_SIZE - sizeof(t_page);
+  t_chunk* chunk = page->base_chunk;
+  assert_int_equal(mem_size, chunk->size);
+  assert_false(IS_IN_USE(chunk));
+  assert_null(chunk->fd);
+  assert_null(chunk->bk);
+  assert_ptr_equal(page->base_chunk, chunk);
 }
 
 void chunk_split_test_success(void** state) {
