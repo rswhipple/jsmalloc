@@ -8,7 +8,7 @@ void chunk_write_boundary_tag(t_chunk* chunk) {
 }
 
 t_chunk* chunk_base_create(void* start, size_t size) {
-    t_chunk* chunk = (t_chunk*)PAGE_SHIFT(start);
+    t_chunk* chunk = start;
     chunk->size = size;
     SET_FREE(chunk);
     chunk_write_boundary_tag(chunk);
@@ -29,31 +29,32 @@ t_chunk* chunk_split(t_chunk* chunk, size_t size) {
     }
 
     // Placeholder variables
-    t_chunk* temp = chunk->fd;
     size_t initial_chunk_size = chunk->size;
 
     int flag = 0;
 
     if (g_pagemap->top_chunk == chunk) flag = 1;
-    else if (g_pagemap->last_chunk == chunk) flag = 2;
 
+    printf("chunk->size: %zu\n", chunk->size);
     // Update the original chunk's size, free status, next pointer & boundary_tag
     t_chunk* first_chunk = chunk;
     first_chunk->size = size;
     first_chunk->fd = NULL;
     first_chunk->bk = NULL;
-    chunk_write_boundary_tag(chunk);
+    printf("first_chunk->size: %zu\n", first_chunk->size);
+    chunk_write_boundary_tag(first_chunk);
     SET_IN_USE(first_chunk);    // set in_use after writing boundary tag 
 
     // Create the second chunk immediately after the first chunk
-    t_chunk* second_chunk = (t_chunk*)MEMORY_SHIFT(chunk, size);
+    t_chunk* second_chunk = (t_chunk*)MEMORY_SHIFT(first_chunk, size);
     second_chunk->size = initial_chunk_size - size;
-    second_chunk->bk = chunk;
-    second_chunk->fd = temp;
+    second_chunk->bk = NULL;
+    second_chunk->fd = NULL;
+    printf("second_chunk->size: %zu\n", second_chunk->size);
+    printf("now here\n");
     chunk_write_boundary_tag(second_chunk);
 
     if (flag == 1) g_pagemap->top_chunk = second_chunk;
-    else if (flag == 2) g_pagemap->last_chunk = second_chunk;
     else {
         second_chunk->fd = g_pagemap->frontend_cache->unsorted_cache;
         g_pagemap->frontend_cache->unsorted_cache = second_chunk;

@@ -40,8 +40,12 @@ t_page* page_base_create(t_pagemap* pagemap, t_span* span) {
   else {
     page->mem_size = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
   }
-
-  page->base_chunk = chunk_base_create((void*)page, page->mem_size);
+  
+  void* start = (void*)PAGE_SHIFT(page);
+  // printf("start: %p\n", start);
+  page->base_chunk = chunk_base_create(start, page->mem_size);
+  // printf("base_chunk\n\tmem_size: %zu\n\tstart: %p\n\tend: %p\n", page->base_chunk->size,
+  //     page->base_chunk, (char*)(page->base_chunk) + page->base_chunk->size);
 
   return page;
 }
@@ -54,6 +58,8 @@ t_page* page_create(t_page* prev_page, int pagetype) {
   page->mem_size = PAGE_SIZE - sizeof(t_page);
   page->pagetype = pagetype;
   page->base_chunk = chunk_base_create(start, page->mem_size);
+  // printf("base_chunk\n\tmem_size: %zu\n\tstart: %p\n\tend: %p\n", page->base_chunk->size,
+  //     page->base_chunk, (char*)(page->base_chunk) + page->base_chunk->size);
 
   return page;
 }
