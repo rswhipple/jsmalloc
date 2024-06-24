@@ -11,7 +11,7 @@ void pages_create(t_pagemap* pagemap, t_span* span) {
 
   while (pages_left > 0) {
     temp = current;
-    current = page_create(current, small);
+    current = page_create(temp, small);
     temp->next = current;
     pages_left -= 1;
   }
@@ -19,7 +19,7 @@ void pages_create(t_pagemap* pagemap, t_span* span) {
   pages_left = LARGE_PAGE_ALLOCATION_SIZE;
   while (pages_left > 0) {
     temp = current;
-    current = page_create(current, large);
+    current = page_create(temp, large);
     temp->next = current;
     pages_left -= 1;
   }
@@ -41,11 +41,11 @@ t_page* page_base_create(t_pagemap* pagemap, t_span* span) {
     page->mem_size = PAGE_SIZE - sizeof(t_span) - sizeof(t_page);
   }
   
-  void* start = (void*)PAGE_SHIFT(page);
-  // printf("start: %p\n", start);
+  void* start = (void*)MEMORY_SHIFT(page, (sizeof(t_page) * SMALL_PAGE_ALLOCATION_SIZE));
   page->base_chunk = chunk_base_create(start, page->mem_size);
-  // printf("base_chunk\n\tmem_size: %zu\n\tstart: %p\n\tend: %p\n", page->base_chunk->size,
-  //     page->base_chunk, (char*)(page->base_chunk) + page->base_chunk->size);
+  pagemap->top_chunk = page->base_chunk;
+  // printf("top_chunk\n\tCHUNK_SIZE(chunk): %zu\n\tsize: %zu\n\tstart: %p\n\tend: %p\n", CHUNK_SIZE(pagemap->top_chunk),
+      // pagemap->top_chunk->size, pagemap->top_chunk, (char*)(page->base_chunk) + page->base_chunk->size);
 
   return page;
 }
@@ -58,8 +58,6 @@ t_page* page_create(t_page* prev_page, int pagetype) {
   page->mem_size = PAGE_SIZE - sizeof(t_page);
   page->pagetype = pagetype;
   page->base_chunk = chunk_base_create(start, page->mem_size);
-  // printf("base_chunk\n\tmem_size: %zu\n\tstart: %p\n\tend: %p\n", page->base_chunk->size,
-  //     page->base_chunk, (char*)(page->base_chunk) + page->base_chunk->size);
-
+  // printf("t_page struct\n\tstart: %p\n\tend: %p\n", page, (char*)page + sizeof(t_page));
   return page;
 }

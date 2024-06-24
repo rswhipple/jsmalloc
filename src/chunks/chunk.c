@@ -35,13 +35,11 @@ t_chunk* chunk_split(t_chunk* chunk, size_t size) {
 
     if (g_pagemap->top_chunk == chunk) flag = 1;
 
-    printf("chunk->size: %zu\n", chunk->size);
     // Update the original chunk's size, free status, next pointer & boundary_tag
     t_chunk* first_chunk = chunk;
     first_chunk->size = size;
     first_chunk->fd = NULL;
     first_chunk->bk = NULL;
-    printf("first_chunk->size: %zu\n", first_chunk->size);
     chunk_write_boundary_tag(first_chunk);
     SET_IN_USE(first_chunk);    // set in_use after writing boundary tag 
 
@@ -50,8 +48,6 @@ t_chunk* chunk_split(t_chunk* chunk, size_t size) {
     second_chunk->size = initial_chunk_size - size;
     second_chunk->bk = NULL;
     second_chunk->fd = NULL;
-    printf("second_chunk->size: %zu\n", second_chunk->size);
-    printf("now here\n");
     chunk_write_boundary_tag(second_chunk);
 
     if (flag == 1) g_pagemap->top_chunk = second_chunk;

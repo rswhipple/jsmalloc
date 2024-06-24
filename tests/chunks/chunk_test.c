@@ -15,11 +15,11 @@ void chunk_base_create_test(void** state) {
 
 void chunk_split_test_success(void** state) {
   t_pagemap* pagemap = (t_pagemap*)*state;
-
-  size_t new_top_size = pagemap->top_chunk->size - 100;
-  t_chunk* split = chunk_split(pagemap->top_chunk, 100);
+  t_chunk* ck = pagemap->top_chunk;
+  size_t new_top_size = ck->size - 100;
+  t_chunk* split = chunk_split(ck, 100);
   assert_int_equal(CHUNK_SIZE(split), 100);
-  assert_int_equal(pagemap->top_chunk->fd, split->fd);
+  assert_int_equal(ck->fd, split->fd);
   assert_int_equal(split->fd, NULL);
   assert_int_equal(split->bk, NULL);
   assert_int_equal(new_top_size, pagemap->top_chunk->size);
