@@ -15,7 +15,7 @@ extern t_pagemap* g_pagemap;
 #define SMALL_PAGE_ALLOCATION_SIZE 40
 #define SMALL_MAX_CHUNK_SIZE 512
 #define LARGE_PAGE_ALLOCATION_SIZE 0
-// #define LARGE_MAX_CHUNK_SIZE (LARGE_PAGE_ALLOCATION_SIZE * PAGE_SIZE / 12)
+#define LARGE_MAX_CHUNK_SIZE (PAGE_SIZE / 2)
 
 #define TINY_CHUNK_OVERHEAD sizeof(size_t)
 #define CHUNK_OVERHEAD (sizeof(size_t) * 2)
