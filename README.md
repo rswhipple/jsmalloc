@@ -15,7 +15,6 @@ How did we solve it? See:
 
 [Design doc](./JSMalloc.md)
 
-[JSMalloc Diagrams](./JSMalloc_diagrams.md)
 
 ## Installation
 
