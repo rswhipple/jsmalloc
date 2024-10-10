@@ -13,7 +13,7 @@ Create your own implementation of the malloc families functions in order to allo
 
 How did we solve it? See:
 
-[Design doc](./JSMalloc.md)
+[Design doc](./JSMalloc_diagrams.md)
 
 
 ## Installation
